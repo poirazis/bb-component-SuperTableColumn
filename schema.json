@@ -1,0 +1,304 @@
+{
+  "type": "component",
+  "metadata": {},
+  "schema": {
+    "name": "bb-component-SuperTableColumn",
+    "friendlyName": "Super Table Column",
+    "description": "Customizable columns for the SuperTable Component",
+    "info": "Super Table Columns only work inside a Super Table Component",
+    "icon": "TableColumnAddRight",
+    "hasChildren": true,
+    "showSettingsBar": false,
+    "settings": [
+      {
+        "type": "schema",
+        "key": "schema",
+        "label": "Schema",
+        "dependsOn": "_hidden"
+      },
+      {
+        "type": "field",
+        "key": "field",
+        "label": "Field"
+      },
+      {
+        "type": "select",
+        "key": "columnWidth",
+        "label": "Column Width",
+        "options": [
+          {"label": "Fixed Minimum Width", "value": "0"},
+          {"label": "Responsive Tiny", "value": "0.1"},
+          {"label": "Responsive Extra Small", "value": "0.25"},
+          {"label": "Responsive Small", "value": "0.5"},
+          {"label": "Responsive Medium", "value": "1"},
+          {"label": "Responsive Large", "value": "1.5"},
+          {"label": "Responsive Double", "value": "2"},
+          {"label": "Responsive Triple", "value": "3"}   
+        ],
+        "defaultValue": "1"
+      },
+      {
+        "type": "text",
+        "key": "minWidth",
+        "label": "Minimum Width",
+        "dependsOn": { "setting": "columnWidth", "value": "0" },
+        "defaultValue": "fit-contents"
+      },
+      {
+        "type": "text",
+        "key": "header",
+        "label": "Header"
+      },
+      {
+        "type": "text",
+        "key": "footer",
+        "label": "Footer"
+      },
+      {
+        "type": "boolean",
+        "key": "resizable",
+        "label": "Resizable",
+        "defaultValue": true
+      },
+      {
+        "type": "boolean",
+        "key": "sortable",
+        "label": "Sortable",
+        "defaultValue": false
+      },
+      {
+        "type": "boolean",
+        "key": "searchable",
+        "label": "Searchable",
+        "defaultValue": false
+      },
+      {
+        "type": "select",
+        "label": "Search Mode",
+        "key": "searchMode",
+        "dependsOn": "searchable",
+        "options" : [
+          { "label": "Live Debounced", "value": "live" },
+          { "label": "On Enter / Tab", "value": "onEnter"}
+        ],
+        "defaultValue": "live"
+      },
+      {
+        "type": "boolean",
+        "key": "customize",
+        "label": "Customize",
+        "defaultValue": false
+      },
+      {
+        "section": true,
+        "name": "Customize Header Settings",
+        "dependsOn": "customize",
+        "settings": [
+          {
+            "type": "select",
+            "label": "Header Alignment",
+            "key": "headerAlign",
+            "showInBar": true,
+            "barStyle": "buttons",
+            "options": [
+              {
+                "label": "Inherit",
+                "value": "inherit",
+                "barIcon": "Table",
+                "barTitle": "Inherit Setting From Table"
+              },
+              {
+                "label": "Left",
+                "value": "left",
+                "barIcon": "TextAlignLeft",
+                "barTitle": "Text Align Left"
+              },
+              {
+                "label": "Center",
+                "value": "center",
+                "barIcon": "TextAlignCenter",
+                "barTitle": "Text Align Center"
+              },
+              {
+                "label": "Right",
+                "value": "right",
+                "barIcon": "TextAlignRight",
+                "barTitle": "Text Align Right"
+              }
+            ],
+            "defaultValue": "inherit"
+          },
+          {
+            "type": "color",
+            "key": "headerFontColor",
+            "label": "Font Color"
+          },
+          {
+            "type": "color",
+            "key": "headerBackground",
+            "label": "Background Color"
+          }
+        ]
+      },
+      {
+        "section": true,
+        "name": "Customize Row Settings",
+        "dependsOn": "customize",
+        "settings": [
+          {
+            "type": "select",
+            "label": "Row Horizontal Align",
+            "key": "rowHorizontalAlign",
+            "showInBar": true,
+            "barStyle": "buttons",
+            "options": [
+              {
+                "label": "Inherit",
+                "value": "inherit",
+                "barIcon": "Table",
+                "barTitle": "Inherit Setting From Table"
+              },
+              {
+                "label": "Left",
+                "value": "flex-start",
+                "barIcon": "AlignLeft",
+                "barTitle": "Align left"
+              },
+              {
+                "label": "Center",
+                "value": "center",
+                "barIcon": "AlignCenter",
+                "barTitle": "Align center"
+              },
+              {
+                "label": "Right",
+                "value": "flex-end",
+                "barIcon": "AlignRight",
+                "barTitle": "Align right"
+              },
+              {
+                "label": "Stretch",
+                "value": "stretch",
+                "barIcon": "MoveLeftRight",
+                "barTitle": "Align stretched horizontally"
+              }
+            ],
+            "defaultValue": "inherit"
+          },
+          {
+            "type": "select",
+            "label": "Row Vertical Align",
+            "key": "rowVerticalAlign",
+            "showInBar": true,
+            "barStyle": "buttons",
+            "options": [
+              {
+                "label": "Inherit",
+                "value": "inherit",
+                "barIcon": "Table",
+                "barTitle": "Inherit Setting From Table"
+              },
+              {
+                "label": "Top",
+                "value": "flex-start",
+                "barIcon": "AlignTop",
+                "barTitle": "Align top"
+              },
+              {
+                "label": "Middle",
+                "value": "center",
+                "barIcon": "AlignMiddle",
+                "barTitle": "Align middle"
+              },
+              {
+                "label": "Bottom",
+                "value": "flex-end",
+                "barIcon": "AlignBottom",
+                "barTitle": "Align bottom"
+              }
+            ],
+            "defaultValue": "inherit"
+          },
+          {
+            "type": "color",
+            "key": "rowFontColor",
+            "label": "Text Color"
+          },
+          {
+            "type": "color",
+            "key": "rowBackground",
+            "label": "Background Color"
+          }
+        ]
+      },
+      {
+        "section": true,
+        "name": "Customize Footer Settings",
+        "dependsOn": "customize",
+        "settings": [
+          {
+            "type": "select",
+            "label": "Footer Alignment",
+            "key": "footerAlign",
+            "showInBar": true,
+            "barStyle": "buttons",
+            "options": [
+              {
+                "label": "Inherit",
+                "value": "inherit",
+                "barIcon": "Table",
+                "barTitle": "Inherit Setting From Table"
+              },
+              {
+                "label": "Left",
+                "value": "left",
+                "barIcon": "TextAlignLeft",
+                "barTitle": "Text Align Left"
+              },
+              {
+                "label": "Center",
+                "value": "center",
+                "barIcon": "TextAlignCenter",
+                "barTitle": "Text Align Center"
+              },
+              {
+                "label": "Right",
+                "value": "right",
+                "barIcon": "TextAlignRight",
+                "barTitle": "Text Align Right"
+              }
+            ],
+            "defaultValue": "inherit"
+          },
+          {
+            "type": "color",
+            "key": "footerFontColor",
+            "label": "Text Color"
+          },
+          {
+            "type": "color",
+            "key": "footerBackground",
+            "label": "Background Color"
+          }
+        ]
+      }
+    ],
+    "context": [
+      {
+        "type": "static",
+        "values": [
+          {
+            "label": "Row ID",
+            "key": "rowID",
+            "type": "text"
+          },
+          {
+            "label": "Cell Value",
+            "key": "cellValue",
+            "type": "text"
+          }
+        ]
+      }
+    ]
+  }
+}
