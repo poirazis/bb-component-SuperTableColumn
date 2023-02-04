@@ -22,8 +22,8 @@
 </script>
 
 <div 
-	on:mouseenter={ () => dispatch("hovered")} 
-	on:mouseleave={ () => dispatch("unHovered")}
+	on:mouseenter={ () => dispatch("hovered") } 
+	on:mouseleave={ () => dispatch("unHovered") }
 	class="spectrum-Table-row" 
 	class:is-selected={isSelected} 
 	class:is-hovered={isHovered}
@@ -40,20 +40,18 @@
 </div>
 
 <style>
-.spectrum-Table-row {
-	flex: 1 0 auto;
-	display: flex;
-	min-height: fit-content;
-	height: var(--row-height) !important;
-	flex-direction: column;
-	justify-content: var(--super-table-row-vertical-align);
-	align-items: var(--super-table-row-horizontal-align);
-}
-
+	.spectrum-Table-row {
+		flex: 1 0 auto;
+		display: flex;
+		min-height: fit-content;
+		height: var(--row-height) !important;
+		flex-direction: column;
+		justify-content: var(--super-table-row-vertical-align);
+		align-items: var(--super-table-row-horizontal-align);
+	}
 	.is-hovered {
     background-color: var(--spectrum-table-m-regular-row-background-color-hover, var(--spectrum-alias-highlight-hover));
 	}
-
 	.is-hovered.is-selected {
     background-color: var(--spectrum-table-m-regular-row-background-color-selected-hover, var(--spectrum-alias-highlight-selected-hover));
 	}

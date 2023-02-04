@@ -1,5 +1,7 @@
 <script>
   import { getContext, onMount, afterUpdate, onDestroy, setContext } from "svelte";
+  import { writable, derived } from "svelte/store"
+
 
   import "../node_modules/@spectrum-css/table/dist/index-vars.css"
 
@@ -14,6 +16,14 @@
   const tableStore = getContext("tableStore");
   const tableSynchronizer = getContext("tableSynchronizer")
   const tableFilterStore = getContext("tableFilterStore")
+
+  let nameStore = writable()
+  $: nameStore.set(field)
+  // Create our derived store and make sure we grab only this columns rows
+  let columnStore = derived( 
+      [tableStore, nameStore], 
+        ( [$tableStore, $nameStore] ) => { return $tableStore?.data.map( row => ({ rowKey: row[$tableStore.idColumn], rowValue:row[$nameStore]  }) )  } 
+      ) || null
 
   // We keep a hidden property of type "schema" so we can use the "field" property type
   export let schema;
@@ -34,44 +44,25 @@
   let id = $component.id;
   let flexBasis = "auto";
   let resizing = false;
-  let columnStore = null
-  let rowHeights = []
+  let rowHeights = new Array(20).fill(30)
   let loaded = false
   let noRecords = false
   let order, isLast, isFirst
 
   // Builder Specific Code 
-  // Set components hidden property Schema to the wrapping dataProviderd datasource
+  // Set components hidden property Schema to the wrapping dataProvider datasource
   // so the field property will populate the fields for the user to select
   $: if ( $builderStore?.inBuilder && (!field || !schema))  {
     initializeColumnBuilder();
-  }
-  
-  // Scrolling Synchonicity Code 
-  // Notify the tableSynchronizer that you have been scrolled
-  let tableBodyContainer
-  function handleScroll( e ) {
-    if ( $tableSynchronizer.scrollY !== tableBodyContainer?.scrollTop )
-    {
-      $tableSynchronizer.controllerID = id
-      $tableSynchronizer.scrollY = tableBodyContainer?.scrollTop 
-    }
-  } 
-
-  // Do not update if you are the one who initiated the scroll 
-  afterUpdate( () => { 
-      if (tableBodyContainer && $tableSynchronizer.controllerID !== id  && tableBodyContainer?.scrollTop != $tableSynchronizer?.scrollY  ) {
-        tableBodyContainer.scrollTop = $tableSynchronizer?.scrollY 
-      }
-    } 
-  )
+  }  
 
   // Component Code 
   $: if ( $tableStore?.loaded ) loaded = true
+
   // Reinitialize when another field is selεcted or after a DND 
   $: initializeColumn( field )
-  $: getOrderAmongstSiblings($screenStore)
-  $: if ( loaded && columnStore ) tableStore?.updateRowHeights(id, rowHeights)
+  $: getOrderAmongstSiblings( $screenStore )
+  $: if ( loaded && columnStore ) tableSynchronizer?.updateRowHeights(id, rowHeights)
   $: if ( loaded && columnStore && field ) tableStore?.updateColumn({ id: id, field: field });
   $: size = $tableStore?.size
 
@@ -136,12 +127,16 @@
     }
   }
 
+  function handleFieldSelection ( field ) {
+
+  }
+
   function initializeColumn( field ) {
     if ( !field ) return
     // unregister before registering to cover for in builder DND
     tableStore?.unregisterColumn({ id: id, field: field })
     // Register the column to the tableStore, and get back a writable store
-    columnStore = tableStore?.registerColumn({ id: id, field: field });
+    tableStore?.registerColumn({ id: id, field: field });
   }
 
   function initializeColumnBuilder() {
@@ -159,15 +154,28 @@
     } 
   }
 
+  // Scrolling Synchonicity Code 
+  // Notify the tableSynchronizer that you have been scrolled
+  let tableBodyContainer
+  function handleScroll( e ) {
+    if ( $tableSynchronizer.scrollY !== tableBodyContainer?.scrollTop )
+    {
+      $tableSynchronizer.controllerID = id
+      $tableSynchronizer.scrollY = tableBodyContainer?.scrollTop 
+    }
+  } 
+
+  // Do not update if you are the one who initiated the scroll 
+  afterUpdate( () => { 
+      if (tableBodyContainer && $tableSynchronizer.controllerID !== id  && tableBodyContainer?.scrollTop != $tableSynchronizer?.scrollY  ) {
+        tableBodyContainer.scrollTop = $tableSynchronizer?.scrollY 
+      }
+    } 
+  )
+
   // Unregister from the tableStore
   onDestroy(() => tableStore?.unregisterColumn({ id: id, field: field }));
-
-  // Set Context for Super Table Cell components
-  let columnContext = { 
-    parentID: $component?.id,
-    field: field
-   }
-  setContext("SuperTableColumnInfo", columnContext );
+  setContext("columnContext", { columnID: id, columnType: "string" } );
 </script>
 
 <div class="spectrum-Table" use:styleable={styles}>
@@ -196,12 +204,12 @@
       class="spectrum-Table-body" 
       class:resizing={resizing}>
 
-        {#each $columnStore?.rowData as row, index}
+        {#each $columnStore as row, index }
           <SuperTableColumnRow
             on:hovered={() => { if ( $tableSynchronizer.hoveredRow !== index ) $tableSynchronizer.hoveredRow = index} }
             on:unHovered={() => $tableSynchronizer.hoveredRow = null}
             bind:needHeight={rowHeights[index]}
-            minHeight={$tableStore?.rowHeights[index]}
+            minHeight={$tableSynchronizer?.rowHeights[index]}
             rowKey={row.rowKey}
             cellValue={row.rowValue}
             loading={!loaded}
@@ -211,10 +219,11 @@
           {#if noRecords}
             Not Found
           {:else}
-              <slot />
+            <slot />
           {/if}
           </SuperTableColumnRow>
         {/each}
+
     </div>
     <SuperTableFooter>{footer || field}</SuperTableFooter>
   {/if}
