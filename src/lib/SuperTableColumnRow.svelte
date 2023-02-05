@@ -48,6 +48,7 @@
 		flex-direction: column;
 		justify-content: var(--super-table-row-vertical-align);
 		align-items: var(--super-table-row-horizontal-align);
+		border-bottom-width: var(--super-table-row-bottom-border-size);
 	}
 	.is-hovered {
     background-color: var(--spectrum-table-m-regular-row-background-color-hover, var(--spectrum-alias-highlight-hover));
