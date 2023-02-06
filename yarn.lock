@@ -254,10 +254,20 @@
   resolved "https://registry.yarnpkg.com/@sideway/pinpoint/-/pinpoint-2.0.0.tgz#cff8ffadc372ad29fd3f78277aeb29e632cc70df"
   integrity sha512-RNiOoTPkptFtSVzQevY/yWtZwf/RxyVnPy/OcA9HBM3MlGDnBEYL5B41H0MTn0Uec8Hi+2qUtTfG2WWZBmMejQ==
 
+"@spectrum-css/icon@^3.0.31":
+  version "3.0.31"
+  resolved "https://registry.yarnpkg.com/@spectrum-css/icon/-/icon-3.0.31.tgz#e1680cfedf272d9db7339381bbfe1df0a2b97b5e"
+  integrity sha512-fuyna/AvS2Rt/1FJ2f9m43KbFkjZsW8vzoeQtlcOafw3R80tPwzkeZTZSjBbOCvKb/Bw5EnU2I1SS38hIvuQIQ==
+
 "@spectrum-css/table@^4.0.24":
   version "4.0.27"
   resolved "https://registry.yarnpkg.com/@spectrum-css/table/-/table-4.0.27.tgz#cbf36e51a111053853d667bcae4ef1ccf72fcab3"
   integrity sha512-pd7L18IDI/uIqlvmnGz/CSbO/82GXHs6hpvqCl2Nje9UOMPYZdO8ySEbeGrTA9mTpUmaai3cvz87zkgDwDX99w==
+
+"@spectrum-css/vars@^8.0.3":
+  version "8.0.3"
+  resolved "https://registry.yarnpkg.com/@spectrum-css/vars/-/vars-8.0.3.tgz#a5da23c58861b36ee48b9cd5983f956d2bb7977f"
+  integrity sha512-LoSPi5273u21O5ItFr3FuLZS3D0y9dlmJImmat8W66r6dPaFJhHDRAbIB93hGOk5mPxqrQb8guAUx7FmvZrbuQ==
 
 "@techpass/passport-openidconnect@0.3.2":
   version "0.3.2"
@@ -286,9 +296,9 @@
   integrity sha512-EYNwp3bU+98cpU4lAWYYL7Zz+2gryWH1qbdDTidVd6hkiR6weksdbMadyXKXNPEkQFhXM+hVO9ZygomHXp+AIw==
 
 "@types/node@*":
-  version "18.11.18"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.11.18.tgz#8dfb97f0da23c2293e554c5a50d61ef134d7697f"
-  integrity sha512-DHQpWGjyQKSHj3ebjFI/wRKcqQcdR+MoFBygntYOZytCqNfkd2ZC4ARDJ2DQqhjH5p85Nnd3jhUJIXrszFX/JA==
+  version "18.11.19"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.11.19.tgz#35e26df9ec441ab99d73e99e9aca82935eea216d"
+  integrity sha512-YUgMWAQBWLObABqrvx8qKO1enAvBUdjZOAWQ5grBAkp5LQv45jBvYKZ3oFS9iKRCQyFjqw6iuEa1vmFqtxYLZw==
 
 "@types/resolve@1.17.1":
   version "1.17.1"

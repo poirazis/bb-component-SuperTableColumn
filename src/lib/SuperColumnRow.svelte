@@ -17,8 +17,8 @@
 	// the proposed height
 	export let minHeight 
 
-	let innerHeight = 0
-	$: if ( !loading ) needHeight = innerHeight 
+	let innerHeight = minHeight
+	$: needHeight = innerHeight
 </script>
 
 <div 
@@ -27,16 +27,17 @@
 	class="spectrum-Table-row" 
 	class:is-selected={isSelected} 
 	class:is-hovered={isHovered}
-	style:--row-height={minHeight + "px"}>
-	{#if loading}
-		<Skeleton>Loading</Skeleton>
-	{:else}
-		<div bind:clientHeight={innerHeight} class="spectrum-Table-cell" >
-			<Provider data={ {rowID: rowKey, cellValue: cellValue} }>
+	style:--row-height={minHeight + "px"}
+	>
+		<div bind:clientHeight={innerHeight} class="spectrum-Table-cell" style:width={loading ? "100%" : "min-content"}>
+			{#if loading}
+				<Skeleton>Loading</Skeleton>
+			{:else}
+				<Provider data={ {rowID: rowKey, cellValue: cellValue} }>
 					<slot />				
-			</Provider>
+				</Provider>
+			{/if}
 		</div>
-	{/if}
 </div>
 
 <style>
@@ -44,7 +45,7 @@
 		flex: 1 0 auto;
 		display: flex;
 		min-height: fit-content;
-		height: var(--row-height) !important;
+		height: var(--row-height);
 		flex-direction: column;
 		justify-content: var(--super-table-row-vertical-align);
 		align-items: var(--super-table-row-horizontal-align);

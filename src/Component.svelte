@@ -3,9 +3,10 @@
   import { writable, derived } from "svelte/store"
   import "../node_modules/@spectrum-css/table/dist/index-vars.css"
 
-  import SuperTableHeader from "./lib/SuperTableHeader.svelte";
-  import SuperTableColumnRow from "./lib/SuperTableColumnRow.svelte";
-  import SuperTableFooter from "./lib/SuperTableFooter.svelte";
+  import SuperColumnHeader from "./lib/SuperColumnHeader.svelte";
+  import SuperColumnRow from "./lib/SuperColumnRow.svelte";
+  import SuperColumnFooter from "./lib/SuperColumnFooter.svelte";
+
   import { findComponentById } from "./lib/builderHelpers" 
 
   const { styleable, builderStore, screenStore } = getContext("sdk");
@@ -34,7 +35,7 @@
   let id = $component.id;
   let flexBasis = "auto";
   let resizing = false;
-  let rowHeights = new Array(20).fill(30)
+  let rowHeights = new Array(100)
   let loaded = false
   let noRecords = false
   let order, isLast, isFirst
@@ -58,10 +59,11 @@
         ( [$tableDataStore, $nameStore] ) => { return $tableDataStore?.data.map( row => ({ rowKey: row[$tableDataStore.idColumn], rowValue:row[$nameStore]  }) )  } 
       ) || null
 
+      
   // Reinitialize when another field is selεcted or after a DND 
   $: initializeColumn( field )
   $: getOrderAmongstSiblings( $screenStore )
-  $: if ( loaded && columnStore ) tableStateStore?.updateRowHeights(id, rowHeights)
+  $: if ( loaded ) tableStateStore?.updateRowHeights(id, rowHeights)
   $: tableDataStore?.updateColumn({ id: id, field: field });
   $: size = $tableDataStore?.size
 
@@ -84,8 +86,9 @@
     if (footerAlign != "inherit")  styles["--super-table-footer-horizontal-align"] = footerAlign
     if (footerFontColor)  styles["--super-table-footer-font-color"] = footerFontColor
     if (footerBackground) styles["--super-table-footer-background-color"] = footerBackground
-    if (!isLast && ($tableStateStore.stylingOptions.dividers == "vertical" || $tableStateStore.stylingOptions.dividers == "both")) 
-      styles["border-right"] = "1px solid var(--spectrum-table-m-regular-border-color)"
+
+    // Hide right side divider if you are the last column
+    if (isLast) styles["--super-table-column-right-border-size"] = "0px"
     return styles
   }
 
@@ -182,7 +185,7 @@
     <p> Add a component to show the contents </p>
     <p> Add a Super Table Cell for advanced functionality </p>
   {:else}
-    <SuperTableHeader
+    <SuperColumnHeader
       bind:flexBasis
       bind:isResizing={resizing}
       on:sort={handleSort}
@@ -193,7 +196,7 @@
       isSorted={sortable && $tableDataStore?.sortColumn === field}
     >
       {header || field}
-    </SuperTableHeader>
+    </SuperColumnHeader>
 
     <div
       bind:this={tableBodyContainer} 
@@ -202,7 +205,7 @@
       class:resizing={resizing}>
 
         {#each $columnStore as row, index }
-          <SuperTableColumnRow
+          <SuperColumnRow
             on:hovered={() => { if ( $tableStateStore.hoveredRow !== index ) $tableStateStore.hoveredRow = index} }
             on:unHovered={() => $tableStateStore.hoveredRow = null}
             bind:needHeight={rowHeights[index]}
@@ -218,11 +221,11 @@
           {:else}
             <slot />
           {/if}
-          </SuperTableColumnRow>
+        </SuperColumnRow>
         {/each}
 
     </div>
-    <SuperTableFooter>{footer || field}</SuperTableFooter>
+    <SuperColumnFooter>{footer || field}</SuperColumnFooter>
   {/if}
 </div>
 
@@ -237,7 +240,11 @@
     overflow-x: hidden;
     padding: 0px;
     margin: 0px;
-    border: unset;
+    border-left: unset;
+    border-top: unset;
+    border-bottom: unset;
+    border-right-width: var(--super-table-column-right-border-size);
+     
   }
 
   .spectrum-Table-body.is-last-column::-webkit-scrollbar {

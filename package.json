@@ -1,6 +1,6 @@
 {
   "name": "bb-component-SuperTableColumn",
-  "version": "1.0.10-alpha",
+  "version": "1.0.11-alpha",
   "description": "Customizable columns for the SuperTable Component",
   "author": "Michael Poirazi",
   "license": "MIT",
@@ -12,7 +12,9 @@
   },
   "dependencies": {
     "@crownframework/svelte-error-boundary": "^1.0.3",
+    "@spectrum-css/icon": "^3.0.31",
     "@spectrum-css/table": "^4.0.24",
+    "@spectrum-css/vars": "^8.0.3",
     "svelte": "^3.49.0"
   },
   "devDependencies": {

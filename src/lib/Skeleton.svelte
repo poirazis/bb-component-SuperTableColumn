@@ -6,7 +6,6 @@
 
 <style>
   .skeleton {
-    margin: 13px;
     height: 100%;
     width: 100%;
     opacity: 0;

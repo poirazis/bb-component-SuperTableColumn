@@ -1,6 +1,6 @@
 <script>
 	import { createEventDispatcher } from "svelte";
-	import SuperTableHeaderSearch from "./SuperTableHeaderSearch.svelte";
+	import SuperColumnHeaderSearchControl from "./SuperColumnHeaderSearchControl.svelte";
 
 	const dispatch = createEventDispatcher()
 
@@ -102,7 +102,7 @@
 					<slot />
 				</div>	
 			{:else} 
-				<SuperTableHeaderSearch on:closeMe={()=> (showSearch = false)} bind:value={filteredValue}/>
+				<SuperColumnHeaderSearchControl on:closeMe={()=> (showSearch = false)} bind:value={filteredValue}/>
 			{/if}
 
 			{#if isSorted}
