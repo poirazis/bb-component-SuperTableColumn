@@ -15,6 +15,7 @@
   const tableDataStore = getContext("tableDataStore")
   const tableStateStore = getContext("tableStateStore")
   const tableFilterStore = getContext("tableFilterStore")
+  const tableSelectionStore = getContext("tableSelectionStore")
 
   // We keep a hidden property of type "schema" so we can use the "field" property type
   export let schema;
@@ -52,6 +53,7 @@
 
   let nameStore = writable()
   $: nameStore.set(field)
+
   // Create our derived store and make sure we grab only the selected field rows.
   // If the field changes, the store will update to reflect the change
   let columnStore = derived( 
@@ -59,7 +61,7 @@
         ( [$tableDataStore, $nameStore] ) => { return $tableDataStore?.data.map( row => ({ rowKey: row[$tableDataStore.idColumn], rowValue:row[$nameStore]  }) )  } 
       ) || null
 
-      
+
   // Reinitialize when another field is selεcted or after a DND 
   $: initializeColumn( field )
   $: getOrderAmongstSiblings( $screenStore )
@@ -167,7 +169,7 @@
 
   // Do not update if you are the one who initiated the scroll 
   afterUpdate( () => { 
-      if (tableBodyContainer && $tableStateStore.controllerID !== id  && tableBodyContainer?.scrollTop != $tableStateStore?.scrollY  ) {
+      if (tableBodyContainer && $tableStateStore.controllerID !== id  && (tableBodyContainer?.scrollTop != $tableStateStore?.scrollY ) ) {
         tableBodyContainer.scrollTop = $tableStateStore?.scrollY 
       }
     } 
@@ -214,7 +216,7 @@
             cellValue={row.rowValue}
             loading={!loaded}
             isHovered={ $tableStateStore?.hoveredRow == index }
-            isSelected={ $tableDataStore?.selectedRows.includes(row.rowKey) }
+            isSelected={ $tableSelectionStore.includes(row.rowKey) }
           >
           {#if noRecords}
             Not Found
@@ -244,11 +246,7 @@
     border-top: unset;
     border-bottom: unset;
     border-right-width: var(--super-table-column-right-border-size);
-     
-  }
-
-  .spectrum-Table-body.is-last-column::-webkit-scrollbar {
-    display: block;
+    scrollbar-width: none;   
   }
 
   .spectrum-Table-body::-webkit-scrollbar {
