@@ -289,7 +289,7 @@
         "values": [
           {
             "label": "Row ID",
-            "key": "rowID",
+            "key": "rowKey",
             "type": "text"
           },
           {

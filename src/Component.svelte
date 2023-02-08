@@ -36,7 +36,7 @@
   let id = $component.id;
   let flexBasis = "auto";
   let resizing = false;
-  let rowHeights = new Array(100)
+  let rowHeights = []
   let loaded = false
   let noRecords = false
   let order, isLast, isFirst
@@ -177,7 +177,7 @@
 
   // Unregister from the tableStore
   onDestroy(() => tableDataStore?.unregisterColumn({ id: id, field: field }));
-  setContext("columnContext", { columnID: id, columnType: "string" } );
+  setContext("columnContext", { columnID: id, columnField: field ,columnType: "string" } );
 </script>
 
 <div class="spectrum-Table" use:styleable={styles}>
