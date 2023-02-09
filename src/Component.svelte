@@ -8,7 +8,6 @@
   import SuperColumnFooter from "./lib/SuperColumnFooter.svelte";
 
   import { findComponentById } from "./lib/builderHelpers" 
-
   const { styleable, builderStore, screenStore } = getContext("sdk");
 
   const component = getContext("component");
@@ -37,10 +36,12 @@
   let flexBasis = "auto";
   let resizing = false;
   let rowHeights = []
-  let loaded = false
   let noRecords = false
   let order, isLast, isFirst
+  let hasChildren = false
 
+  $: hasChildren = $component.children > 0
+  
   // Builder Specific Code 
   // Set components hidden property Schema to the wrapping dataProvider datasource
   // so the field property will populate the fields for the user to select
@@ -49,8 +50,6 @@
   }  
 
   // Component Code 
-  $: if ( $tableDataStore?.loaded ) loaded = true
-
   let nameStore = writable()
   $: nameStore.set(field)
 
@@ -65,7 +64,7 @@
   // Reinitialize when another field is selεcted or after a DND 
   $: initializeColumn( field )
   $: getOrderAmongstSiblings( $screenStore )
-  $: if ( loaded ) tableStateStore?.updateRowHeights(id, rowHeights)
+  $: tableStateStore?.updateRowHeights(id, rowHeights)
   $: tableDataStore?.updateColumn({ id: id, field: field });
   $: size = $tableDataStore?.size
 
@@ -175,17 +174,13 @@
     } 
   )
 
-  // Unregister from the tableStore
   onDestroy(() => tableDataStore?.unregisterColumn({ id: id, field: field }));
-  setContext("columnContext", { columnID: id, columnField: field ,columnType: "string" } );
+  setContext("columnContext", { columnID: id, columnField: field, columnType: "string" } );
 </script>
 
 <div class="spectrum-Table" use:styleable={styles}>
   { #if !tableDataStore || !columnStore }
     <p> Super Table Column can olny be placed inside a Super Table </p>
-  {:else if $component.empty}
-    <p> Add a component to show the contents </p>
-    <p> Add a Super Table Cell for advanced functionality </p>
   {:else}
     <SuperColumnHeader
       bind:flexBasis
@@ -214,18 +209,13 @@
             minHeight={$tableStateStore?.rowHeights[index]}
             rowKey={row.rowKey}
             cellValue={row.rowValue}
-            loading={!loaded}
             isHovered={ $tableStateStore?.hoveredRow == index }
             isSelected={ $tableSelectionStore.includes(row.rowKey) }
+            {hasChildren}
           >
-          {#if noRecords}
-            Not Found
-          {:else}
             <slot />
-          {/if}
-        </SuperColumnRow>
+          </SuperColumnRow>
         {/each}
-
     </div>
     <SuperColumnFooter>{footer || field}</SuperColumnFooter>
   {/if}

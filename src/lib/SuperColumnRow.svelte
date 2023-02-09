@@ -1,7 +1,5 @@
 <script>
 	import { getContext, createEventDispatcher } from "svelte";
-	import Skeleton from "./Skeleton.svelte";
-
 	const { Provider } = getContext("sdk")
 	const dispatch = createEventDispatcher();
 
@@ -9,8 +7,9 @@
 	export let cellValue
 	export let isSelected
 	export let isHovered
-	export let loading
-	
+	export let loaded
+	export let hasChildren
+
 	// only used to notify the Parent that we need more space than the given minHeight
 	export let needHeight
 
@@ -30,12 +29,12 @@
 	style:--row-height={minHeight + "px"}
 	>
 		<div bind:clientHeight={innerHeight} class="spectrum-Table-cell" style:width={"100%"}>
-			{#if loading}
-				<Skeleton>Loading</Skeleton>
-			{:else}
-				<Provider data={ {rowKey: rowKey, cellValue: cellValue} }>
+			{#if hasChildren}
+				<Provider data={ {rowKey: rowKey, cellValue: cellValue} }>					
 					<slot />				
 				</Provider>
+			{:else}
+				{cellValue}
 			{/if}
 		</div>
 </div>

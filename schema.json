@@ -5,10 +5,11 @@
     "name": "bb-component-SuperTableColumn",
     "friendlyName": "Super Table Column",
     "description": "Customizable columns for the SuperTable Component",
-    "info": "Super Table Columns only work inside a Super Table Component",
+    "info": "You can add components to customize how cell values are displayed.",
     "icon": "TableColumnAddRight",
     "hasChildren": true,
     "showSettingsBar": false,
+    "showEmptyState": false, 
     "settings": [
       {
         "type": "schema",
