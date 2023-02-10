@@ -20,9 +20,11 @@
 	$: needHeight = innerHeight
 </script>
 
+<!-- svelte-ignore a11y-click-events-have-key-events -->
 <div 
 	on:mouseenter={ () => dispatch("hovered") } 
 	on:mouseleave={ () => dispatch("unHovered") }
+	on:click={ () => dispatch("rowClicked", {rowKey : rowKey}) }
 	class="spectrum-Table-row" 
 	class:is-selected={isSelected} 
 	class:is-hovered={isHovered}

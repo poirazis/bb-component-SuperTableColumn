@@ -203,8 +203,9 @@
 
         {#each $columnStore as row, index }
           <SuperColumnRow
-            on:hovered={() => { if ( $tableStateStore.hoveredRow !== index ) $tableStateStore.hoveredRow = index} }
-            on:unHovered={() => $tableStateStore.hoveredRow = null}
+            on:hovered={ () => { if ( $tableStateStore.hoveredRow !== index ) $tableStateStore.hoveredRow = index} }
+            on:unHovered={ () => $tableStateStore.hoveredRow = null}
+            on:rowClicked={ (e) => $tableStateStore.rowClicked = e.detail.rowKey }
             bind:needHeight={rowHeights[index]}
             minHeight={$tableStateStore?.rowHeights[index]}
             rowKey={row.rowKey}
