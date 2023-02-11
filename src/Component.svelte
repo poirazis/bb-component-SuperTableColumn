@@ -205,11 +205,11 @@
           <SuperColumnRow
             on:hovered={ () => { if ( $tableStateStore.hoveredRow !== index ) $tableStateStore.hoveredRow = index} }
             on:unHovered={ () => $tableStateStore.hoveredRow = null}
-            on:rowClicked={ (e) => $tableStateStore.rowClicked = e.detail.rowKey }
+            on:rowClicked={ (e) => $tableStateStore.rowClicked = row.rowKey }
             bind:needHeight={rowHeights[index]}
             minHeight={$tableStateStore?.rowHeights[index]}
             rowKey={row.rowKey}
-            cellValue={row.rowValue}
+            cellValue={row.rowValue ?? false}
             isHovered={ $tableStateStore?.hoveredRow == index }
             isSelected={ $tableSelectionStore.includes(row.rowKey) }
             {hasChildren}
@@ -225,7 +225,7 @@
 <style>
   .spectrum-Table-body {
     max-height: var(--super-table-body-height);
-    flex: 1 1 auto;
+    flex: 0 0;
     display: flex;
     flex-direction: column;
     border-radius: 0px;
@@ -237,7 +237,7 @@
     border-top: unset;
     border-bottom: unset;
     border-right-width: var(--super-table-column-right-border-size);
-    scrollbar-width: none;   
+    scrollbar-width: none;  
   }
 
   .spectrum-Table-body::-webkit-scrollbar {
