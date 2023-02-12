@@ -1,37 +1,17 @@
 <script>
-  export let inactiveColor = "var(--spectrum-global-color-red-400)"
-  export let activeColor = "var(--spectrum-global-color-green-400)"
-  export let accentColor = "var(--spectrum-global-color-gray-50)"
   export let isActive = false;
 </script>
 
-
-<div class="toggle">
-  <div style="background: {isActive ? activeColor : inactiveColor};" class="toggle-button {isActive && 'toggle-button-active'}">
-    <div style="background: {accentColor};" class="toggle-inner-circle {isActive && 'toggle-inner-circle-active'}">
-    </div>
-  </div>
-</div>
-
-<style>
-  .toggle {
-    display: flex;
-    position: relative;
-  }
-  .toggle-button {
-    width: 36px;
-    height: 20px;
-    border-radius: 30px;
-    padding: 4px;
-    transition: all 200ms ease-in-out;
-  }
-  .toggle-button > .toggle-inner-circle {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    transition: all 200ms ease-in-out;
-  }
-  .toggle-inner-circle-active {
-    margin-left: 16px;
-  }
-</style>
+{#if isActive}
+  <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 18 18" width="18">
+    <defs>
+      <style>
+        .fill {    
+          fill: var(--spectrum-global-color-green-500);;
+        }
+      </style>
+    </defs>
+    <title>S Checkmark 18 N</title>
+    <rect id="Canvas" fill="#ff13dc" opacity="0" width="18" height="18" /><path class="fill" d="M15.656,3.8625l-.7275-.5665a.5.5,0,0,0-.7.0875L7.411,12.1415,4.0875,8.8355a.5.5,0,0,0-.707,0L2.718,9.5a.5.5,0,0,0,0,.707l4.463,4.45a.5.5,0,0,0,.75-.0465L15.7435,4.564A.5.5,0,0,0,15.656,3.8625Z" />
+  </svg>
+{/if}

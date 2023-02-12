@@ -1,37 +1,23 @@
 <script>
+	// Expects an Array of strings
 	export let value
-	let open = false
 </script>
 
-	<ul class="spectrum-TreeView spectrum-TreeView--sizeM">
-		<!-- svelte-ignore a11y-click-events-have-key-events -->
-		<li class="spectrum-TreeView-item" class:is-open={open} >
-			<span on:click={() => open = !open}  class="spectrum-TreeView-itemLink outer">
-				<svg class="spectrum-Icon spectrum-UIIcon-ChevronRight100 spectrum-TreeView-itemIndicator" focusable="false" aria-hidden="true">
-					<use xlink:href="#spectrum-css-icon-Chevron100" />
-				</svg>
-				<span class="spectrum-TreeView-itemLabel"> <slot/> </span>
-			</span>
-			<ul class="spectrum-TreeView spectrum-TreeView--sizeM">
-				{#each value as item }
-					<li class="spectrum-TreeView-item">
-						<span class="spectrum-TreeView-itemLink"><span class="spectrum-TreeView-itemLabel">{item.primaryDisplay}</span></span>
-					</li>					
-				{/each}
-			</ul>
-		</li>
-	</ul>
+{#each value as val}
+	<span class="item">{val}</span>
+{/each}
 
 <style>
-
-	.spectrum-TreeView {
-		padding: unset;
-		margin: unset;
-	}
-
-	.spectrum-TreeView-itemLink.outer {
-		padding: unset;
-		height: unset;
-		padding-left: 18px;
+	/* your styles go here */.item {
+		display: inline-block;
+		margin-right: 4px;
+		font-size: 11px;
+		line-height: 18px;
+		padding-left: 8px;
+		padding-right: 8px;
+		color: white;
+		font-weight: 600;
+		border-radius: 3px;
+		background-color: var(--spectrum-global-color-gray-500);
 	}
 </style>

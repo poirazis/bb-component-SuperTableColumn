@@ -4,6 +4,7 @@
 	import { cubicInOut } from 'svelte/easing';
   import SuperTableBooleanCell from "./SuperTableBooleanCell.svelte";
   import SuperTableArrayCell from "./SuperTableArrayCell.svelte";
+    import SuperTableRelationshipCell from "./SuperTableRelationshipCell.svelte";
 
 	const { Provider } = getContext("sdk")
 	const dispatch = createEventDispatcher();
@@ -43,11 +44,9 @@
 				</Provider>
 			{:else if Array.isArray(cellValue) }
 				{#if typeof cellValue[0] === "string"}
-					{#each cellValue as val}
-						<span class="item">{val}</span>
-					{/each}
+					<SuperTableArrayCell value={cellValue} />
 				{:else}
-					<SuperTableArrayCell value={cellValue}> {cellValue.length + " Related Records"} </SuperTableArrayCell>
+					<SuperTableRelationshipCell value={cellValue}> {cellValue.length ?? 0} {cellValue.length == 1 ? "Item" : "Items"}  </SuperTableRelationshipCell>
 				{/if}
 			{:else if typeof cellValue === "boolean"}
 				<SuperTableBooleanCell isActive={ cellValue } />
@@ -59,20 +58,12 @@
 
 <style>
 
-.value{
+.value {
 	display: inline-block;
+	white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.item {
-		display: inline-block;
-		padding: 4px 8px;
-		margin-right: 4px;
-		font-size: 11px;
-		color: white;
-		font-weight: 600;
-		border-radius: 3px;
-		background-color: var(--spectrum-global-color-gray-500);
-	}
-
 	.spectrum-Table-row {
 		display: flex;
 		min-height: var(--row-height);
