@@ -31,6 +31,7 @@
 	}
 	.spectrum-TreeView-itemLink {
 		padding-left: 22px;
+		color: var(--spectrum-table-m-regular-cell-text-color);
 	}
 	.spectrum-TreeView-itemLink.outer {
 		padding-left: 22px;

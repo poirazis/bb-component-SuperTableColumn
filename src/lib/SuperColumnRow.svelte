@@ -4,7 +4,8 @@
 	import { cubicInOut } from 'svelte/easing';
   import SuperTableBooleanCell from "./SuperTableBooleanCell.svelte";
   import SuperTableArrayCell from "./SuperTableArrayCell.svelte";
-    import SuperTableRelationshipCell from "./SuperTableRelationshipCell.svelte";
+  import SuperTableRelationshipCell from "./SuperTableRelationshipCell.svelte";
+	import SuperTableDateCell from "./SuperTableDateCell.svelte";
 
 	const { Provider } = getContext("sdk")
 	const dispatch = createEventDispatcher();
@@ -50,6 +51,8 @@
 				{/if}
 			{:else if typeof cellValue === "boolean"}
 				<SuperTableBooleanCell isActive={ cellValue } />
+			{:else if typeof cellValue === "datetime"}
+				<SuperTableDateCell> {cellValue} </SuperTableDateCell>
 			{:else}
 				<span class="value">{cellValue}</span>
 			{/if}
