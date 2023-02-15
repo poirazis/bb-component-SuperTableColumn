@@ -42,13 +42,6 @@
 
   $: hasChildren = $component.children > 0
   
-  // Builder Specific Code 
-  // Set components hidden property Schema to the wrapping dataProvider datasource
-  // so the field property will populate the fields for the user to select
-  $: if ( $builderStore?.inBuilder && (!field || !schema))  {
-    initializeColumnBuilder();
-  }  
-
   // Component Code 
   let nameStore = writable()
   $: nameStore.set(field)
@@ -140,13 +133,13 @@
     tableDataStore?.registerColumn({ id: id, field: field });
   }
 
+  // Builder Specific Code 
+  // Set components hidden property Schema to the wrapping dataProvider datasource
+  // so the field property will populate the fields for the user to select
   function initializeColumnBuilder() {
     if (!tableDataStore) return;
 
-    // AutoSelect the schema if possible
-    if ( !schema && $tableDataStore?.dataSource ) {
-      builderStore.actions.updateProp("schema", $tableDataStore?.dataSource);
-    }
+    builderStore.actions.updateProp("schema", $tableDataStore?.dataSource);
 
     // AutoSelect the next unused field
     if (!field && $tableDataStore?.dataSource) {
@@ -174,7 +167,9 @@
     } 
   )
 
-  onDestroy(() => tableDataStore?.unregisterColumn({ id: id, field: field }));
+  onMount( () => { if ($builderStore?.inBuilder) initializeColumnBuilder() })
+  onDestroy( () => tableDataStore?.unregisterColumn({ id: id, field: field }))
+
   setContext("columnContext", { columnID: id, columnField: field, columnType: "string" } );
 </script>
 
