@@ -70,13 +70,13 @@
   function generateStylingOverrides () {
     let styles = {}
     if (headerAlign != "inherit") styles["--super-table-header-horizontal-align"] = headerAlign
-    if (headerFontColor) styles["--spectrum-table-m-regular-header-text-color"] = headerFontColor
-    if (headerBackground) styles["--spectrum-table-m-regular-header-background-color"] = headerBackground
+    if (headerFontColor) styles["--spectrum-table-header-text-color"] = headerFontColor
+    if (headerBackground) styles["--spectrum-table-header-background-color"] = headerBackground
 
-    if (rowBackground)  styles["--spectrum-table-m-regular-row-background-color"] = rowBackground
+    if (rowBackground)  styles["--spectrum-table-row-background-color"] = rowBackground
     if (rowVerticalAlign != "inherit") styles["--super-table-row-vertical-align"] = rowVerticalAlign;
     if (rowHorizontalAlign != "inherit") styles["--super-table-row-horizontal-align"] = rowHorizontalAlign
-    if (rowFontColor) styles["--spectrum-table-m-regular-cell-text-color"] = rowFontColor
+    if (rowFontColor) styles["--spectrum-table-cell-text-color"] = rowFontColor
 
     if (footerAlign != "inherit")  styles["--super-table-footer-horizontal-align"] = footerAlign
     if (footerFontColor)  styles["--super-table-footer-font-color"] = footerFontColor
