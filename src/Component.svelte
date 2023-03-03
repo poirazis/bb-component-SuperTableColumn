@@ -1,7 +1,7 @@
 <script>
   import { getContext, onMount, afterUpdate, onDestroy, setContext } from "svelte";
   import { writable, derived } from "svelte/store"
-  import "../node_modules/@spectrum-css/table/dist/index-vars.css"
+
 
   import SuperColumnHeader from "./lib/SuperColumnHeader.svelte";
   import SuperColumnRow from "./lib/SuperColumnRow.svelte";
@@ -12,6 +12,7 @@
 
   const component = getContext("component");
   const tableDataStore = getContext("tableDataStore")
+  const tableThemeStore = getContext("tableThemeStore")
   const tableStateStore = getContext("tableStateStore")
   const tableFilterStore = getContext("tableFilterStore")
   const tableSelectionStore = getContext("tableSelectionStore")
@@ -116,7 +117,7 @@
       tableFilterStore?.setFilter({
         id: id,
         field: field,
-        operator: "string",
+        operator: "fuzzy",
         value: event.detail.filteredValue,
         valueType: "Value",
       });
@@ -213,7 +214,9 @@
           </SuperColumnRow>
         {/each}
     </div>
-    <SuperColumnFooter>{footer || field}</SuperColumnFooter>
+    {#if $tableThemeStore.showFooter}
+      <SuperColumnFooter>{footer || field}</SuperColumnFooter>
+    {/if}
   {/if}
 </div>
 

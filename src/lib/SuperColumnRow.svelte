@@ -24,20 +24,20 @@
 	export let minHeight 
 
 	let innerHeight
-	$: needHeight = innerHeight + 1
+	$: needHeight = innerHeight + 2
 
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div 
-	on:mouseenter={ () => dispatch("hovered") } 
-	on:mouseleave={ () => dispatch("unHovered") }
-	on:click={ () => dispatch("rowClicked", {rowKey : rowKey}) }
-	class="spectrum-Table-row" 
-	class:is-selected={isSelected} 
-	class:is-hovered={isHovered}
-	style:--row-height={minHeight + "px"}
-	>
+class="spectrum-Table-row" 
+class:is-selected={isSelected} 
+class:is-hovered={isHovered}
+style:--row-height={minHeight + "px"}
+on:mouseenter={ () => dispatch("hovered") } 
+on:mouseleave={ () => dispatch("unHovered") }
+on:click={ () => dispatch("rowClicked", {rowKey : rowKey}) }
+>
 		<div in:fade="{{ duration: 330, easing: cubicInOut }}" bind:clientHeight={innerHeight} class="spectrum-Table-cell">
 			{#if hasChildren}
 				<Provider  data={ {rowKey: rowKey, cellValue: cellValue} }>					
@@ -61,25 +61,28 @@
 
 <style>
 
+.spectrum-Table-cell {
+	min-height: unset;
+}
 .value {
 	display: inline-block;
 	white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
-	.spectrum-Table-row {
-		display: flex;
-		min-height: var(--row-height);
-		flex-direction: column;
-		justify-content: var(--super-table-row-vertical-align);
-		align-items: var(--super-table-row-horizontal-align);
-		border-bottom-width: var(--super-table-row-bottom-border-size);
-		overflow: hidden;
-	}
-	.is-hovered {
-    background-color: var(--spectrum-table-m-regular-row-background-color-hover, var(--spectrum-alias-highlight-hover));
-	}
-	.is-hovered.is-selected {
-    background-color: var(--spectrum-table-m-regular-row-background-color-selected-hover, var(--spectrum-alias-highlight-selected-hover));
-	}
+.spectrum-Table-row {
+	display: flex;
+	min-height: var(--row-height);
+	flex-direction: column;
+	justify-content: var(--super-table-row-vertical-align);
+	align-items: var(--super-table-row-horizontal-align);
+	border-bottom-width: var(--super-table-row-bottom-border-size);
+	overflow: hidden;
+}
+.is-hovered {
+	background-color: var(--spectrum-table-m-regular-row-background-color-hover, var(--spectrum-alias-highlight-hover));
+}
+.is-hovered.is-selected {
+	background-color: var(--spectrum-table-m-regular-row-background-color-selected-hover, var(--spectrum-alias-highlight-selected-hover));
+}
 </style>
