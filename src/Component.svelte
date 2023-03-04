@@ -117,7 +117,7 @@
       tableFilterStore?.setFilter({
         id: id,
         field: field,
-        operator: "fuzzy",
+        operator: "string",
         value: event.detail.filteredValue,
         valueType: "Value",
       });
@@ -207,7 +207,7 @@
             rowKey={row.rowKey}
             cellValue={row.rowValue ?? false}
             isHovered={ $tableStateStore?.hoveredRow == index }
-            isSelected={ $tableSelectionStore.includes(row.rowKey) }
+            isSelected={ $tableSelectionStore[row.rowKey] }
             {hasChildren}
           >
             <slot />
