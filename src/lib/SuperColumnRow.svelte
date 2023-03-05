@@ -1,6 +1,7 @@
 <script>
 	import { getContext, createEventDispatcher } from "svelte";
 	import { fade } from "svelte/transition"
+	import { tick } from 'svelte';
 	import { cubicInOut } from 'svelte/easing';
   import SuperTableBooleanCell from "./SuperTableBooleanCell.svelte";
   import SuperTableArrayCell from "./SuperTableArrayCell.svelte";
@@ -24,20 +25,27 @@
 	export let minHeight 
 
 	let innerHeight
-	$: needHeight = innerHeight + 2
+	$: handleHeightChange( innerHeight )
+
+	async function handleHeightChange ( newHeight ) {
+		await tick();
+		if ( needHeight != innerHeight + 2 ) {
+			needHeight = innerHeight + 2
+		}
+	}
 
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div 
-class="spectrum-Table-row" 
-class:is-selected={isSelected} 
-class:is-hovered={isHovered}
-style:--row-height={minHeight + "px"}
-on:mouseenter={ () => dispatch("hovered") } 
-on:mouseleave={ () => dispatch("unHovered") }
-on:click={ () => dispatch("rowClicked", {rowKey : rowKey}) }
->
+	class="spectrum-Table-row" 
+	class:is-selected={isSelected} 
+	class:is-hovered={isHovered}
+	style:--row-height={minHeight + "px"}
+	on:mouseenter={ () => dispatch("hovered") } 
+	on:mouseleave={ () => dispatch("unHovered") }
+	on:click={ () => dispatch("rowClicked", {rowKey : rowKey}) }
+	>
 		<div in:fade="{{ duration: 330, easing: cubicInOut }}" bind:clientHeight={innerHeight} class="spectrum-Table-cell">
 			{#if hasChildren}
 				<Provider  data={ {rowKey: rowKey, cellValue: cellValue} }>					

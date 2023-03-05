@@ -1,5 +1,5 @@
 <script>
-  import { getContext, onMount, afterUpdate, onDestroy, setContext } from "svelte";
+  import { getContext, onMount, onDestroy, setContext } from "svelte";
   import { writable, derived } from "svelte/store"
 
 
@@ -40,6 +40,7 @@
   let noRecords = false
   let order, isLast, isFirst
   let hasChildren = false
+  let autoScroll = false
 
   $: hasChildren = $component.children > 0
   
@@ -160,13 +161,13 @@
     }
   } 
 
-  // Do not update if you are the one who initiated the scroll 
-  afterUpdate( () => { 
-      if (tableBodyContainer && $tableStateStore.controllerID !== id  && (tableBodyContainer?.scrollTop != $tableStateStore?.scrollY ) ) {
-        tableBodyContainer.scrollTop = $tableStateStore?.scrollY 
-      }
-    } 
-  )
+  $: stateSynch($tableStateStore)
+
+  function stateSynch ( ) {
+    autoScroll = tableBodyContainer && $tableStateStore.controllerID !== id && (tableBodyContainer?.scrollTop != $tableStateStore?.scrollY) 
+    if (autoScroll) tableBodyContainer.scrollTop = $tableStateStore?.scrollY  
+  }
+
 
   onMount( () => { if ($builderStore?.inBuilder) initializeColumnBuilder() })
   onDestroy( () => tableDataStore?.unregisterColumn({ id: id, field: field }))
