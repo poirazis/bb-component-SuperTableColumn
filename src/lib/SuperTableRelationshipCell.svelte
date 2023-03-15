@@ -1,9 +1,16 @@
 <script>
 	// Expects an array of relatioship objects
-	export let value
+	export let value = null
 	let open = false
+
+console.log("hello")
 </script>
 
+{#if value === null }
+	No Records
+{:else if value.length == 1}
+	{value[0].primaryDisplay}
+{:else}
 	<ul class="spectrum-TreeView spectrum-TreeView--sizeS">
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<li class="spectrum-TreeView-item" class:is-open={open} >
@@ -22,6 +29,7 @@
 			</ul>
 		</li>
 	</ul>
+{/if}
 
 <style>
 
