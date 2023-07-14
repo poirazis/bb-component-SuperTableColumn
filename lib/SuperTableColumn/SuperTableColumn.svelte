@@ -1,25 +1,23 @@
 <script>
-  import { getContext, onMount, onDestroy, setContext } from "svelte";
+  import { getContext, onDestroy, setContext } from "svelte";
   import { writable, derived } from "svelte/store"
 
-  import SuperColumnHeader from "./lib/SuperColumnHeader.svelte";
-  import SuperColumnRow from "./lib/SuperColumnRow.svelte";
-  import SuperColumnRowContainer from "./lib/SuperColumnRowContainer.svelte";
-  import SuperColumnFooter from "./lib/SuperColumnFooter.svelte";
+  import SuperColumnHeader from "./parts/SuperColumnHeader.svelte"
+  import SuperColumnRow from "./parts/SuperColumnRow.svelte";
+  import SuperColumnRowContainer from "./parts/SuperColumnRowContainer.svelte";
+  import SuperColumnFooter from "./parts/SuperColumnFooter.svelte";
 
-
-  const { styleable, builderStore, screenStore } = getContext("sdk");
-
-  const component = getContext("component");
   const tableDataStore = getContext("tableDataStore")
   const tableThemeStore = getContext("tableThemeStore")
   const tableStateStore = getContext("tableStateStore")
   const tableFilterStore = getContext("tableFilterStore")
   const tableSelectionStore = getContext("tableSelectionStore")
 
+  export let columnOptions
+  export let superColumnOptions
+
   // We keep a hidden property of type "schema" so we can use the "field" property type
   export let schema;
-  export let field
   export let size = "M"
 
   export let columnWidth
@@ -29,28 +27,20 @@
   export let searchable
   export let searchMode
 
-  export let header, headerAlign, headerFontColor, headerBackground;
-  export let rowHorizontalAlign, rowVerticalAlign, rowFontColor, rowBackground;
-  export let footer, footerAlign, footerFontColor, footerBackground;
-
-  let id = $component.id;
   let flexBasis = "auto";
   let resizing = false;
-  let rowHeights = []
-  let noRecords = false
   let order, isLast, isFirst
-  let hasChildren = false
+  let id = Math.random()
+  export let hasChildren = false
 
-  // Activate row height sync if the column has child components
-  // and remove if the children have been removed.
-  $: hasChildren = $component.children > 0
   $: if ( !hasChildren ) { 
       tableStateStore?.removeRowHeights ( id ) 
     }
   
   // Component Code 
   let nameStore = writable()
-  $: nameStore.set(field)
+  $: nameStore.set(columnOptions.name)
+  $: field = columnOptions.name
 
   // Create our derived store and make sure we grab only the selected field rows.
   // If the field changes, the store will update to reflect the change
@@ -61,59 +51,13 @@
 
 
   // Reinitialize when another field is selεcted or after a DND 
-  $: initializeColumn( field )
-  $: getOrderAmongstSiblings( $screenStore )
+  $: initializeColumn( columnOptions.name )
   $: tableDataStore?.updateColumn({ id: id, field: field });
   $: size = $tableDataStore?.size
-
-  $: flexType =
-    flexBasis == "auto"
-      ? columnWidth + " " + columnWidth + " auto"
-      : " 0 0 " + flexBasis;
-
-  function generateStylingOverrides () {
-    let styles = {}
-    if (headerAlign != "inherit") styles["--super-table-header-horizontal-align"] = headerAlign
-    if (headerFontColor) styles["--spectrum-table-header-text-color"] = headerFontColor
-    if (headerBackground) styles["--spectrum-table-header-background-color"] = headerBackground
-
-    if (rowBackground)  styles["--spectrum-table-row-background-color"] = rowBackground
-    if (rowVerticalAlign != "inherit") styles["--super-table-row-vertical-align"] = rowVerticalAlign;
-    if (rowHorizontalAlign != "inherit") styles["--super-table-row-horizontal-align"] = rowHorizontalAlign
-    if (rowFontColor) styles["--spectrum-table-cell-text-color"] = rowFontColor
-
-    if (footerAlign != "inherit")  styles["--super-table-footer-horizontal-align"] = footerAlign
-    if (footerFontColor)  styles["--super-table-footer-font-color"] = footerFontColor
-    if (footerBackground) styles["--super-table-footer-background-color"] = footerBackground
-
-    // Hide right side divider if you are the last column
-    if (isLast) styles["--super-table-column-right-border-size"] = "0px"
-    return styles
-  }
-
-  // Ammend component styles with variable overrides
-  $: styles = {
-    ...$component.styles,
-    normal: {
-      ...$component.styles.normal,
-      ...generateStylingOverrides(),
-      flex: flexType,
-    },
-  };
 
   function handleSort(event) {
     $tableDataStore.sortColumn = field;
     $tableDataStore.sortDirection = event.detail.sortDirection;
-  }
-
-  function getOrderAmongstSiblings ( ) {
-    if (!tableDataStore) return
-
-    let parentTableID = $tableDataStore?._parentID
-    let parentTableObj = findComponentById ( $screenStore.activeScreen.props, parentTableID )
-    order = parentTableObj?._children?.findIndex ( v => v._id == id )
-    isLast = order == parentTableObj?._children?.length - 1
-    isFirst = order == 0  
   }
 
   function handleFilter(event) {
@@ -138,26 +82,6 @@
     tableDataStore?.registerColumn({ id: id, field: field });
   }
 
-  // Builder Specific Code 
-  // Set components hidden property Schema to the wrapping dataProvider datasource
-  // so the field property will populate the fields for the user to select
-  function initializeColumnBuilder() {
-    if (!tableDataStore) return;
-
-    console.log($tableDataStore.schema, schema)
-
-
-    builderStore.actions.updateProp("schema", $tableDataStore.dataSource);
-
-
-
-    // AutoSelect the next unused field
-    if (!field && $tableDataStore?.dataSource) {
-      field = tableDataStore?.nextUnusedField();
-      builderStore.actions.updateProp("field", field );
-    } 
-  }
-
   // Scrolling Synchonicity Code 
   // Notify the tableStateStore that you have been scrolled
   let tableBodyContainer
@@ -168,17 +92,13 @@
   } 
 
   $: if ( tableBodyContainer ) tableBodyContainer.scrollTop = $tableStateStore.scrollY
-
-  onMount( () => { if ($builderStore?.inBuilder) 
-    initializeColumnBuilder()
-   })
    
   onDestroy( () => tableDataStore?.unregisterColumn({ id: id, field: field }))
 
   setContext("columnContext", { columnID: id, columnField: field, columnType: "string" } );
 </script>
 
-<div class="spectrum-Table" use:styleable={styles}>
+<div class="superTableColumn">
   { #if !tableDataStore || !columnStore }
     <p> Super Table Column can olny be placed inside a Super Table </p>
   {:else}
@@ -193,7 +113,7 @@
       scrolPos={tableBodyContainer?.scrollTop}
       isSorted={sortable && $tableDataStore?.sortColumn === field}
     >
-      {header || field}
+      {columnOptions.displayName}
     </SuperColumnHeader>
 
     {#if hasChildren}
@@ -226,7 +146,6 @@
       on:scroll={handleScroll}
       class="spectrum-Table-body" 
       class:resizing={resizing}>
-
         {#each $columnStore as row, index }
           <SuperColumnRow
             on:hovered={ () => tableStateStore.hoverRow( id, index ) }
@@ -246,12 +165,16 @@
 
 
     {#if $tableThemeStore.showFooter}
-      <SuperColumnFooter>{footer || field}</SuperColumnFooter>
+      <SuperColumnFooter>{field}</SuperColumnFooter>
     {/if}
   {/if}
 </div>
 
 <style>
+  .superTableColumn {
+    flex: auto;
+  }
+
   .spectrum-Table-body {
     max-height: var(--super-table-body-height);
     flex: 0 0;

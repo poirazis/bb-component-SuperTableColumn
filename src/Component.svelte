@@ -1,21 +1,15 @@
 <script>
   import { getContext, onMount, onDestroy, setContext } from "svelte";
   import { writable, derived } from "svelte/store"
+  import { SuperTableColumn } from "../lib/SuperTableColumn";
 
-  import SuperColumnHeader from "./lib/SuperColumnHeader.svelte";
-  import SuperColumnRow from "./lib/SuperColumnRow.svelte";
-  import SuperColumnRowContainer from "./lib/SuperColumnRowContainer.svelte";
-  import SuperColumnFooter from "./lib/SuperColumnFooter.svelte";
-
-  import { findComponentById } from "./lib/builderHelpers" 
+  import { findComponentById } from "../lib/builderHelpers" 
   const { styleable, builderStore, screenStore } = getContext("sdk");
 
   const component = getContext("component");
   const tableDataStore = getContext("tableDataStore")
-  const tableThemeStore = getContext("tableThemeStore")
   const tableStateStore = getContext("tableStateStore")
   const tableFilterStore = getContext("tableFilterStore")
-  const tableSelectionStore = getContext("tableSelectionStore")
 
   // We keep a hidden property of type "schema" so we can use the "field" property type
   export let schema;
@@ -46,6 +40,10 @@
   $: hasChildren = $component.children > 0
   $: if ( !hasChildren ) { 
       tableStateStore?.removeRowHeights ( id ) 
+    }
+
+    $: columnOptions {
+      name: field 
     }
   
   // Component Code 
@@ -182,72 +180,7 @@
   { #if !tableDataStore || !columnStore }
     <p> Super Table Column can olny be placed inside a Super Table </p>
   {:else}
-    <SuperColumnHeader
-      bind:flexBasis
-      bind:isResizing={resizing}
-      on:sort={handleSort}
-      on:filter={handleFilter}
-      {resizable}
-      {searchable}
-      {sortable}
-      scrolPos={tableBodyContainer?.scrollTop}
-      isSorted={sortable && $tableDataStore?.sortColumn === field}
-    >
-      {header || field}
-    </SuperColumnHeader>
-
-    {#if hasChildren}
-      <div
-        bind:this={tableBodyContainer} 
-        on:scroll|preventDefault={handleScroll}
-        class="spectrum-Table-body" 
-        class:resizing={resizing}>
-
-          {#each $columnStore as row, index }
-            <SuperColumnRowContainer
-              on:hovered={ () => tableStateStore.hoverRow( index ) }
-              on:unHovered={ () => tableStateStore.unhoverRow() }
-              on:rowClicked={ (e) => $tableStateStore.rowClicked = row.rowKey }
-              on:resize={ (e) => { tableStateStore.resizeRow(id, index, e.detail.height ) } }
-              minHeight={$tableStateStore?.rowHeights[index]}
-              rowKey={row.rowKey}
-              cellValue={row.rowValue ?? false}
-              isHovered={ $tableStateStore?.hoveredRow == index || $tableStateStore.hoveredColumn == id }
-              isSelected={ $tableSelectionStore[row.rowKey] }
-              verticalPadding= {$tableThemeStore.rowVerticalPadding}
-            >
-              <slot />
-            </SuperColumnRowContainer>
-          {/each}
-      </div>
-    {:else}
-      <div
-      bind:this={tableBodyContainer} 
-      on:scroll={handleScroll}
-      class="spectrum-Table-body" 
-      class:resizing={resizing}>
-
-        {#each $columnStore as row, index }
-          <SuperColumnRow
-            on:hovered={ () => tableStateStore.hoverRow( id, index ) }
-            on:unHovered={ () => tableStateStore.unhoverRow() }
-            on:rowClicked={ (e) => $tableStateStore.rowClicked = row.rowKey }
-            minHeight={$tableStateStore?.rowHeights[index]}
-            rowKey={row.rowKey}
-            cellValue={row.rowValue ?? false}
-            isHovered={ $tableStateStore?.hoveredRow == index || $tableStateStore.hoveredColumn == id }
-            isSelected={ $tableSelectionStore[row.rowKey] }
-          >
-          </SuperColumnRow>
-        {/each}
-     </div>
-
-    {/if}
-
-
-    {#if $tableThemeStore.showFooter}
-      <SuperColumnFooter>{footer || field}</SuperColumnFooter>
-    {/if}
+    <SuperTableColumn {columnOptions} />
   {/if}
 </div>
 
