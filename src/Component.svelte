@@ -42,7 +42,7 @@
       tableStateStore?.removeRowHeights ( id ) 
     }
 
-    $: columnOptions {
+    $: columnOptions = {
       name: field 
     }
   
