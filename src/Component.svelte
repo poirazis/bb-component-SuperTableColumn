@@ -2,9 +2,9 @@
   import { getContext, onMount, onDestroy, setContext } from "svelte";
   import { writable, derived } from "svelte/store"
 
-
   import SuperColumnHeader from "./lib/SuperColumnHeader.svelte";
   import SuperColumnRow from "./lib/SuperColumnRow.svelte";
+  import SuperColumnRowContainer from "./lib/SuperColumnRowContainer.svelte";
   import SuperColumnFooter from "./lib/SuperColumnFooter.svelte";
 
   import { findComponentById } from "./lib/builderHelpers" 
@@ -40,9 +40,13 @@
   let noRecords = false
   let order, isLast, isFirst
   let hasChildren = false
-  let autoScroll = false
 
+  // Activate row height sync if the column has child components
+  // and remove if the children have been removed.
   $: hasChildren = $component.children > 0
+  $: if ( !hasChildren ) { 
+      tableStateStore?.removeRowHeights ( id ) 
+    }
   
   // Component Code 
   let nameStore = writable()
@@ -59,7 +63,6 @@
   // Reinitialize when another field is selεcted or after a DND 
   $: initializeColumn( field )
   $: getOrderAmongstSiblings( $screenStore )
-  $: tableStateStore?.updateRowHeights(id, rowHeights)
   $: tableDataStore?.updateColumn({ id: id, field: field });
   $: size = $tableDataStore?.size
 
@@ -141,7 +144,12 @@
   function initializeColumnBuilder() {
     if (!tableDataStore) return;
 
-    builderStore.actions.updateProp("schema", $tableDataStore?.dataSource);
+    console.log($tableDataStore.schema, schema)
+
+
+    builderStore.actions.updateProp("schema", $tableDataStore.dataSource);
+
+
 
     // AutoSelect the next unused field
     if (!field && $tableDataStore?.dataSource) {
@@ -154,22 +162,17 @@
   // Notify the tableStateStore that you have been scrolled
   let tableBodyContainer
   function handleScroll( e ) {
-    if ( $tableStateStore.scrollY !== tableBodyContainer?.scrollTop )
-    {
-      $tableStateStore.controllerID = id
-      $tableStateStore.scrollY = tableBodyContainer?.scrollTop 
+    if (e.isTrusted) {
+      tableStateStore.synchScrollY ( tableBodyContainer?.scrollTop )
     }
   } 
 
-  $: stateSynch($tableStateStore)
+  $: if ( tableBodyContainer ) tableBodyContainer.scrollTop = $tableStateStore.scrollY
 
-  function stateSynch ( ) {
-    autoScroll = tableBodyContainer && $tableStateStore.controllerID !== id && (tableBodyContainer?.scrollTop != $tableStateStore?.scrollY) 
-    if (autoScroll) tableBodyContainer.scrollTop = $tableStateStore?.scrollY  
-  }
-
-
-  onMount( () => { if ($builderStore?.inBuilder) initializeColumnBuilder() })
+  onMount( () => { if ($builderStore?.inBuilder) 
+    initializeColumnBuilder()
+   })
+   
   onDestroy( () => tableDataStore?.unregisterColumn({ id: id, field: field }))
 
   setContext("columnContext", { columnID: id, columnField: field, columnType: "string" } );
@@ -187,12 +190,38 @@
       {resizable}
       {searchable}
       {sortable}
+      scrolPos={tableBodyContainer?.scrollTop}
       isSorted={sortable && $tableDataStore?.sortColumn === field}
     >
       {header || field}
     </SuperColumnHeader>
 
-    <div
+    {#if hasChildren}
+      <div
+        bind:this={tableBodyContainer} 
+        on:scroll|preventDefault={handleScroll}
+        class="spectrum-Table-body" 
+        class:resizing={resizing}>
+
+          {#each $columnStore as row, index }
+            <SuperColumnRowContainer
+              on:hovered={ () => tableStateStore.hoverRow( index ) }
+              on:unHovered={ () => tableStateStore.unhoverRow() }
+              on:rowClicked={ (e) => $tableStateStore.rowClicked = row.rowKey }
+              on:resize={ (e) => { tableStateStore.resizeRow(id, index, e.detail.height ) } }
+              minHeight={$tableStateStore?.rowHeights[index]}
+              rowKey={row.rowKey}
+              cellValue={row.rowValue ?? false}
+              isHovered={ $tableStateStore?.hoveredRow == index || $tableStateStore.hoveredColumn == id }
+              isSelected={ $tableSelectionStore[row.rowKey] }
+              verticalPadding= {$tableThemeStore.rowVerticalPadding}
+            >
+              <slot />
+            </SuperColumnRowContainer>
+          {/each}
+      </div>
+    {:else}
+      <div
       bind:this={tableBodyContainer} 
       on:scroll={handleScroll}
       class="spectrum-Table-body" 
@@ -200,21 +229,22 @@
 
         {#each $columnStore as row, index }
           <SuperColumnRow
-            on:hovered={ () => { if ( $tableStateStore.hoveredRow !== index ) $tableStateStore.hoveredRow = index} }
-            on:unHovered={ () => $tableStateStore.hoveredRow = null}
+            on:hovered={ () => tableStateStore.hoverRow( id, index ) }
+            on:unHovered={ () => tableStateStore.unhoverRow() }
             on:rowClicked={ (e) => $tableStateStore.rowClicked = row.rowKey }
-            bind:needHeight={rowHeights[index]}
             minHeight={$tableStateStore?.rowHeights[index]}
             rowKey={row.rowKey}
             cellValue={row.rowValue ?? false}
-            isHovered={ $tableStateStore?.hoveredRow == index }
+            isHovered={ $tableStateStore?.hoveredRow == index || $tableStateStore.hoveredColumn == id }
             isSelected={ $tableSelectionStore[row.rowKey] }
-            {hasChildren}
           >
-            <slot />
           </SuperColumnRow>
         {/each}
-    </div>
+     </div>
+
+    {/if}
+
+
     {#if $tableThemeStore.showFooter}
       <SuperColumnFooter>{footer || field}</SuperColumnFooter>
     {/if}

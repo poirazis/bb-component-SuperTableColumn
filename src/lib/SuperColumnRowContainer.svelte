@@ -1,19 +1,35 @@
 <script>
-	import { createEventDispatcher } from "svelte";
-  import SuperTableBooleanCell from "./SuperTableBooleanCell.svelte";
-  import SuperTableArrayCell from "./SuperTableArrayCell.svelte";
-  import SuperTableRelationshipCell from "./SuperTableRelationshipCell.svelte";
-	import SuperTableDateCell from "./SuperTableDateCell.svelte";
+	import { onMount, getContext, createEventDispatcher } from "svelte";
+	import { elementSizeStore } from "svelte-legos";
 
+	const { Provider } = getContext("sdk")
 	const dispatch = createEventDispatcher();
 
 	export let rowKey
 	export let cellValue
 	export let isSelected
 	export let isHovered
+	export let verticalPadding = 11
+	export let borderWidth = 1
+
+	// only used to notify the Parent that we need more space than the given minHeight
+	export let needHeight 
 
 	// the proposed height
 	export let minHeight
+	
+	let ref
+	let size = null
+
+	$: if ( size ) 
+	{ 
+		needHeight =  Math.ceil (parseFloat($size.height)) + ( 2 * verticalPadding ) + borderWidth
+		dispatch( "resize" , { height : needHeight })
+	}
+
+	onMount ( () => { 
+			size = elementSizeStore(ref) 
+	})
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -26,20 +42,10 @@
 	on:mouseleave={ () => dispatch("unHovered") }
 	on:click={ () => dispatch("rowClicked", {rowKey : rowKey}) }
 	>
-		<div class="spectrum-Table-cell" 	>
-			{#if Array.isArray(cellValue) }
-				{#if typeof cellValue[0] === "string"}
-					<SuperTableArrayCell value={cellValue} />
-				{:else}
-					<SuperTableRelationshipCell value={cellValue}> {cellValue.length ?? 0} {cellValue.length == 1 ? "Item" : "Items"}  </SuperTableRelationshipCell>
-				{/if}
-			{:else if typeof cellValue === "boolean"}
-				<SuperTableBooleanCell isActive={ cellValue } />
-			{:else if typeof cellValue === "datetime"}
-				<SuperTableDateCell> {cellValue} </SuperTableDateCell>
-			{:else}
-				<span class="value">{cellValue}</span>
-			{/if}
+		<div bind:this={ref} class="spectrum-Table-cell">
+			<Provider  data={ {rowKey: rowKey, cellValue: cellValue} }>					
+				<slot />				
+			</Provider>
 		</div>
 </div>
 
@@ -49,12 +55,7 @@
 	display: block;
 	min-height: unset;
 }
-.value {
-	display: block;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
+
 .spectrum-Table-row {
 	display: flex;
 	flex-direction: column;

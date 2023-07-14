@@ -10,6 +10,7 @@
 	export let isSorted
 	export let sortDirection
 	export let filteredValue = ""
+	export let scrolPos
 
 	// When the header is resized, notify the Parent Component to adjust accordingly
 	export let flexBasis = "auto"
@@ -76,6 +77,7 @@
 <svelte:window on:mouseup={stopResizing} />
 <div 
     class="spectrum-Table-headCell"
+		class:is-scrolled={scrolPos > 10 }
 		style:--indicatorRotation={ sortDirection === "Ascending" ? "90deg" : "-90Deg"}
 		on:mousemove={resize} 
 		bind:this={container}	
@@ -132,6 +134,10 @@
  		gap: 8px;
 		min-height: 2.5rem;
 		padding-right: 8px;
+	}
+	.is-scrolled {
+		/* box-shadow: 0px 10px 5px -2px #191919; */
+		z-index: 100;
 	}
 	.headerActions {
 		flex: 0 0 auto;

@@ -14,8 +14,7 @@
       {
         "type": "schema",
         "key": "schema",
-        "label": "Schema",
-        "dependsOn": "_hidden"
+        "label": "Schema"
       },
       {
         "type": "field",
