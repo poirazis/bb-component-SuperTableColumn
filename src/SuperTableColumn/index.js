@@ -1,0 +1,1 @@
+export { default as SuperTableColumn } from "./SuperTableColumn.svelte"
