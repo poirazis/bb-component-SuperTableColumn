@@ -8,13 +8,15 @@
     "info": "You can add components to customize how cell values are displayed.",
     "icon": "TableColumnAddRight",
     "hasChildren": true,
+    "illegalChildren": ["plugins/bb-component-SuperTableColumn"],
     "showSettingsBar": false,
     "showEmptyState": false, 
     "settings": [
       {
         "type": "schema",
         "key": "schema",
-        "label": "Schema"
+        "label": "Schema",
+        "dependsOn": "_hidden"
       },
       {
         "type": "field",
@@ -53,6 +55,11 @@
         "type": "text",
         "key": "footer",
         "label": "Footer"
+      },
+      {
+        "type": "icon",
+        "key": "icon",
+        "label": "Icon"
       },
       {
         "type": "boolean",

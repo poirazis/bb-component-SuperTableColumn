@@ -14,6 +14,8 @@
 
 	// the proposed height
 	export let minHeight
+
+	$: console.log(cellValue)
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->

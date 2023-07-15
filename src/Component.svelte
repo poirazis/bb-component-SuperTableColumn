@@ -7,6 +7,7 @@
   const { styleable, builderStore, screenStore } = getContext("sdk");
 
   const component = getContext("component");
+
   const tableDataStore = getContext("tableDataStore")
   const tableStateStore = getContext("tableStateStore")
   const tableFilterStore = getContext("tableFilterStore")
@@ -15,6 +16,7 @@
   export let schema;
   export let field
   export let size = "M"
+  export let icon 
 
   export let columnWidth
   export let minWidth
@@ -29,22 +31,16 @@
 
   let id = $component.id;
   let flexBasis = "auto";
-  let resizing = false;
-  let rowHeights = []
-  let noRecords = false
   let order, isLast, isFirst
-  let hasChildren = false
 
-  // Activate row height sync if the column has child components
-  // and remove if the children have been removed.
-  $: hasChildren = $component.children > 0
-  $: if ( !hasChildren ) { 
-      tableStateStore?.removeRowHeights ( id ) 
-    }
+  let nested = false;
 
-    $: columnOptions = {
-      name: field 
-    }
+  $: columnOptions = {
+    name: field,
+    displayName: header?.length > 0 ? header : field, 
+    hasChildren: $component.children > 0,
+    asComponent: $builderStore.inBuilder
+  }
   
   // Component Code 
   let nameStore = writable()
@@ -59,10 +55,7 @@
 
 
   // Reinitialize when another field is selεcted or after a DND 
-  $: initializeColumn( field )
   $: getOrderAmongstSiblings( $screenStore )
-  $: tableDataStore?.updateColumn({ id: id, field: field });
-  $: size = $tableDataStore?.size
 
   $: flexType =
     flexBasis == "auto"
@@ -99,10 +92,6 @@
     },
   };
 
-  function handleSort(event) {
-    $tableDataStore.sortColumn = field;
-    $tableDataStore.sortDirection = event.detail.sortDirection;
-  }
 
   function getOrderAmongstSiblings ( ) {
     if (!tableDataStore) return
@@ -114,40 +103,12 @@
     isFirst = order == 0  
   }
 
-  function handleFilter(event) {
-    if (event.detail.filteredValue !== "") {
-      tableFilterStore?.setFilter({
-        id: id,
-        field: field,
-        operator: "string",
-        value: event.detail.filteredValue,
-        valueType: "Value",
-      });
-    } else {
-      tableFilterStore?.clearFilter({ id: id });
-    }
-  }
-
-  function initializeColumn( field ) {
-    if ( !field ) return
-    // unregister before registering to cover for in builder DND
-    tableDataStore?.unregisterColumn({ id: id, field: field })
-    // Register the column to the tableStore, and get back a writable store
-    tableDataStore?.registerColumn({ id: id, field: field });
-  }
-
   // Builder Specific Code 
   // Set components hidden property Schema to the wrapping dataProvider datasource
   // so the field property will populate the fields for the user to select
   function initializeColumnBuilder() {
     if (!tableDataStore) return;
-
-    console.log($tableDataStore.schema, schema)
-
-
     builderStore.actions.updateProp("schema", $tableDataStore.dataSource);
-
-
 
     // AutoSelect the next unused field
     if (!field && $tableDataStore?.dataSource) {
@@ -156,56 +117,23 @@
     } 
   }
 
-  // Scrolling Synchonicity Code 
-  // Notify the tableStateStore that you have been scrolled
-  let tableBodyContainer
-  function handleScroll( e ) {
-    if (e.isTrusted) {
-      tableStateStore.synchScrollY ( tableBodyContainer?.scrollTop )
-    }
-  } 
-
-  $: if ( tableBodyContainer ) tableBodyContainer.scrollTop = $tableStateStore.scrollY
-
   onMount( () => { if ($builderStore?.inBuilder) 
     initializeColumnBuilder()
    })
-   
-  onDestroy( () => tableDataStore?.unregisterColumn({ id: id, field: field }))
 
-  setContext("columnContext", { columnID: id, columnField: field, columnType: "string" } );
+   $: console.log(columnOptions, $component)
 </script>
 
 <div class="spectrum-Table" use:styleable={styles}>
+
   { #if !tableDataStore || !columnStore }
     <p> Super Table Column can olny be placed inside a Super Table </p>
+  {:else if nested }
+    <p> Super Columns cannot be nested </p>
   {:else}
-    <SuperTableColumn {columnOptions} />
+    <SuperTableColumn {columnOptions} > 
+      <slot />
+    </SuperTableColumn>
   {/if}
+
 </div>
-
-<style>
-  .spectrum-Table-body {
-    max-height: var(--super-table-body-height);
-    flex: 0 0;
-    display: flex;
-    flex-direction: column;
-    border-radius: 0px;
-    overflow-y: scroll !important;
-    overflow-x: hidden;
-    padding: 0px;
-    margin: 0px;
-    border-left: unset;
-    border-top: unset;
-    border-bottom: unset;
-    border-right-width: var(--super-table-column-right-border-size);
-    scrollbar-width: none;  
-  }
-
-  .spectrum-Table-body::-webkit-scrollbar {
-    display: none;
-  }
-  .resizing {
-    border-right: 1px dotted lime;
-  }
-</style>

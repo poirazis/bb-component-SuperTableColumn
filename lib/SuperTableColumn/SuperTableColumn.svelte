@@ -14,7 +14,6 @@
   const tableSelectionStore = getContext("tableSelectionStore")
 
   export let columnOptions
-  export let superColumnOptions
 
   // We keep a hidden property of type "schema" so we can use the "field" property type
   export let schema;
@@ -113,10 +112,11 @@
       scrolPos={tableBodyContainer?.scrollTop}
       isSorted={sortable && $tableDataStore?.sortColumn === field}
     >
-      {columnOptions.displayName}
+      { columnOptions.asComponent ? "🚀" : "" }
+      { columnOptions.displayName } 
     </SuperColumnHeader>
 
-    {#if hasChildren}
+    {#if columnOptions.hasChildren }
       <div
         bind:this={tableBodyContainer} 
         on:scroll|preventDefault={handleScroll}
@@ -152,12 +152,10 @@
             on:unHovered={ () => tableStateStore.unhoverRow() }
             on:rowClicked={ (e) => $tableStateStore.rowClicked = row.rowKey }
             minHeight={$tableStateStore?.rowHeights[index]}
-            rowKey={row.rowKey}
-            cellValue={row.rowValue ?? false}
+            rowKey={ row.rowKey }
+            cellValue={ row.rowValue ?? false }
             isHovered={ $tableStateStore?.hoveredRow == index || $tableStateStore.hoveredColumn == id }
-            isSelected={ $tableSelectionStore[row.rowKey] }
-          >
-          </SuperColumnRow>
+            isSelected={ $tableSelectionStore[row.rowKey] } />
         {/each}
      </div>
 

@@ -28,7 +28,7 @@
 	}
 
 	onMount ( () => { 
-			// size = elementSizeStore(ref) 
+			size = elementSizeStore(ref) 
 	})
 </script>
 
