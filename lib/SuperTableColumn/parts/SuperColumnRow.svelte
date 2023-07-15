@@ -1,9 +1,6 @@
 <script>
 	import { createEventDispatcher } from "svelte";
-  import SuperTableBooleanCell from "../cells/SuperTableBooleanCell.svelte";
-  import SuperTableArrayCell from "../cells/SuperTableArrayCell.svelte"
-  import SuperTableRelationshipCell from "../cells/SuperTableRelationshipCell.svelte";
-	import SuperTableDateCell from "../cells/SuperTableArrayCell.svelte";
+	import { SuperTableCell } from "../../../bb-component-SuperTableCell/lib/SuperTableCell";
 
 	const dispatch = createEventDispatcher();
 
@@ -14,8 +11,6 @@
 
 	// the proposed height
 	export let minHeight
-
-	$: console.log(cellValue)
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -28,35 +23,10 @@
 	on:mouseleave={ () => dispatch("unHovered") }
 	on:click={ () => dispatch("rowClicked", {rowKey : rowKey}) }
 	>
-		<div class="spectrum-Table-cell" 	>
-			{#if Array.isArray(cellValue) }
-				{#if typeof cellValue[0] === "string"}
-					<SuperTableArrayCell value={cellValue} />
-				{:else}
-					<SuperTableRelationshipCell value={cellValue}> {cellValue.length ?? 0} {cellValue.length == 1 ? "Item" : "Items"}  </SuperTableRelationshipCell>
-				{/if}
-			{:else if typeof cellValue === "boolean"}
-				<SuperTableBooleanCell isActive={ cellValue } />
-			{:else if typeof cellValue === "datetime"}
-				<SuperTableDateCell> {cellValue} </SuperTableDateCell>
-			{:else}
-				<span class="value">{cellValue}</span>
-			{/if}
-		</div>
+		<SuperTableCell {rowKey} value = {cellValue} cellOptions ={ {editable : true } }/>
 </div>
 
 <style>
-
-.spectrum-Table-cell {
-	display: block;
-	min-height: unset;
-}
-.value {
-	display: block;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
 .spectrum-Table-row {
 	display: flex;
 	flex-direction: column;
