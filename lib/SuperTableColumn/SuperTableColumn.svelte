@@ -175,9 +175,6 @@
 
   .spectrum-Table-body {
     max-height: var(--super-table-body-height);
-    flex: 0 0;
-    display: flex;
-    flex-direction: column;
     border-radius: 0px;
     overflow-y: scroll !important;
     overflow-x: hidden;

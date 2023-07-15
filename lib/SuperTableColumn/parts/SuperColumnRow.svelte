@@ -18,7 +18,7 @@
 	class="spectrum-Table-row" 
 	class:is-selected={isSelected} 
 	class:is-hovered={isHovered}
-	style:min-height={ minHeight + "px" }
+	style:height={ minHeight + "px" }
 	on:mouseenter={ () => dispatch("hovered") } 
 	on:mouseleave={ () => dispatch("unHovered") }
 	on:click={ () => dispatch("rowClicked", {rowKey : rowKey}) }
@@ -28,7 +28,6 @@
 
 <style>
 .spectrum-Table-row {
-
 	border-bottom-width: var(--super-table-row-bottom-border-size);
 }
 .is-hovered {
