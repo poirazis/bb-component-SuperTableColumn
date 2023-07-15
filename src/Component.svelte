@@ -1,7 +1,7 @@
 <script>
   import { getContext, onMount, onDestroy, setContext } from "svelte";
   import { writable, derived } from "svelte/store"
-  import { SuperTableColumn } from "../lib/SuperTableColumn";
+  import { SuperTableColumn } from "../lib/SuperTableColumn/index.js";
 
   import { findComponentById } from "../lib/builderHelpers" 
   const { styleable, builderStore, screenStore } = getContext("sdk");
