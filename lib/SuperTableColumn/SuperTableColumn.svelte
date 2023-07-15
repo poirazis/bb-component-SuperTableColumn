@@ -32,7 +32,7 @@
   let id = Math.random()
   export let hasChildren = false
 
-  $: if ( !hasChildren ) { 
+  $: if ( !columnOptions.hasChildren ) { 
       tableStateStore?.removeRowHeights ( id ) 
     }
   
@@ -135,7 +135,7 @@
               isHovered={ $tableStateStore?.hoveredRow == index || $tableStateStore.hoveredColumn == id }
               isSelected={ $tableSelectionStore[row.rowKey] }
               verticalPadding= {$tableThemeStore.rowVerticalPadding}
-            >
+            > 
               <slot />
             </SuperColumnRowContainer>
           {/each}

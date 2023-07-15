@@ -9,13 +9,10 @@
   const component = getContext("component");
 
   const tableDataStore = getContext("tableDataStore")
-  const tableStateStore = getContext("tableStateStore")
-  const tableFilterStore = getContext("tableFilterStore")
 
   // We keep a hidden property of type "schema" so we can use the "field" property type
   export let schema;
   export let field
-  export let size = "M"
   export let icon 
 
   export let columnWidth
@@ -120,8 +117,6 @@
   onMount( () => { if ($builderStore?.inBuilder) 
     initializeColumnBuilder()
    })
-
-   $: console.log(columnOptions, $component)
 </script>
 
 <div class="spectrum-Table" use:styleable={styles}>

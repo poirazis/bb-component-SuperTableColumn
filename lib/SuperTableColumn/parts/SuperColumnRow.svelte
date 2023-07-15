@@ -1,6 +1,6 @@
 <script>
 	import { createEventDispatcher } from "svelte";
-	import { SuperTableCell } from "../../../bb-component-SuperTableCell/lib/SuperTableCell";
+	import { SuperTableCell } from "../../../bb-component-SuperTableCell/lib/SuperTableCell/index.js";
 
 	const dispatch = createEventDispatcher();
 
@@ -23,15 +23,12 @@
 	on:mouseleave={ () => dispatch("unHovered") }
 	on:click={ () => dispatch("rowClicked", {rowKey : rowKey}) }
 	>
-		<SuperTableCell {rowKey} value = {cellValue} cellOptions ={ {editable : true } }/>
+	 <SuperTableCell {rowKey} value = {cellValue} cellOptions ={ {editable : true } }/>
 </div>
 
 <style>
 .spectrum-Table-row {
-	display: flex;
-	flex-direction: column;
-	justify-content: var(--super-table-row-vertical-align);
-	align-items: var(--super-table-row-horizontal-align);
+
 	border-bottom-width: var(--super-table-row-bottom-border-size);
 }
 .is-hovered {
