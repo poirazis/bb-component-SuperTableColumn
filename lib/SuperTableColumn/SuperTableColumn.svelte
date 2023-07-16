@@ -8,7 +8,6 @@
   import SuperColumnFooter from "./parts/SuperColumnFooter.svelte";
 
   const tableDataStore = getContext("tableDataStore")
-  const tableThemeStore = getContext("tableThemeStore")
   const tableStateStore = getContext("tableStateStore")
   const tableFilterStore = getContext("tableFilterStore")
   const tableSelectionStore = getContext("tableSelectionStore")
@@ -134,7 +133,6 @@
               cellValue={row.rowValue ?? false}
               isHovered={ $tableStateStore?.hoveredRow == index || $tableStateStore.hoveredColumn == id }
               isSelected={ $tableSelectionStore[row.rowKey] }
-              verticalPadding= {$tableThemeStore.rowVerticalPadding}
             > 
               <slot />
             </SuperColumnRowContainer>
@@ -162,8 +160,8 @@
     {/if}
 
 
-    {#if $tableThemeStore.showFooter}
-      <SuperColumnFooter>{field}</SuperColumnFooter>
+    {#if columnOptions.showFooter}
+      <SuperColumnFooter>{columnOptions.displayName}</SuperColumnFooter>
     {/if}
   {/if}
 </div>

@@ -27,13 +27,13 @@
 </div>
 
 <style>
-.spectrum-Table-row {
-	border-bottom-width: var(--super-table-row-bottom-border-size);
-}
-.is-hovered {
-	background-color: var(--spectrum-table-m-regular-row-background-color-hover, var(--spectrum-alias-highlight-hover));
-}
-.is-hovered.is-selected {
-	background-color: var(--spectrum-table-m-regular-row-background-color-selected-hover, var(--spectrum-alias-highlight-selected-hover));
-}
+	.spectrum-Table-row {
+		border-bottom-width: var(--super-table-row-bottom-border-size);
+	}
+	.is-hovered {
+		background-color: var(--spectrum-table-m-regular-row-background-color-hover, var(--spectrum-alias-highlight-hover));
+	}
+	.is-hovered.is-selected {
+		background-color: var(--spectrum-table-m-regular-row-background-color-selected-hover, var(--spectrum-alias-highlight-selected-hover));
+	}
 </style>
