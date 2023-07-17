@@ -13,15 +13,17 @@
     "showEmptyState": false, 
     "settings": [
       {
-        "type": "schema",
-        "key": "schema",
-        "label": "Schema",
+        "type": "dataProvider",
+        "key" : "data",
+        "label": "Data Rrovider",
+        "required": true,
         "dependsOn": "_hidden"
       },
       {
         "type": "field",
         "key": "field",
-        "label": "Field"
+        "label": "Field",
+        "required": true
       },
       {
         "type": "select",
@@ -50,12 +52,6 @@
         "type": "text",
         "key": "header",
         "label": "Header"
-      },
-      {
-        "type": "text",
-        "key": "valueTemplate",
-        "label": "Value",
-        "nested" : true
       },
       {
         "type": "text",

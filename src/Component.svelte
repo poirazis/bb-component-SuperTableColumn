@@ -1,11 +1,10 @@
 <script>
-  import { getContext, onMount, onDestroy, setContext } from "svelte";
+  import { getContext, setContext } from "svelte";
   import { writable, derived } from "svelte/store"
   import { SuperTableColumn } from "../lib/SuperTableColumn/index.js";
 
   import { findComponentById } from "../lib/builderHelpers" 
 
-  
   const { styleable, builderStore, screenStore } = getContext("sdk");
 
   const component = getContext("component");
@@ -13,10 +12,8 @@
   const tableDataStore = getContext("tableDataStore")
 
   // We keep a hidden property of type "schema" so we can use the "field" property type
-  export let schema;
   export let field
   export let icon 
-  export let valueTemplate
 
   export let columnWidth
   export let minWidth
@@ -38,7 +35,6 @@
   $: columnOptions = {
     name: field,
     displayName: header ? header : field, 
-    valueTemplate: valueTemplate,
     hasChildren: $component.children > 0,
     asComponent: $builderStore.inBuilder
   }
@@ -103,25 +99,6 @@
     isLast = order == parentTableObj?._children?.length - 1
     isFirst = order == 0  
   }
-
-  // Builder Specific Code 
-  // Set components hidden property Schema to the wrapping dataProvider datasource
-  // so the field property will populate the fields for the user to select
-  function initializeColumnBuilder() {
-    if (!tableDataStore) return;
-    console.log("init")
-    builderStore.actions.updateProp("schema", $tableDataStore.dataSource)
-
-    // AutoSelect the next unused field
-    if (!field && $tableDataStore?.dataSource) {
-      field = tableDataStore?.nextUnusedField();
-      builderStore.actions.updateProp("field", field );
-    } 
-  }
-
-  onMount( () => { if ($builderStore?.inBuilder) 
-    initializeColumnBuilder()
-   })
 </script>
 
 <div class="spectrum-Table" use:styleable={styles}>

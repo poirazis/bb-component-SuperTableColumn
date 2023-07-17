@@ -13,12 +13,6 @@
   const tableSelectionStore = getContext("tableSelectionStore")
 
   export let columnOptions
-  export let valueTemplate
-
-  // We keep a hidden property of type "schema" so we can use the "field" property type
-  export let schema;
-  export let size = "M"
-
   export let columnWidth
   export let minWidth
   export let resizable
@@ -29,15 +23,17 @@
   let flexBasis = "auto";
   let resizing = false;
   let id = Math.random()
-  export let hasChildren = false
 
   $: if ( !columnOptions.hasChildren ) { 
       tableStateStore?.removeRowHeights ( id ) 
     }
+
   $: cellOptions = {
     paddingLeft: "12px",
-    editable: false
+    editable: false,
+    cellTemplate: columnOptions.valueTemplate
   }
+  
   // Component Code 
   let nameStore = writable()
   $: nameStore.set(columnOptions.name)
@@ -54,7 +50,6 @@
   // Reinitialize when another field is selεcted or after a DND 
   $: initializeColumn( columnOptions.name )
   $: tableDataStore?.updateColumn({ id: id, field: field });
-  $: size = $tableDataStore?.size
 
   function handleSort(event) {
     $tableDataStore.sortColumn = field;
@@ -97,7 +92,6 @@
   onDestroy( () => tableDataStore?.unregisterColumn({ id: id, field: field }))
   
   setContext("columnContext", { columnID: id, columnField: field, columnType: "string" } );
-
 </script>
 
 <div class="superTableColumn">
@@ -150,7 +144,7 @@
       class="spectrum-Table-body" 
       class:resizing={resizing}
       >
-        {#each $columnStore as row, index }
+        {#each $columnStore as row, index }			
           <SuperColumnRow
             on:hovered={ () => tableStateStore.hoverRow( id, index ) }
             on:unHovered={ () => tableStateStore.unhoverRow() }
@@ -158,7 +152,7 @@
             {cellOptions}
             minHeight={$tableStateStore?.rowHeights[index]}
             rowKey={ row.rowKey }
-            cellValue={ row.rowValue ?? false }
+            cellValue={ row.rowValue ?? "🌵 Field Doesnt Exist" }
             isHovered={ $tableStateStore?.hoveredRow == index || $tableStateStore.hoveredColumn == id }
             isSelected={ $tableSelectionStore[row.rowKey] } />
         {/each}
