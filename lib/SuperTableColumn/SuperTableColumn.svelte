@@ -13,6 +13,7 @@
   const tableSelectionStore = getContext("tableSelectionStore")
 
   export let columnOptions
+  export let valueTemplate
 
   // We keep a hidden property of type "schema" so we can use the "field" property type
   export let schema;
@@ -27,14 +28,16 @@
 
   let flexBasis = "auto";
   let resizing = false;
-  let order, isLast, isFirst
   let id = Math.random()
   export let hasChildren = false
 
   $: if ( !columnOptions.hasChildren ) { 
       tableStateStore?.removeRowHeights ( id ) 
     }
-  
+  $: cellOptions = {
+    paddingLeft: "12px",
+    editable: false
+  }
   // Component Code 
   let nameStore = writable()
   $: nameStore.set(columnOptions.name)
@@ -92,11 +95,13 @@
   $: if ( tableBodyContainer ) tableBodyContainer.scrollTop = $tableStateStore.scrollY
    
   onDestroy( () => tableDataStore?.unregisterColumn({ id: id, field: field }))
-
+  
   setContext("columnContext", { columnID: id, columnField: field, columnType: "string" } );
+
 </script>
 
 <div class="superTableColumn">
+
   { #if !tableDataStore || !columnStore }
     <p> Super Table Column can olny be placed inside a Super Table </p>
   {:else}
@@ -124,9 +129,9 @@
 
           {#each $columnStore as row, index }
             <SuperColumnRowContainer
-              on:hovered={ () => tableStateStore.hoverRow( index ) }
-              on:unHovered={ () => tableStateStore.unhoverRow() }
-              on:rowClicked={ (e) => $tableStateStore.rowClicked = row.rowKey }
+            on:hovered={ () => tableStateStore.hoverRow( id, index ) }
+            on:unHovered={ () => tableStateStore.unhoverRow() }
+            on:rowClicked={ (e) => $tableStateStore.rowClicked = row.rowKey }
               on:resize={ (e) => { tableStateStore.resizeRow(id, index, e.detail.height ) } }
               minHeight={$tableStateStore?.rowHeights[index]}
               rowKey={row.rowKey}
@@ -143,12 +148,14 @@
       bind:this={tableBodyContainer} 
       on:scroll={handleScroll}
       class="spectrum-Table-body" 
-      class:resizing={resizing}>
+      class:resizing={resizing}
+      >
         {#each $columnStore as row, index }
           <SuperColumnRow
             on:hovered={ () => tableStateStore.hoverRow( id, index ) }
             on:unHovered={ () => tableStateStore.unhoverRow() }
             on:rowClicked={ (e) => $tableStateStore.rowClicked = row.rowKey }
+            {cellOptions}
             minHeight={$tableStateStore?.rowHeights[index]}
             rowKey={ row.rowKey }
             cellValue={ row.rowValue ?? false }

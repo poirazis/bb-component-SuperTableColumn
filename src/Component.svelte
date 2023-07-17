@@ -4,6 +4,8 @@
   import { SuperTableColumn } from "../lib/SuperTableColumn/index.js";
 
   import { findComponentById } from "../lib/builderHelpers" 
+
+  
   const { styleable, builderStore, screenStore } = getContext("sdk");
 
   const component = getContext("component");
@@ -14,6 +16,7 @@
   export let schema;
   export let field
   export let icon 
+  export let valueTemplate
 
   export let columnWidth
   export let minWidth
@@ -34,7 +37,8 @@
 
   $: columnOptions = {
     name: field,
-    displayName: header?.length > 0 ? header : field, 
+    displayName: header ? header : field, 
+    valueTemplate: valueTemplate,
     hasChildren: $component.children > 0,
     asComponent: $builderStore.inBuilder
   }
@@ -105,7 +109,8 @@
   // so the field property will populate the fields for the user to select
   function initializeColumnBuilder() {
     if (!tableDataStore) return;
-    builderStore.actions.updateProp("schema", $tableDataStore.dataSource);
+    console.log("init")
+    builderStore.actions.updateProp("schema", $tableDataStore.dataSource)
 
     // AutoSelect the next unused field
     if (!field && $tableDataStore?.dataSource) {

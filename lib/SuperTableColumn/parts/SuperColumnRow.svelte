@@ -11,6 +11,8 @@
 
 	// the proposed height
 	export let minHeight
+
+	export let cellOptions
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -23,7 +25,7 @@
 	on:mouseleave={ () => dispatch("unHovered") }
 	on:click={ () => dispatch("rowClicked", {rowKey : rowKey}) }
 	>
-	 <SuperTableCell {rowKey} value = {cellValue} cellOptions ={ {editable : true } }/>
+	 <SuperTableCell {rowKey} value = {cellValue} {cellOptions} />
 </div>
 
 <style>

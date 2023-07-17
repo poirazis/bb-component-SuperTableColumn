@@ -53,6 +53,12 @@
       },
       {
         "type": "text",
+        "key": "valueTemplate",
+        "label": "Value",
+        "nested" : true
+      },
+      {
+        "type": "text",
         "key": "footer",
         "label": "Footer"
       },

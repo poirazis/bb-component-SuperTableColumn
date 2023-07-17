@@ -23,7 +23,8 @@
 
 	$: if ( size ) 
 	{ 
-		needHeight =  Math.ceil (parseFloat($size.height)) + ( 2 * verticalPadding ) + borderWidth
+		needHeight =  Math.ceil (parseFloat($size.height)) + borderWidth
+		needHeight = needHeight < 43 ? 43 : needHeight
 		dispatch( "resize" , { height : needHeight })
 	}
 
@@ -42,7 +43,7 @@
 	on:mouseleave={ () => dispatch("unHovered") }
 	on:click={ () => dispatch("rowClicked", {rowKey : rowKey}) }
 	>
-		<div bind:this={ref} class="spectrum-Table-cell">
+		<div bind:this={ref} >
 			<Provider  data={ {rowKey: rowKey, cellValue: cellValue} }>					
 				<slot />				
 			</Provider>
@@ -50,12 +51,6 @@
 </div>
 
 <style>
-
-.spectrum-Table-cell {
-	display: block;
-	min-height: unset;
-}
-
 .spectrum-Table-row {
 	display: flex;
 	flex-direction: column;
