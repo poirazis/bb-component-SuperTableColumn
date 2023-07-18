@@ -14,7 +14,7 @@
     "settings": [
       {
         "type": "dataProvider",
-        "key" : "data",
+        "key" : "dataProvider",
         "label": "Data Rrovider",
         "required": true,
         "dependsOn": "_hidden"
