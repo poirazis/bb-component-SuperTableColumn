@@ -28,8 +28,6 @@
   let mouseOver = false;
 
   $: combinedOptions = { ...tableOptions.columnOptions , ...columnOptions }
-  // $: console.log(combinedOptions)
-  $: console.log(tableOptions)
 
   // Remove Dynamic Heights if all children have been removed
   $: if ( !columnOptions.hasChildren ) { 
