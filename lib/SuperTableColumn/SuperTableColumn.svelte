@@ -27,16 +27,16 @@
   let id = Math.random()
   let mouseOver = false;
 
+  $: combinedOptions = { ...tableOptions.columnOptions , ...columnOptions }
+  // $: console.log(combinedOptions)
+  $: console.log(tableOptions)
 
-
-  columnOptions = { ...columnOptions, ...tableOptions.columnOptions }
-
-  console.log(columnOptions)
-
+  // Remove Dynamic Heights if all children have been removed
   $: if ( !columnOptions.hasChildren ) { 
       tableStateStore?.removeRowHeights ( id ) 
     }
 
+  // Generate Default settings for Cell Renderers 
   $: cellOptions = {
     paddingLeft: "12px",
     editable: false
@@ -95,15 +95,13 @@
     }
   } 
    
-  beforeUpdate ( () => { if ( tableBodyContainer ) tableBodyContainer.scrollTop = $tableScrollPosition } )
+  beforeUpdate ( () => { if ( tableBodyContainer && ( tableBodyContainer.scrollTop != $tableScrollPosition))
+     tableBodyContainer.scrollTop = $tableScrollPosition } )
+
   onDestroy( () => tableDataStore?.unregisterColumn({ id: id, field: field }))
 </script>
 
 <div class="superTableColumn">
-
-  { #if !tableDataStore }
-    <p> Super Table Column can olny be placed inside a Super Table </p>
-  {:else}
     <SuperColumnHeader
       bind:flexBasis
       bind:isResizing={resizing}
@@ -169,20 +167,14 @@
     {/if}
 
 
-    {#if columnOptions.showFooter }
+    {#if combinedOptions.showFooter }
       <SuperColumnFooter>{columnOptions.displayName}</SuperColumnFooter>
     {/if}
-  {/if}
 </div>
 
 <style>
-  .superTableColumn {
-    flex: auto;
-    width: 100%;
-  }
-
   .spectrum-Table-body {
-    max-height: var(--super-table-body-height);
+    height: var(--super-table-body-height);
     border-radius: 0px;
     overflow-y: scroll !important;
     overflow-x: hidden;
@@ -191,7 +183,8 @@
     border-left: unset;
     border-top: unset;
     border-bottom: unset;
-    border-right-width: var(--super-table-column-right-border-size);
+/*     border-right-width:  var(--super-table-column-right-border-size); */
+    border-right-width:  0px;     
     scrollbar-width: none;  
   }
 
