@@ -1,5 +1,5 @@
 <script>
-  import { getContext, onDestroy, setContext } from "svelte";
+  import { getContext, onDestroy, setContext, beforeUpdate } from "svelte";
   import { writable, derived } from "svelte/store"
 
   import SuperColumnHeader from "./parts/SuperColumnHeader.svelte"
@@ -11,6 +11,8 @@
   const tableStateStore = getContext("tableStateStore")
   const tableFilterStore = getContext("tableFilterStore")
   const tableSelectionStore = getContext("tableSelectionStore")
+  const tableScrollPosition = getContext("tableScrollPosition")
+  const tableOption = getContext("tableOptions")
 
   export let columnOptions
   export let columnWidth
@@ -30,8 +32,7 @@
 
   $: cellOptions = {
     paddingLeft: "12px",
-    editable: false,
-    cellTemplate: columnOptions.valueTemplate
+    editable: false
   }
   
   // Component Code 
@@ -83,12 +84,12 @@
   let tableBodyContainer
   function handleScroll( e ) {
     if (e.isTrusted) {
-      tableStateStore.synchScrollY ( tableBodyContainer?.scrollTop )
+      
+      $tableScrollPosition = tableBodyContainer?.scrollTop
     }
   } 
-
-  $: if ( tableBodyContainer ) tableBodyContainer.scrollTop = $tableStateStore.scrollY
    
+  beforeUpdate ( () => { if ( tableBodyContainer ) tableBodyContainer.scrollTop = $tableScrollPosition } )
   onDestroy( () => tableDataStore?.unregisterColumn({ id: id, field: field }))
   
   setContext("columnContext", { columnID: id, columnField: field, columnType: "string" } );
@@ -161,7 +162,7 @@
     {/if}
 
 
-    {#if columnOptions.showFooter}
+    {#if columnOptions.showFooter }
       <SuperColumnFooter>{columnOptions.displayName}</SuperColumnFooter>
     {/if}
   {/if}
