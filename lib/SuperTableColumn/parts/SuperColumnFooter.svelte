@@ -4,6 +4,7 @@
 
 <style>
 	.spectrum-Table-headCell {
+		white-space: nowrap;
 		display: flex;
 		flex-direction: row;
 		justify-content: var(--super-table-footer-horizontal-align);

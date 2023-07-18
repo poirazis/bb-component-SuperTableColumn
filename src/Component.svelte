@@ -26,21 +26,20 @@
   export let footer, footerAlign, footerFontColor, footerBackground;
 
   let id = $component.id;
-  let order, isLast, isFirst
-
+ 
   $: columnOptions = {
     name: field,
     displayName: header ? header : field, 
     hasChildren: $component.children > 0,
-    asComponent: $builderStore.inBuilder,
-    showFooter: true
+    asComponent: $builderStore.inBuilder 
   }
   
   // We nned to know the position of the Super Columns amonsgt other siblings
   // to adjust various properties
   $: getOrderAmongstSiblings( $screenStore )
   function getOrderAmongstSiblings ( ) {
-    if (!tableDataStore ) return
+    let order, isLast, isFirst
+    if (!tableDataStore ) return -1
 
     let parentTableID = $tableDataStore?._parentID
     let parentTableObj = findComponentById ( $screenStore.activeScreen.props, parentTableID )
@@ -51,10 +50,16 @@
 
 </script>
 
-<div use:styleable={$component.styles}>
+<div class="superColumnWrapper" use:styleable={$component.styles}>
   { #if !tableDataStore }
     <p> Super Table Column can olny be placed inside a Super Table </p>
   {:else}    
     <SuperTableColumn {columnOptions} />
   {/if}
 </div>
+
+<style>
+  .superColumnWrapper {
+    flex: auto;
+  }
+</style>
