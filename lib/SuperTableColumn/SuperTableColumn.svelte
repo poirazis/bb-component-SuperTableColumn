@@ -1,5 +1,5 @@
 <script>
-  import { getContext, onDestroy, setContext, beforeUpdate } from "svelte";
+  import { getContext, onDestroy, beforeUpdate } from "svelte";
   import { writable, derived } from "svelte/store"
 
   import SuperColumnHeader from "./parts/SuperColumnHeader.svelte"
@@ -12,7 +12,7 @@
   const tableFilterStore = getContext("tableFilterStore")
   const tableSelectionStore = getContext("tableSelectionStore")
   const tableScrollPosition = getContext("tableScrollPosition")
-  const tableOption = getContext("tableOptions")
+  const tableOptions = getContext("tableOptions")
 
   export let columnOptions
   export let columnWidth
@@ -25,6 +25,13 @@
   let flexBasis = "auto";
   let resizing = false;
   let id = Math.random()
+  let mouseOver = false;
+
+
+
+  columnOptions = { ...columnOptions, ...tableOptions.columnOptions }
+
+  console.log(columnOptions)
 
   $: if ( !columnOptions.hasChildren ) { 
       tableStateStore?.removeRowHeights ( id ) 
@@ -83,21 +90,18 @@
   // Notify the tableStateStore that you have been scrolled
   let tableBodyContainer
   function handleScroll( e ) {
-    if (e.isTrusted) {
-      
+    if (mouseOver) {
       $tableScrollPosition = tableBodyContainer?.scrollTop
     }
   } 
    
   beforeUpdate ( () => { if ( tableBodyContainer ) tableBodyContainer.scrollTop = $tableScrollPosition } )
   onDestroy( () => tableDataStore?.unregisterColumn({ id: id, field: field }))
-  
-  setContext("columnContext", { columnID: id, columnField: field, columnType: "string" } );
 </script>
 
 <div class="superTableColumn">
 
-  { #if !tableDataStore || !columnStore }
+  { #if !tableDataStore }
     <p> Super Table Column can olny be placed inside a Super Table </p>
   {:else}
     <SuperColumnHeader
@@ -118,10 +122,11 @@
     {#if columnOptions.hasChildren }
       <div
         bind:this={tableBodyContainer} 
-        on:scroll|preventDefault={handleScroll}
+        on:scroll={handleScroll}
+        on:mouseenter={ () => { mouseOver = true } }
+        on:mouseleave={ () => mouseOver = false }
         class="spectrum-Table-body" 
         class:resizing={resizing}>
-
           {#each $columnStore as row, index }
             <SuperColumnRowContainer
             on:hovered={ () => tableStateStore.hoverRow( id, index ) }
@@ -142,6 +147,8 @@
       <div
       bind:this={tableBodyContainer} 
       on:scroll={handleScroll}
+      on:mouseenter={ () => { mouseOver = true } }
+      on:mouseleave={ () => mouseOver = false }
       class="spectrum-Table-body" 
       class:resizing={resizing}
       >
@@ -171,6 +178,7 @@
 <style>
   .superTableColumn {
     flex: auto;
+    width: 100%;
   }
 
   .spectrum-Table-body {

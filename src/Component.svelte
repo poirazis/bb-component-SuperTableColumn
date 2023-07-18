@@ -1,5 +1,4 @@
 <script>
-
   // Budibase Minimum
   const component = getContext("component");
   import { getContext } from "svelte";
@@ -29,8 +28,6 @@
   let id = $component.id;
   let order, isLast, isFirst
 
-  let nested = true;
-
   $: columnOptions = {
     name: field,
     displayName: header ? header : field, 
@@ -43,7 +40,7 @@
   // to adjust various properties
   $: getOrderAmongstSiblings( $screenStore )
   function getOrderAmongstSiblings ( ) {
-    if (!tableDataStore) return
+    if (!tableDataStore ) return
 
     let parentTableID = $tableDataStore?._parentID
     let parentTableObj = findComponentById ( $screenStore.activeScreen.props, parentTableID )
@@ -54,14 +51,10 @@
 
 </script>
 
-<div class="spectrum-Table" use:styleable={$component.styles}>
-
+<div use:styleable={$component.styles}>
   { #if !tableDataStore }
     <p> Super Table Column can olny be placed inside a Super Table </p>
-  {:else if nested }
-    <p> Super Columns cannot be nested </p>
   {:else}    
     <SuperTableColumn {columnOptions} />
   {/if}
-
 </div>
