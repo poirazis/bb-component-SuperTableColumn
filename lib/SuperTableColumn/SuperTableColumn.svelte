@@ -171,6 +171,10 @@
 </div>
 
 <style>
+  .superTableColumn {
+    flex: auto;
+  }
+  
   .spectrum-Table-body {
     height: var(--super-table-body-height);
     border-radius: 0px;
