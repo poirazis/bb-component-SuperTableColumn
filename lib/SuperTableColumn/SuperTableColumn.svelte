@@ -1,6 +1,7 @@
 <script>
-  import { getContext, onDestroy, beforeUpdate } from "svelte";
+  import { getContext, onDestroy, beforeUpdate, createEventDispatcher } from "svelte";
   import { writable, derived } from "svelte/store"
+  import fsm from "svelte-fsm"
 
   import SuperColumnHeader from "./parts/SuperColumnHeader.svelte"
   import SuperColumnRow from "./parts/SuperColumnRow.svelte";
@@ -14,18 +15,38 @@
   const tableScrollPosition = getContext("tableScrollPosition")
   const tableOptions = getContext("tableOptions")
 
+  // The Super Columns can dispatch a number of events to be handled by the 
+  // Super Table for Sorting and Filtering and other operations
+  const dispatch = createEventDispatcher();
+
+  // Props
   export let columnOptions
   export let columnWidth
   export let minWidth
-  export let resizable
-  export let sortable
-  export let searchable
   export let searchMode
 
+  // Internal Variables
   let flexBasis = "auto";
   let resizing = false;
   let id = Math.random()
   let mouseOver = false;
+
+  // Static 
+
+  // Reactive
+
+  // Super Column Internal State Machine
+  const columnState = fsm('view', {
+    view: { 
+      filter : 'showFilter',
+      sort( direction ) { return direction == "ASC" ? 'sortedAscending' : 'sortedDescending' }
+    },
+    showFilter: { 
+      clearFilter( ) { console.log ("clearing");  return 'view' } 
+    },
+    sortedAscending: { filter : 'showFilter', sort : 'sortedDescending' }, 
+    sortedDescending: { filter : 'showFilter', sort : 'sortedAscending' } 
+  });
 
   $: combinedOptions = { ...tableOptions.columnOptions , ...columnOptions }
 
@@ -37,6 +58,8 @@
   // Generate Default settings for Cell Renderers 
   $: cellOptions = {
     paddingLeft: "12px",
+    borderBottom: undefined,
+    borderRight: undefined,
     editable: false
   }
   
@@ -52,7 +75,6 @@
         ( [$tableDataStore, $nameStore] ) => { return $tableDataStore?.data.map( row => ({ rowKey: row[$tableDataStore.idColumn], rowValue:row[$nameStore]  }) )  } 
       ) || null
 
-
   // Reinitialize when another field is selεcted or after a DND 
   $: initializeColumn( columnOptions.name )
   $: tableDataStore?.updateColumn({ id: id, field: field });
@@ -60,9 +82,11 @@
   function handleSort(event) {
     $tableDataStore.sortColumn = field;
     $tableDataStore.sortDirection = event.detail.sortDirection;
+    columnState.sort(event.detail.sortDirection);
   }
 
   function handleFilter(event) {
+
     if (event.detail.filteredValue !== "") {
       tableFilterStore?.setFilter({
         id: id,
@@ -97,37 +121,34 @@
      tableBodyContainer.scrollTop = $tableScrollPosition } )
 
   onDestroy( () => tableDataStore?.unregisterColumn({ id: id, field: field }))
+
+  $: console.log($columnState)
 </script>
 
-<div class="superTableColumn">
+<div class="superTableColumn" on:mouseleave={ () => tableStateStore.unhoverRow() }>
     <SuperColumnHeader
-      bind:flexBasis
-      bind:isResizing={resizing}
-      on:sort={handleSort}
-      on:filter={handleFilter}
-      {resizable}
-      {searchable}
-      {sortable}
-      scrolPos={tableBodyContainer?.scrollTop}
-      isSorted={sortable && $tableDataStore?.sortColumn === field}
+      on:sort={columnState.sort}
+      on:showFilter={columnState.filter}
+      on:clearFilter={columnState.clearFilter}
+      state={$columnState}
+      searchable={columnOptions.searchable}
+      sortable={columnOptions.sortable}
     >
-      { columnOptions.asComponent ? "🚀" : "" }
-      { columnOptions.displayName } 
+      { columnOptions.header != "" ? columnOptions.header : columnOptions.displayName } 
     </SuperColumnHeader>
 
     {#if columnOptions.hasChildren }
       <div
         bind:this={tableBodyContainer} 
-        on:scroll={handleScroll}
+        on:scroll|capture|preventDefault={handleScroll}
         on:mouseenter={ () => { mouseOver = true } }
         on:mouseleave={ () => mouseOver = false }
         class="spectrum-Table-body" 
         class:resizing={resizing}>
           {#each $columnStore as row, index }
             <SuperColumnRowContainer
-            on:hovered={ () => tableStateStore.hoverRow( id, index ) }
-            on:unHovered={ () => tableStateStore.unhoverRow() }
-            on:rowClicked={ (e) => $tableStateStore.rowClicked = row.rowKey }
+              on:hovered={ () => tableStateStore.hoverRow( id, index ) }
+              on:rowClicked={ (e) => $tableStateStore.rowClicked = row.rowKey }
               on:resize={ (e) => { tableStateStore.resizeRow(id, index, e.detail.height ) } }
               minHeight={$tableStateStore?.rowHeights[index]}
               rowKey={row.rowKey}
@@ -141,24 +162,24 @@
       </div>
     {:else}
       <div
-      bind:this={tableBodyContainer} 
-      on:scroll={handleScroll}
-      on:mouseenter={ () => { mouseOver = true } }
-      on:mouseleave={ () => mouseOver = false }
-      class="spectrum-Table-body" 
-      class:resizing={resizing}
+        class="spectrum-Table-body" 
+        class:resizing={resizing}
+        bind:this={tableBodyContainer} 
+        on:scroll|capture|preventDefault={handleScroll}
+        on:mouseenter={ () => { mouseOver = true } }
+        on:mouseleave={ () => mouseOver = false }
       >
-        {#each $columnStore as row, index }			
+        {#each $columnStore as row, index }		
           <SuperColumnRow
-            on:hovered={ () => tableStateStore.hoverRow( id, index ) }
-            on:unHovered={ () => tableStateStore.unhoverRow() }
-            on:rowClicked={ (e) => $tableStateStore.rowClicked = row.rowKey }
             {cellOptions}
-            minHeight={$tableStateStore?.rowHeights[index]}
+            minHeight={ $tableStateStore?.rowHeights[index] }
             rowKey={ row.rowKey }
             cellValue={ row.rowValue ?? "🌵 Field Doesnt Exist" }
-            isHovered={ $tableStateStore?.hoveredRow == index || $tableStateStore.hoveredColumn == id }
-            isSelected={ $tableSelectionStore[row.rowKey] } />
+            isHovered={ $tableStateStore?.hoveredRow == index }
+            isSelected={ $tableSelectionStore[row.rowKey] }
+            on:hovered={ () => tableStateStore.hoverRow( id, index ) }
+            on:rowClicked={ (e) => $tableStateStore.rowClicked = row.rowKey }
+          />
         {/each}
      </div>
 
@@ -174,7 +195,7 @@
   .superTableColumn {
     flex: auto;
   }
-  
+
   .spectrum-Table-body {
     height: var(--super-table-body-height);
     border-radius: 0px;

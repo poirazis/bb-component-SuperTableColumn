@@ -1,8 +1,7 @@
 <script>
   import { onMount, createEventDispatcher } from "svelte";
-  import { fade } from "svelte/transition";
   
-  const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher()
   export let value
   
   let searchInput
@@ -17,62 +16,54 @@
 
   function handleClearMarkClick ()
   {
-    if (value == "") 
-       dispatch("closeMe")
-    else {
-      searchInput.value = ""; 
-      value = "";  
-      searchInput.focus();
-    }
+    value = null;
+    dispatch("closeMe")
   }
 
   onMount(() => searchInput?.focus())
 </script>
-
-<div in:fade class="inputWrapper"> 
-  <input
+<div class="searchControl"> 
+  <input class="inline-edit"
     bind:this={searchInput} 
     on:keyup={({ target: { value } }) => debounce(value)} 
-    class="spectrum-Textfield-input"
-    type="search" placeholder="Search" name="search"  autocomplete="off"
+    type="search" placeholder="Search" name="search" autocomplete="off"
   >
-  <button class="clearButton" on:click={handleClearMarkClick}> 
-    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10">
-      <g id="CrossSize200">
+  <button class="clearButton" on:click={handleClearMarkClick}>
+    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
+      <g id="CrossSize300">
         <rect id="Frame" width="10" height="10" fill="red" opacity="0"/>
-        <path d="M6.28925,5,9.21191,2.07715A.9115.9115,0,1,0,7.92285.78809L5.00024,3.71088,2.07764.78809A.91151.91151,0,0,0,.78857,2.07715L3.71124,5,.78857,7.92285A.91151.91151,0,0,0,2.07764,9.21191l2.9226-2.92279L7.92285,9.21191A.9115.9115,0,0,0,9.21191,7.92285Z"/>
+        <path d="M7.34277,6l3.39649-3.39648a.94949.94949,0,1,0-1.34375-1.3418L6.00018,4.65741,2.60449,1.26172a.94914.94914,0,1,0-1.34277,1.3418L4.65778,6,1.26172,9.39648a.94914.94914,0,1,0,1.34277,1.3418L6.00018,7.34259l3.39533,3.39569a.94949.94949,0,1,0,1.34375-1.3418Z"/>
       </g>
-    </svg>    
+    </svg>
   </button>
 </div>
 
 <style>
-  .inputWrapper {
-    flex: 1;
-    display: flex;
-    flex-direction: row;
-    justify-items: stretch;
-    margin-top: -8px;
-    margin-bottom: -8px;
+  .searchControl {
+    flex: auto;
   }
-
-  .clearButton {
+  input.inline-edit {
+    box-sizing: border-box;
+    padding-left: 12px;
+    padding-right: 28px;
+    outline: none;
     border: none;
+    background: none;
+    color: inherit;
+    height: 100%;
+    width: 100%;
+    border: 2px solid var(--spectrum-alias-border-color-mid);
+    background-color: var(--spectrum-textfield-m-background-color, var(--spectrum-global-color-gray-50));
+  }
+  .clearButton {
     background-color: transparent;
-    margin-left: -24px;
+    border: none;
+    margin-left: -28px;
+    cursor: pointer;
     fill:  var(--spectrum-table-cell-text-color, var(--spectrum-alias-text-color));
   }
-
-  .spectrum-Textfield-input {
-    font-size: 14px;
-    line-height: 14px;
-    padding: 2px;
-    padding-left: 12px;
-    border-bottom: 1px solid var(--spectrum-alias-border-color-mid);
-    border-radius: 2px;
-  }
-  
-  .spectrum-Textfield-input:focus {
-    border-bottom: 1px solid var(--primaryColor);
+  .clearButton:hover {
+    background-color: transparent;
+    fill: var(--spectrum-global-color-red-500);
   }
 </style>

@@ -7,26 +7,13 @@
 	export let searchable
 	export let sortable
 	export let resizable
-	export let isSorted
-	export let sortDirection
 	export let filteredValue = ""
-	export let scrolPos
+
+	// In which state to render itself depending on the state of the column
+	export let state 
 
 	// When the header is resized, notify the Parent Component to adjust accordingly
 	export let flexBasis = "auto"
-
-	let showSearch = false
-	let showSort
-
-	// Column Searching / Filtering Functionality
-	function toggleSearch() {
-		showSearch = !showSearch
-	}
-
-	// Column Sorting Functionality
-	function toggleSort() {
-		showSort = !showSort
-	}
 
 	// Column Resize Functionality
 	export let isResizing = false
@@ -60,120 +47,88 @@
     }
 	}
 
-	function handleClick () {
-		if (sortable) {
-			if (isSorted) 
-				sortDirection = sortDirection === "Ascending" ? "Descending" : "Ascending" 
-			else 
-				sortDirection = "Ascending"
 
-			dispatch("sort", { sortDirection: sortDirection })
-		}
-	}
-
-	$: dispatch("filter", {filteredValue: showSearch ? filteredValue : ""})	
+	// $: dispatch("filter", {filteredValue: showSearch ? filteredValue : ""})	
 </script>
 
-<svelte:window on:mouseup={stopResizing} />
-<div 
-    class="spectrum-Table-headCell"
-		class:is-scrolled={scrolPos > 10 }
-		style:--indicatorRotation={ sortDirection === "Ascending" ? "90deg" : "-90Deg"}
-		on:mousemove={resize} 
-		bind:this={container}	
-		>
+<div class="spectrum-Table-headCell">
 
-		{#if searchable}
-			<div class="headerActions">
-				<button on:click={toggleSearch}>
-				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
-					<path d="M15.77,14.70942l-4.53431-4.53431a6.01393,6.01393,0,1,0-1.06055,1.06055L14.70942,15.77A.74992.74992,0,1,0,15.77,14.70942ZM6.5,11A4.5,4.5,0,1,1,11,6.5,4.50508,4.50508,0,0,1,6.5,11Z" />
-				</svg>
-			</button>
-			</div>
-		{/if}
-	
-		<div class="headerContents">
-			{#if !showSearch}
-				<!-- svelte-ignore a11y-click-events-have-key-events -->
-				<div 
-					on:click={handleClick} 
-					class="headerLabel" 
-					class:sortable={sortable}
-					>
-					<slot />
-				</div>	
-			{:else} 
-				<SuperColumnHeaderSearchControl on:closeMe={()=> (showSearch = false)} bind:value={filteredValue}/>
-			{/if}
-
-			{#if isSorted}
-			<div class="headerSort">
-				<svg class = "sortIndicator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10">
-					<g id="ArrowSize100" >
-						<path d="M9.94952,4.99652a.87815.87815,0,0,0-.02966-.15259.854.854,0,0,0-.03522-.17315L9.882,4.66217A.86384.86384,0,0,0,9.7464,4.459a.819.819,0,0,0-.04718-.07226l-.00488-.005-.00086-.00079L6.62354,1.26172A.87459.87459,0,1,0,5.37646,2.48828L6.98682,4.125H.9248a.875.875,0,0,0,0,1.75h6.062L5.37646,7.51172A.87459.87459,0,1,0,6.62354,8.73828l3.06994-3.1192.00086-.00079.00488-.005A.819.819,0,0,0,9.7464,5.541.86384.86384,0,0,0,9.882,5.33783l.00262-.00861a.854.854,0,0,0,.03522-.17315.87815.87815,0,0,0,.02966-.15259L9.9502,5Z"/>
-					</g>
-				</svg>				
-			</div>
-			{/if}
+	{#if searchable && state != "showFilter" }
+		<!-- svelte-ignore a11y-click-events-have-key-events -->
+		<div 
+			class="headerActions"
+			on:click={() => dispatch("showFilter")}>
+			<svg xmlns="http://www.w3.org/2000/svg" height="14" viewBox="0 0 18 18" width="18">
+				<rect id="Canvas" fill="#ff13dc" opacity="0" width="18" height="18" /><path class="fill" d="M7.4,13.5A6.573,6.573,0,0,1,9,9.2945c1.0415-1.3445,5.8665-7.486,5.8665-7.486A.5.5,0,0,0,14.473,1H.527a.5.5,0,0,0-.3935.8085L6,9.2945V16.95a.496.496,0,0,0,.84.4125L8.009,16.143A6.06548,6.06548,0,0,1,7.4,13.5Z" />
+				<path class="fill" d="M13.5,9.05a4.45,4.45,0,1,0,4.45,4.45A4.45,4.45,0,0,0,13.5,9.05Zm2.5,4.7a.25.25,0,0,1-.25.25H14v1.75a.25.25,0,0,1-.25.25h-.5a.25.25,0,0,1-.25-.25V14H11.25a.25.25,0,0,1-.25-.25v-.5a.25.25,0,0,1,.25-.25H13V11.25a.25.25,0,0,1,.25-.25h.5a.25.25,0,0,1,.25.25V13h1.75a.25.25,0,0,1,.25.25Z" />
+			</svg>
 		</div>
-		{#if resizable}
-			<div on:dblclick={resetResizing} on:mousedown={startResizing.bind(this)} class="headerResizeKnob">				
-			</div>
-		{/if}
+	{/if}
+
+	{#if state != "showFilter"}
+		<!-- svelte-ignore a11y-click-events-have-key-events -->
+		<div 
+			on:click={() =>{ if (sortable ) dispatch("sort") }} 
+			class="headerLabel" 
+			class:sortable={sortable}
+		>
+			<slot />
+	</div>	
+	{:else} 
+		<SuperColumnHeaderSearchControl
+			bind:value={filteredValue} 
+			on:closeMe={() => dispatch ("clearFilter")}
+		/>
+	{/if}
+
+	{#if state == "sortedAscending" || state == "sortedDescending" }
+		<div class="headerSort" 	
+			style:--indicatorRotation={ state === "sortedAscending" ? "90deg" : "-90Deg"}>
+			<svg class = "sortIndicator" xmlns="http://www.w3.org/2000/svg" height=10px; viewBox="0 0 10 10">
+				<g id="ArrowSize100" >
+					<path d="M9.94952,4.99652a.87815.87815,0,0,0-.02966-.15259.854.854,0,0,0-.03522-.17315L9.882,4.66217A.86384.86384,0,0,0,9.7464,4.459a.819.819,0,0,0-.04718-.07226l-.00488-.005-.00086-.00079L6.62354,1.26172A.87459.87459,0,1,0,5.37646,2.48828L6.98682,4.125H.9248a.875.875,0,0,0,0,1.75h6.062L5.37646,7.51172A.87459.87459,0,1,0,6.62354,8.73828l3.06994-3.1192.00086-.00079.00488-.005A.819.819,0,0,0,9.7464,5.541.86384.86384,0,0,0,9.882,5.33783l.00262-.00861a.854.854,0,0,0,.03522-.17315.87815.87815,0,0,0,.02966-.15259L9.9502,5Z"/>
+				</g>
+			</svg>				
+		</div>
+	{/if}
 </div>
 
 <style>
 
 	.spectrum-Table-headCell {
-		flex: 0 1 auto;
 		display: flex;
 		flex-direction: row;
 		justify-content: stretch;
-		align-items: center;
- 		gap: 8px;
-		min-height: 2.5rem;
-		padding-right: 8px;
+		align-items: stretch;
+		height: 2.5rem;
+		padding: unset;
+		border-bottom: 1px solid var(--spectrum-alias-border-color-mid);
 	}
-	.is-scrolled {
-		/* box-shadow: 0px 10px 5px -2px #191919; */
-		z-index: 100;
-	}
+
 	.headerActions {
-		flex: 0 0 auto;
-		min-height: 12px;
+		display: flex;
+		background-color: transparent;
 		aspect-ratio: 1 / 1;
 		background-color: transparent;
 		align-items: center;
+		justify-content: center;
 		fill: var(--spectrum-table-header-text-color, var(--spectrum-alias-label-text-color));
+		transition: scale 130ms ease-in-out;
 	}
 
-	.headerActions > button {
-		border: none;
-		padding: 0px;
-		margin: 0px;
-		background-color: transparent;
-		height: 100%;
-		width: 100%;
-		fill: var(--st-header-text-color);
-	}
-
-	.headerActions:hover > button {
+	.headerActions:hover {
 		filter: brightness(120%);
-		cursor:pointer;
+		cursor: pointer;
+		scale: 1.2;
 	}
-
-	.headerContents {
-		flex: 1;
-		display: flex;
-		flex-direction: row;
-		justify-content: var(--super-table-header-horizontal-align);
-		align-items: center;
-		gap: 8px;
-	}
-
 	.headerLabel {
+		flex: auto;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-content: center;
 		white-space: nowrap;
+		color: var(--spectrum-table-header-text-color, var(--spectrum-alias-label-text-color));
 	}
 	.sortable:hover {
 		white-space: nowrap;
@@ -182,26 +137,16 @@
 	}
 
 	.headerSort {
-		flex: 0 0 auto;
+		display: flex;
 		align-items: center;
-		width: 10px;
+		padding-left: 8px;
+		min-width: 1.5rem;
 	}
 
 	.sortIndicator {
+		max-height: 10px;
 		transition: tranform 300ms ease-in-out;
 		transform: rotate( var(--indicatorRotation) );
 		fill: var(--spectrum-table-header-text-color, var(--spectrum-alias-label-text-color));
-	}
-
-	.headerResizeKnob {
-		padding: 2px 2px;
-		margin: 0px 0px;
-		width: 5px;
-		height: 1rem;
-		background-color: var(--spectrum-global-color-gray-300)
-	}
-	.headerResizeKnob:hover {
-		cursor:col-resize ;
-		background-color: var(--spectrum-global-color-gray-700)
 	}
 </style>
