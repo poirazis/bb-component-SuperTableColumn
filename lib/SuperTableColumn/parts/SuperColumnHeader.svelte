@@ -47,21 +47,17 @@
     }
 	}
 
-
 	$: dispatch( "applyFilter", {filteredValue: filteredValue } )	
 </script>
 
-<div 
-	class="spectrum-Table-headCell"
-	style:--sp-header-paddingLeft={ !searchable ? "11px" : "0px" } 
-	>
+<div class="spectrum-Table-headCell">
 
 	{#if searchable && state != "showFilter" }
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<div 
 			class="headerActions"
 			on:click={() => dispatch("showFilter")}>
-			<svg xmlns="http://www.w3.org/2000/svg" height="12" viewBox="0 0 18 18" width="18">
+			<svg xmlns="http://www.w3.org/2000/svg" height="12px" viewBox="0 0 18 18" width="12px">
 				<rect id="Canvas" fill="#ff13dc" opacity="0" width="18" height="18" /><path class="fill" d="M7.4,13.5A6.573,6.573,0,0,1,9,9.2945c1.0415-1.3445,5.8665-7.486,5.8665-7.486A.5.5,0,0,0,14.473,1H.527a.5.5,0,0,0-.3935.8085L6,9.2945V16.95a.496.496,0,0,0,.84.4125L8.009,16.143A6.06548,6.06548,0,0,1,7.4,13.5Z" />
 				<path class="fill" d="M13.5,9.05a4.45,4.45,0,1,0,4.45,4.45A4.45,4.45,0,0,0,13.5,9.05Zm2.5,4.7a.25.25,0,0,1-.25.25H14v1.75a.25.25,0,0,1-.25.25h-.5a.25.25,0,0,1-.25-.25V14H11.25a.25.25,0,0,1-.25-.25v-.5a.25.25,0,0,1,.25-.25H13V11.25a.25.25,0,0,1,.25-.25h.5a.25.25,0,0,1,.25.25V13h1.75a.25.25,0,0,1,.25.25Z" />
 			</svg>
@@ -71,11 +67,12 @@
 	{#if state != "showFilter"}
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<div 
-			on:click={() =>{ if (sortable ) dispatch("sort") }} 
+			on:click={() =>{ if ( sortable ) dispatch("sort") }} 
 			class="headerLabel" 
 			class:sortable={sortable}
 		>
-			<slot />
+		<div class="headerLabelText"><slot /></div>
+			
 	</div>	
 	{:else} 
 		<SuperColumnHeaderSearchControl
@@ -109,13 +106,14 @@
 	}
 
 	.headerActions {
+		width: calc(var(--super-table-cell-padding) + 12px);
 		display: flex;
 		background-color: transparent;
-		aspect-ratio: 1 / 1;
 		align-items: center;
 		justify-content: center;
 		fill: var(--spectrum-table-header-text-color, var(--spectrum-alias-label-text-color));
 		transition: scale 130ms ease-in-out;
+		padding-left: var(--super-table-cell-padding);
 	}
 
 	.headerActions:hover {
@@ -125,14 +123,21 @@
 	}
 	.headerLabel {
 		flex: auto;
+		min-width: 0;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
 		align-content: center;
-		white-space: nowrap;
 		color: var(--spectrum-table-header-text-color, var(--spectrum-alias-label-text-color));
-		padding-left: var(--sp-header-paddingLeft);
-		padding-right: var(--sp-header-paddingLeft);
+		padding-left: var(--super-table-cell-padding);
+		padding-right: var(--super-table-cell-padding);
+	}
+
+	.headerLabelText {
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		overflow: hidden;
+
 	}
 	.sortable:hover {
 		white-space: nowrap;
@@ -141,11 +146,10 @@
 	}
 
 	.headerSort {
+		width: calc(var(--super-table-cell-padding) + 10px);
 		display: flex;
 		align-items: center;
-		padding-left: 8px;
-		padding-right: 10px;
-		width: 28px;
+		padding-right: var(--super-table-cell-padding);
 	}
 
 	.sortIndicator {
