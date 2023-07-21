@@ -134,7 +134,7 @@
       searchable={columnOptions.searchable}
       sortable={columnOptions.sortable}
     >
-      { columnOptions.header != "" ? columnOptions.header : columnOptions.displayName } 
+      { columnOptions.displayName } 
     </SuperColumnHeader>
 
     {#if columnOptions.hasChildren }
