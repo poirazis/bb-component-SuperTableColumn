@@ -51,7 +51,10 @@
 	// $: dispatch("filter", {filteredValue: showSearch ? filteredValue : ""})	
 </script>
 
-<div class="spectrum-Table-headCell">
+<div 
+	class="spectrum-Table-headCell"
+	style:--sp-header-paddingLeft={ !searchable ? "11px" : "0px" } 
+	>
 
 	{#if searchable && state != "showFilter" }
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -109,7 +112,6 @@
 		display: flex;
 		background-color: transparent;
 		aspect-ratio: 1 / 1;
-		background-color: transparent;
 		align-items: center;
 		justify-content: center;
 		fill: var(--spectrum-table-header-text-color, var(--spectrum-alias-label-text-color));
@@ -129,6 +131,7 @@
 		align-content: center;
 		white-space: nowrap;
 		color: var(--spectrum-table-header-text-color, var(--spectrum-alias-label-text-color));
+		padding-left: var(--sp-header-paddingLeft);
 	}
 	.sortable:hover {
 		white-space: nowrap;
