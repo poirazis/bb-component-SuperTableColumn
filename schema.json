@@ -71,15 +71,15 @@
       },
       {
         "type": "boolean",
-        "key": "sortable",
-        "label": "Sortable",
-        "defaultValue": false
+        "key": "filtering",
+        "label": "Filtering",
+        "defaultValue": true
       },
       {
         "type": "boolean",
-        "key": "searchable",
-        "label": "Searchable",
-        "defaultValue": false
+        "key": "sorting",
+        "label": "Sorting",
+        "defaultValue": true
       },
       {
         "type": "select",

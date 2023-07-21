@@ -22,7 +22,6 @@
 	class:is-hovered={isHovered}
 	style:height={ minHeight + "px" }
 	style:border-bottom={cellOptions.borderBottom}
-	style:border-right={cellOptions.borderRight}
 	on:mouseenter={ () => dispatch("hovered") } 
 	on:mouseleave={ () => dispatch("unHovered") }
 	on:click={ () => dispatch("rowClicked", {rowKey : rowKey}) }

@@ -17,8 +17,8 @@
   export let columnWidth
   export let minWidth
   export let resizable
-  export let sortable
-  export let searchable
+  export let filtering
+  export let sorting
   export let searchMode
 
   export let header, headerAlign, headerFontColor, headerBackground;
@@ -47,8 +47,8 @@
     hasChildren: $component.children > 0,
     asComponent: $builderStore.inBuilder,
     header: header ?? "",
-    sortable: sortable,
-    searchable: searchable,
+    filtering: filtering,
+    sorting: sorting,
     order: order,
     isFirst: isFirst,
     isLast: isLast 

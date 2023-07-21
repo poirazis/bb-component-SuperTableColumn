@@ -196,6 +196,7 @@
 <style>
   .superTableColumn {
     flex: auto;
+    border-right: var(--super-table-vertical-dividers);
   }
 
   .spectrum-Table-body {
@@ -205,11 +206,7 @@
     overflow-x: hidden;
     padding: 0px;
     margin: 0px;
-    border-left: unset;
-    border-top: unset;
-    border-bottom: unset;
-/*     border-right-width:  var(--super-table-column-right-border-size); */
-    border-right-width:  0px;     
+    border: none;  
     scrollbar-width: none;  
   }
 
