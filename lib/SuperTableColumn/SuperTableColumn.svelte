@@ -123,7 +123,6 @@
 
   onDestroy( () => tableDataStore?.unregisterColumn({ id: id, field: field }))
 
-  $: console.log($columnState)
 </script>
 
 <div class="superTableColumn" on:mouseleave={ () => tableStateStore.unhoverRow() }>

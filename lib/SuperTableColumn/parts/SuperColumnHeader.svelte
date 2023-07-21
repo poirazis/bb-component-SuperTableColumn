@@ -132,6 +132,7 @@
 		white-space: nowrap;
 		color: var(--spectrum-table-header-text-color, var(--spectrum-alias-label-text-color));
 		padding-left: var(--sp-header-paddingLeft);
+		padding-right: var(--sp-header-paddingLeft);
 	}
 	.sortable:hover {
 		white-space: nowrap;
