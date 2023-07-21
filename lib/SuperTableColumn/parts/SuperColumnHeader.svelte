@@ -48,7 +48,7 @@
 	}
 
 
-	// $: dispatch("filter", {filteredValue: showSearch ? filteredValue : ""})	
+	$: dispatch( "applyFilter", {filteredValue: filteredValue } )	
 </script>
 
 <div 

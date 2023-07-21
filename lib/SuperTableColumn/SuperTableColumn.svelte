@@ -86,7 +86,8 @@
   }
 
   function handleFilter(event) {
-
+    
+    console.log("Here ", event.detail.filteredValue )
     if (event.detail.filteredValue !== "") {
       tableFilterStore?.setFilter({
         id: id,
@@ -129,9 +130,10 @@
     <SuperColumnHeader
       on:sort={columnState.sort}
       on:showFilter={columnState.filter}
+      on:applyFilter={ handleFilter }
       on:clearFilter={columnState.clearFilter}
       state={$columnState}
-      searchable={columnOptions.searchable}
+      searchable={columnOptions.filtering}
       sortable={columnOptions.sortable}
     >
       { columnOptions.displayName } 
