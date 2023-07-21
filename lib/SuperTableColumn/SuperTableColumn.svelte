@@ -134,7 +134,7 @@
       on:clearFilter={columnState.clearFilter}
       state={$columnState}
       searchable={columnOptions.filtering}
-      sortable={columnOptions.sortable}
+      sortable={columnOptions.sorting}
     >
       { columnOptions.displayName } 
     </SuperColumnHeader>
