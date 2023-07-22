@@ -5,7 +5,7 @@
     beforeUpdate,
     createEventDispatcher,
   } from "svelte";
-  import { writable, derived } from "svelte/store";
+  import { writable, derived  } from "svelte/store";
   import fsm from "svelte-fsm";
 
   import SuperColumnHeader from "./parts/SuperColumnHeader.svelte";
@@ -17,6 +17,7 @@
   const tableFilterStore = getContext("tableFilterStore");
   const tableSelectionStore = getContext("tableSelectionStore");
   const tableScrollPosition = getContext("tableScrollPosition");
+  const tableHoverStore = getContext("tableHoverStore");
   const tableOptions = getContext("tableOptions");
 
   // The Super Columns can dispatch a number of events to be handled by the
@@ -133,11 +134,13 @@
   });
 
   onDestroy(() => tableDataStore?.unregisterColumn({ id: id, field: field }));
+
+  $: console.log ($tableHoverStore )
 </script>
 
 <div
   class="superTableColumn"
-  on:mouseleave={() => tableStateStore.unhoverRow()}
+  on:mouseleave={() => $tableHoverStore = null }
 >
   <SuperColumnHeader
     on:sort={handleSort}
@@ -165,10 +168,10 @@
         minHeight={$tableStateStore?.rowHeights[index]}
         rowKey={row.rowKey}
         cellValue={row.rowValue ?? "🌵 Field Doesnt Exist"}
-        isHovered={$tableStateStore?.hoveredRow == index}
+        isHovered={$tableHoverStore == index }
         isSelected={$tableSelectionStore[row.rowKey]}
         on:resize={() => $tableStateStore }
-        on:hovered={() => tableStateStore.hoverRow(id, index)}
+        on:hovered={() => $tableHoverStore = index }
         on:rowClicked={(e) => ($tableStateStore.rowClicked = row.rowKey)}
       > 
         <slot />
