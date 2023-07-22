@@ -65,6 +65,12 @@
       },
       {
         "type": "boolean",
+        "key": "editable",
+        "label": "Editable",
+        "defaultValue": true
+      },
+      {
+        "type": "boolean",
         "key": "resizable",
         "label": "Resizable",
         "defaultValue": true

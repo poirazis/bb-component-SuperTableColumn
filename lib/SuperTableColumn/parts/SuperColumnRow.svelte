@@ -1,5 +1,8 @@
 <script>
-	import { createEventDispatcher } from "svelte";
+	import { getContext , onMount, createEventDispatcher } from "svelte";
+	import { elementSizeStore } from "svelte-legos";
+	const { Provider } = getContext("sdk")
+
 	import { SuperTableCell } from "../../../bb-component-SuperTableCell/lib/SuperTableCell/index.js";
 
 	const dispatch = createEventDispatcher();
@@ -8,11 +11,28 @@
 	export let cellValue
 	export let isSelected
 	export let isHovered
+	export let dynamicHeight
 
 	// the proposed height
 	export let minHeight
 
 	export let cellOptions
+
+	let contents, size, needHeight
+
+	// Ractive request for additional height if needed 
+	$: if ( size ) 
+	{ 
+		needHeight =  Math.ceil (parseFloat($size.height)) + 1
+		needHeight = needHeight < 43 ? 43 : needHeight
+		dispatch( "resize" , { height : needHeight })
+	}
+
+	onMount ( () => { 
+			if (dynamicHeight) size = elementSizeStore(contents) 
+	})
+
+	$: console.log($size)
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -26,7 +46,15 @@
 	on:mouseleave={ () => dispatch("unHovered") }
 	on:click={ () => dispatch("rowClicked", {rowKey : rowKey}) }
 	>
-	 <SuperTableCell {rowKey} value = {cellValue} {cellOptions} />
+		{#if !dynamicHeight }
+			<SuperTableCell {rowKey} value = {cellValue} {cellOptions} /> 
+		{:else}
+			<Provider data={ {rowKey: rowKey, cellValue: cellValue} }>
+				<div bind:this={contents} class="contentsWrapepr"> 		
+					<slot /> 
+				</div>	
+			</Provider>
+		{/if}
 </div>
 
 <style>

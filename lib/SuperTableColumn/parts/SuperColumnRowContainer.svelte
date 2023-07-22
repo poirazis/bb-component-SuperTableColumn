@@ -9,7 +9,6 @@
 	export let cellValue
 	export let isSelected
 	export let isHovered
-	export let verticalPadding = 11
 	export let borderWidth = 1
 
 	// only used to notify the Parent that we need more space than the given minHeight
@@ -31,6 +30,7 @@
 	onMount ( () => { 
 			size = elementSizeStore(ref) 
 	})
+	
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->

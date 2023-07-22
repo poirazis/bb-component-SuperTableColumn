@@ -17,6 +17,7 @@
   export let columnWidth
   export let minWidth
   export let resizable
+  export let editable
   export let filtering
   export let sorting
   export let searchMode
@@ -47,6 +48,7 @@
     hasChildren: $component.children > 0,
     asComponent: $builderStore.inBuilder,
     header: header ?? "",
+    editable: editable,
     filtering: filtering,
     sorting: sorting,
     order: order,
@@ -59,7 +61,7 @@
   { #if !tableDataStore }
     <p> Super Table Column can olny be placed inside a Super Table </p>
   {:else}    
-    <SuperTableColumn {columnOptions} />
+    <SuperTableColumn {columnOptions} > <slot /> </SuperTableColumn>
   {/if}
 </div>
 
