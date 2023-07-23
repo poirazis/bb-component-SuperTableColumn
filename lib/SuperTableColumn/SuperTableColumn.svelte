@@ -36,6 +36,8 @@
   let id = Math.random();
   let mouseOver = false;
 
+
+
   // Static
 
   // Reactive
@@ -136,6 +138,7 @@
 
   onDestroy(() => tableDataStore?.unregisterColumn({ id: id, field: field }));
 
+  $: console.log(columnOptions)
 </script>
 
 <div
