@@ -26,7 +26,7 @@
 		cellHeight = Math.ceil (parseFloat($size.height))
 		console.log(minHeight, cellHeight)
 
-		if ( cellHeight != minHeight ) 
+		if ( cellHeight != minHeight && !( cellHeight < cellOptions.minHeight ) ) 
 		{
 			dispatch( "resize" , { height : cellHeight })
 		}
