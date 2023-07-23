@@ -170,7 +170,7 @@
         cellValue={row.rowValue ?? "🌵 Field Doesnt Exist"}
         isHovered={$tableHoverStore == index }
         isSelected={$tableSelectionStore[row.rowKey]}
-        on:resize={(event) => tableStateStore.resizeRow( id, index, event.detail.height) }
+        on:resize={(event) => tableStateStore.resizeRow( id, index, event.detail.height ) }
         on:hovered={() => $tableHoverStore = index }
         on:rowClicked={(e) => ($tableStateStore.rowClicked = row.rowKey)}
       > 

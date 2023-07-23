@@ -18,16 +18,19 @@
 
 	export let cellOptions
 
-	let contents, size, needHeight
+	let contents, size, cellHeight
 
 	// Ractive request for additional height if needed 
 	$: if ( size ) 
 	{ 
-		needHeight =  Math.ceil (parseFloat($size.height)) + 1
-		needHeight = needHeight < cellOptions.minHeight ? cellOptions.minHeight : needHeight
-		dispatch( "resize" , { height : needHeight })
-	}
+		cellHeight = Math.ceil (parseFloat($size.height))
+		console.log(minHeight, cellHeight)
 
+		if ( cellHeight != minHeight ) 
+		{
+			dispatch( "resize" , { height : cellHeight })
+		}
+	}
 	onMount ( () => { 
 			if (dynamicHeight) size = elementSizeStore(contents) 
 	})
@@ -48,7 +51,7 @@
 			<SuperTableCell {rowKey} value = {cellValue} {cellOptions} /> 
 		{:else}
 			<Provider data={ {rowKey: rowKey, cellValue: cellValue} }>
-				<div bind:this={contents} class="contentsWrapepr"> 		
+				<div bind:this={contents} class="contentsWrapper"> 		
 					<slot /> 
 				</div>	
 			</Provider>
@@ -56,6 +59,10 @@
 </div>
 
 <style>
+
+	.contentsWrapper {
+		border: none;
+	}
 	.is-hovered {
 		background-color: var(--spectrum-table-m-regular-row-background-color-hover, var(--spectrum-alias-highlight-hover));
 	}
