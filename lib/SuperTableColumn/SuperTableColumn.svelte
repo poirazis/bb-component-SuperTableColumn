@@ -135,7 +135,6 @@
 
   onDestroy(() => tableDataStore?.unregisterColumn({ id: id, field: field }));
 
-  $: console.log ($tableHoverStore )
 </script>
 
 <div
@@ -170,7 +169,7 @@
         cellValue={row.rowValue ?? "🌵 Field Doesnt Exist"}
         isHovered={$tableHoverStore == index }
         isSelected={$tableSelectionStore[row.rowKey]}
-        on:resize={() => $tableStateStore }
+        on:resize={(event) => tableStateStore.resizeRow( id, index, event.detail.needHeight) }
         on:hovered={() => $tableHoverStore = index }
         on:rowClicked={(e) => ($tableStateStore.rowClicked = row.rowKey)}
       > 

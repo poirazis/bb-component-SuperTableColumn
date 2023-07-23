@@ -31,8 +31,6 @@
 	onMount ( () => { 
 			if (dynamicHeight) size = elementSizeStore(contents) 
 	})
-
-	$: console.log($size)
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
