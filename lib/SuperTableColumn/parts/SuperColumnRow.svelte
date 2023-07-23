@@ -24,7 +24,7 @@
 	$: if ( size ) 
 	{ 
 		needHeight =  Math.ceil (parseFloat($size.height)) + 1
-		needHeight = needHeight < 43 ? 43 : needHeight
+		needHeight = needHeight < cellOptions.minHeight ? cellOptions.minHeight : needHeight
 		dispatch( "resize" , { height : needHeight })
 	}
 
