@@ -16,8 +16,6 @@
 	// the proposed height
 	export let minHeight
 
-	export let cellOptions
-
 	let contents, size, cellHeight
 
 	// Ractive request for additional height if needed 
@@ -42,19 +40,18 @@
 	class:is-selected={isSelected} 
 	class:is-hovered={isHovered}
 	style:height={ minHeight + "px" }
-	style:border-bottom={cellOptions.borderBottom}
 	on:mouseenter={ () => dispatch("hovered") } 
 	on:mouseleave={ () => dispatch("unHovered") }
 	on:click={ () => dispatch("rowClicked", {rowKey : rowKey}) }
 	>
 		{#if !dynamicHeight }
-			<SuperTableCell {rowKey} value = {cellValue} {cellOptions} /> 
+			<SuperTableCell {rowKey} value = {cellValue} /> 
 		{:else}
-			<Provider data={ {rowKey: rowKey, cellValue: cellValue} }>
-				<div bind:this={contents} class="contentsWrapper"> 		
-					<slot /> 
-				</div>	
-			</Provider>
+			<div bind:this={contents} class="contentsWrapper"> 
+				<Provider data={ {rowKey: rowKey, cellValue: cellValue} }>
+						<slot /> 
+				</Provider>
+			</div>	
 		{/if}
 </div>
 

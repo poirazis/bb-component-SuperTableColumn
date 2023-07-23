@@ -36,12 +36,6 @@
   let id = Math.random();
   let mouseOver = false;
 
-
-
-  // Static
-
-  // Reactive
-
   // Super Column Internal State Machine
   const columnState = fsm("view", {
     view: {
@@ -58,8 +52,6 @@
     sortedDescending: { filter: "showFilter", sort: "sortedAscending" },
   });
 
-  $: combinedOptions = { ...tableOptions.columnOptions, ...columnOptions };
-
   // Remove Dynamic Heights if all children have been removed
   $: if (!columnOptions.hasChildren) {
     tableStateStore?.removeRowHeights(id);
@@ -74,7 +66,6 @@
   // Component Code
   let nameStore = writable();
   $: nameStore.set(columnOptions.name);
-  $: field = columnOptions.name;
 
   // Create our derived store and make sure we grab only the selected field rows.
   // If the field changes, the store will update to reflect the change
@@ -88,7 +79,7 @@
 
   // Reinitialize when another field is selεcted or after a DND
   $: initializeColumn(columnOptions.name);
-  $: tableDataStore?.updateColumn({ id: id, field: field });
+  $: tableDataStore?.updateColumn({ id: id, field: columnOptions.name });
 
   function handleSort() {
     columnState.sort();
@@ -101,7 +92,7 @@
     if (event.detail.filteredValue !== "") {
       tableFilterStore?.setFilter({
         id: id,
-        field: field,
+        field: columnOptions.name,
         operator: "string",
         value: event.detail.filteredValue,
         valueType: "Value",
@@ -136,9 +127,9 @@
       tableBodyContainer.scrollTop = $tableScrollPosition;
   });
 
-  onDestroy(() => tableDataStore?.unregisterColumn({ id: id, field: field }));
+  onDestroy(() => tableDataStore?.unregisterColumn({ id: id, field: columnOptions.name }));
 
-  $: console.log(columnOptions)
+  $: console.log(tableOptions)
 </script>
 
 <div
@@ -182,7 +173,7 @@
     {/each}
   </div>
 
-  {#if combinedOptions.showFooter}
+  {#if tableOptions.showFooter}
     <SuperColumnFooter>{columnOptions.displayName}</SuperColumnFooter>
   {/if}
 </div>
