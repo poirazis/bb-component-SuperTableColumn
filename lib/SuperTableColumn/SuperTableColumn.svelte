@@ -56,13 +56,6 @@
   $: if (!columnOptions.hasChildren) {
     tableStateStore?.removeRowHeights(id);
   }
-
-  // Generate Default settings for Cell Renderers
-  $: cellOptions = {
-    editable: columnOptions.editable,
-    minHeight: $tableStateStore.minRowHeight
-  };
-
   // Component Code
   let nameStore = writable();
   $: nameStore.set(columnOptions.name);
@@ -158,7 +151,6 @@
     {#each $columnStore as row, index}
       <SuperColumnRow
         dynamicHeight={columnOptions.hasChildren}
-        {cellOptions}
         minHeight={$tableStateStore?.rowHeights[index]}
         rowKey={row.rowKey}
         cellValue={row.rowValue ?? "🌵 Field Doesnt Exist"}
