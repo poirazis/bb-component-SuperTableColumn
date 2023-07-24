@@ -4,8 +4,8 @@
 
 	const dispatch = createEventDispatcher()
 
-	export let searchable
-	export let sortable
+	export let filtering
+	export let sorting
 	export let resizable
 	export let filteredValue = ""
 
@@ -52,7 +52,7 @@
 
 <div class="spectrum-Table-headCell">
 
-	{#if searchable && state != "showFilter" }
+	{#if filtering && state != "showFilter" }
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<div 
 			class="headerActions"
@@ -67,9 +67,10 @@
 	{#if state != "showFilter"}
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<div 
-			on:click={() =>{ if ( sortable ) dispatch("sort") }} 
+			on:click={() =>{ if ( sorting ) dispatch("sort") }} 
 			class="headerLabel" 
-			class:sortable={sortable}
+			style:--header-label-cellpadding={ filtering ? "0.85rem" : null  }
+			class:sortable={sorting}
 		>
 		<div class="headerLabelText"><slot /></div>
 			
@@ -129,8 +130,8 @@
 		justify-content: center;
 		align-content: center;
 		color: var(--spectrum-table-header-text-color, var(--spectrum-alias-label-text-color));
-		padding-left: var(--super-table-cell-padding);
-		padding-right: var(--super-table-cell-padding);
+		padding-left: var(--header-label-cellpadding, var(--super-table-cell-padding));
+		padding-right: var(--header-label-cellpadding, var(--super-table-cell-padding));
 	}
 
 	.headerLabelText {

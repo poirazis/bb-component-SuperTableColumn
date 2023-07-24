@@ -8,10 +8,12 @@
 	const dispatch = createEventDispatcher();
 
 	export let rowKey
-	export let cellValue
+	export let value
 	export let isSelected
 	export let isHovered
 	export let dynamicHeight
+	export let columnType
+	export let editable
 
 	// the proposed height
 	export let minHeight
@@ -22,7 +24,6 @@
 	$: if ( size ) 
 	{ 
 		cellHeight = Math.ceil (parseFloat($size.height))
-		console.log(minHeight, cellHeight)
 
 		if ( cellHeight != minHeight && !( cellHeight < cellOptions.minHeight ) ) 
 		{
@@ -45,10 +46,10 @@
 	on:click={ () => dispatch("rowClicked", {rowKey : rowKey}) }
 	>
 		{#if !dynamicHeight }
-			<SuperTableCell {rowKey} value = {cellValue} /> 
+			<SuperTableCell {rowKey} {value} {editable} {columnType} /> 
 		{:else}
 			<div bind:this={contents} class="contentsWrapper"> 
-				<Provider data={ {rowKey: rowKey, cellValue: cellValue} }>
+				<Provider data={ {rowKey: rowKey, cellValue: value} }>
 						<slot /> 
 				</Provider>
 			</div>	

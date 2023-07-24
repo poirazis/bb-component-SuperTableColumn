@@ -36,6 +36,9 @@
   let id = Math.random();
   let mouseOver = false;
 
+  $: columnType = $tableDataStore.schema[columnOptions.name].type
+
+
   // Super Column Internal State Machine
   const columnState = fsm("view", {
     view: {
@@ -44,13 +47,16 @@
     },
     showFilter: {
       clearFilter() {
-        console.log("clearing");
         return "view";
       },
     },
-    sortedAscending: { filter: "showFilter", sort: "sortedDescending" },
-    sortedDescending: { filter: "showFilter", sort: "sortedAscending" },
+    sortedAscending: { filter: "showFilter", sort: "sortedDescending", unsort: "view" },
+    sortedDescending: { filter: "showFilter", sort: "sortedAscending" , unsort: "view" }
   });
+
+  $: if ( $tableDataStore.sortColumn !== columnOptions.name && $columnState != "view" ) {
+    columnState.unsort();
+  }
 
   // Remove Dynamic Heights if all children have been removed
   $: if (!columnOptions.hasChildren) {
@@ -121,22 +127,17 @@
   });
 
   onDestroy(() => tableDataStore?.unregisterColumn({ id: id, field: columnOptions.name }));
-
-  $: console.log(tableOptions)
 </script>
 
-<div
-  class="superTableColumn"
-  on:mouseleave={() => $tableHoverStore = null }
->
+<div class="superTableColumn" on:mouseleave={ () => $tableHoverStore = null } >
   <SuperColumnHeader
     on:sort={handleSort}
     on:showFilter={columnState.filter}
     on:applyFilter={handleFilter}
     on:clearFilter={columnState.clearFilter}
     state={$columnState}
-    searchable={columnOptions.filtering}
-    sortable={columnOptions.sorting}
+    filtering={columnOptions.filtering}
+    sorting={columnOptions.sorting}
   >
     {columnOptions.displayName}
   </SuperColumnHeader>
@@ -147,13 +148,15 @@
     on:scroll={handleScroll}
     on:mouseenter={() => (mouseOver = true)}
     on:mouseleave={() => (mouseOver = false)}
-  >
+  > 
     {#each $columnStore as row, index}
       <SuperColumnRow
         dynamicHeight={columnOptions.hasChildren}
+        {columnType}
         minHeight={$tableStateStore?.rowHeights[index]}
         rowKey={row.rowKey}
-        cellValue={row.rowValue ?? "🌵 Field Doesnt Exist"}
+        value={ row.rowValue }
+        editable={ tableOptions.editable || columnOptions.editable }
         isHovered={$tableHoverStore == index }
         isSelected={$tableSelectionStore[row.rowKey]}
         on:resize={(event) => tableStateStore.resizeRow( id, index, event.detail.height ) }
@@ -165,7 +168,7 @@
     {/each}
   </div>
 
-  {#if tableOptions.showFooter}
+  {#if tableOptions.showFooter }
     <SuperColumnFooter>{columnOptions.displayName}</SuperColumnFooter>
   {/if}
 </div>
