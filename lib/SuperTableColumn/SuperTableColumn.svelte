@@ -129,7 +129,12 @@
   onDestroy(() => tableDataStore?.unregisterColumn({ id: id, field: columnOptions.name }));
 </script>
 
-<div class="superTableColumn" on:mouseleave={ () => $tableHoverStore = null } >
+<div 
+  class="superTableColumn"
+  style:--super-column-bgcolor={ columnOptions.background }
+  style:--super-column-color={ columnOptions.color }
+  style:--super-column-alignment={ columnOptions.align == "Right" ? "flex-end" : columnOptions.align == "Center" ? "center" : "flex-start"}
+  on:mouseleave={ () => $tableHoverStore = null } >  
   <SuperColumnHeader
     on:sort={handleSort}
     on:showFilter={columnState.filter}

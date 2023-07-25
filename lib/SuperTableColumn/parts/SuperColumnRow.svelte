@@ -25,7 +25,7 @@
 	{ 
 		cellHeight = Math.ceil (parseFloat($size.height))
 
-		if ( cellHeight != minHeight && !( cellHeight < cellOptions.minHeight ) ) 
+		if ( cellHeight != minHeight ) 
 		{
 			dispatch( "resize" , { height : cellHeight })
 		}
@@ -58,6 +58,9 @@
 
 <style>
 
+	.spectrum-Table-row {
+		background: var(--super-column-bgcolor);
+	}
 	.contentsWrapper {
 		border: none;
 	}
