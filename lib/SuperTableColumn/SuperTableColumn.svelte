@@ -158,7 +158,8 @@
       <SuperColumnRow
         dynamicHeight={columnOptions.hasChildren}
         {columnType}
-        minHeight={$tableStateStore?.rowHeights[index]}
+        height={$tableStateStore?.rowHeights[index]}
+        minHeight={tableOptions.rowHeight}
         rowKey={row.rowKey}
         value={ row.rowValue }
         editable={ tableOptions.editable || columnOptions.editable }

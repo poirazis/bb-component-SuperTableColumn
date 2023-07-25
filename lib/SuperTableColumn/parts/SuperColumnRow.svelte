@@ -16,6 +16,8 @@
 	export let editable
 
 	// the proposed height
+	export let height
+
 	export let minHeight
 
 	let contents, size, cellHeight
@@ -25,7 +27,7 @@
 	{ 
 		cellHeight = Math.ceil (parseFloat($size.height))
 
-		if ( cellHeight != minHeight ) 
+		if ( cellHeight > minHeight ) 
 		{
 			dispatch( "resize" , { height : cellHeight })
 		}
@@ -40,7 +42,7 @@
 	class="spectrum-Table-row" 
 	class:is-selected={isSelected} 
 	class:is-hovered={isHovered}
-	style:height={ minHeight + "px" }
+	style:height={ height + "px" }
 	on:mouseenter={ () => dispatch("hovered") } 
 	on:mouseleave={ () => dispatch("unHovered") }
 	on:click={ () => dispatch("rowClicked", {rowKey : rowKey}) }
