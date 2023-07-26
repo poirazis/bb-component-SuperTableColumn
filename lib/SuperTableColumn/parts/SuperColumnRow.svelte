@@ -23,18 +23,20 @@
 	let contents, size, cellHeight
 
 	// Ractive request for additional height if needed 
-	$: if ( size ) 
+	$: if ( size && dynamicHeight ) 
 	{ 
 		cellHeight = Math.ceil (parseFloat($size.height))
 
-		if ( cellHeight > minHeight ) 
+		if ( cellHeight > height ) 
 		{
 			dispatch( "resize" , { height : cellHeight })
+		} else if ( cellHeight < minHeight) {
+			dispatch( "resize" , { height : minHeight })
 		}
 	}
-	onMount ( () => { 
-			if (dynamicHeight) size = elementSizeStore(contents) 
-	})
+
+	$: if ( dynamicHeight && contents ) size = elementSizeStore(contents) 
+
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -59,12 +61,11 @@
 </div>
 
 <style>
-
+	.contentsWrapper {
+		height: fit-content;
+	}
 	.spectrum-Table-row {
 		background: var(--super-column-bgcolor);
-	}
-	.contentsWrapper {
-		border: none;
 	}
 	.is-hovered {
 		background-color: var(--spectrum-table-m-regular-row-background-color-hover, var(--spectrum-alias-highlight-hover));

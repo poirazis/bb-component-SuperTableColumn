@@ -150,7 +150,7 @@
   <div
     class="spectrum-Table-body"
     bind:this={tableBodyContainer}
-    on:scroll={handleScroll}
+    on:scroll|stopPropagation={handleScroll}
     on:mouseenter={() => (mouseOver = true)}
     on:mouseleave={() => (mouseOver = false)}
   > 
