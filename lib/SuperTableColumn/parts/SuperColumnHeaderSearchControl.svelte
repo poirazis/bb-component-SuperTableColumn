@@ -1,12 +1,18 @@
 <script>
   import { onMount, createEventDispatcher } from "svelte";
-  
+  import Combobox from "../../../node_modules/@budibase/bbui/src/Form/Core/Combobox.svelte"
   const dispatch = createEventDispatcher()
   export let value
+  export let filteringOperator
+  export let filteringOperators
   
   let searchInput
   let timer
+  
 
+  let options = filteringOperators.map( v => v.label )
+  filteringOperator = options[0]
+  
 	const debounce = v => {
 		clearTimeout(timer);
 		timer = setTimeout(() => {
@@ -21,8 +27,10 @@
   }
 
   onMount(() => searchInput?.focus())
+
 </script>
-<div class="searchControl"> 
+<div class="searchControl">
+  <div class="searchInput">
   <input class="inline-edit"
     bind:this={searchInput} 
     on:keyup={({ target: { value } }) => debounce(value)} 
@@ -36,11 +44,24 @@
       </g>
     </svg>
   </button>
+  </div>
+  <div class="searchParameters">
+    <Combobox
+     {options}
+     quiet={true}
+     value={filteringOperator} 
+     on:change={ (e) => filteringOperator = e.detail }/>
+  </div>
 </div>
 
 <style>
   .searchControl {
     flex: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+    align-items: stretch;
+    height: 4.8rem;
   }
   input.inline-edit {
     box-sizing: border-box;
@@ -49,9 +70,9 @@
     outline: none;
     border: none;
     background: none;
-    color: inherit;
     height: 100%;
     width: 100%;
+    color: inherit;
     border: 2px solid var(--spectrum-alias-border-color-mid);
     background-color: var(--spectrum-textfield-m-background-color, var(--spectrum-global-color-gray-50));
   }
@@ -65,5 +86,13 @@
   .clearButton:hover {
     background-color: transparent;
     fill: var(--spectrum-global-color-red-500);
+  }
+
+  .searchInput {
+    flex: auto;
+  }
+  .searchParameters {
+    flex: auto;
+    border : 1px solid navy;
   }
 </style>

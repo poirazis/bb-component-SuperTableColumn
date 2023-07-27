@@ -5,14 +5,16 @@
 	const dispatch = createEventDispatcher()
 
 	export let filtering
+	export let filteringOperators
 	export let sorting
 	export let resizable
 	export let filteredValue = ""
+	export let filteringOperator
 
 	// In which state to render itself depending on the state of the column
 	export let state 
 
-	// When the header is resized, notify the Parent Component to adjust accordingly
+	// When the header is resized, ßnotify the Parent Component to adjust accordingly
 	export let flexBasis = "auto"
 
 	// Column Resize Functionality
@@ -47,7 +49,7 @@
     }
 	}
 
-	$: dispatch( "applyFilter", {filteredValue: filteredValue } )	
+	$: dispatch( "applyFilter", {filteredValue: filteredValue, operator: filteringOperator } )	
 </script>
 
 <div class="spectrum-Table-headCell">
@@ -77,7 +79,9 @@
 	</div>	
 	{:else} 
 		<SuperColumnHeaderSearchControl
-			bind:value={filteredValue} 
+			bind:value={filteredValue}
+			bind:filteringOperator={filteringOperator}
+			{filteringOperators}
 			on:closeMe={() => dispatch ("clearFilter")}
 		/>
 	{/if}
@@ -101,7 +105,7 @@
 		flex-direction: row;
 		justify-content: stretch;
 		align-items: stretch;
-		height: 2.5rem;
+		min-height: 2.5rem;
 		padding: unset;
 		border-bottom: 1px solid var(--spectrum-alias-border-color-mid);
 	}

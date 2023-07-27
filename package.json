@@ -11,6 +11,7 @@
     "watch": "rollup -cw"
   },
   "dependencies": {
+    "@budibase/bbui": "^2.8.28",
     "@crownframework/svelte-error-boundary": "^1.0.3",
     "svelte": "^3.0.0",
     "svelte-fsm": "^1.2.0",

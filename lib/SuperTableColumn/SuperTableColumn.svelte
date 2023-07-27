@@ -7,6 +7,7 @@
   } from "svelte";
   import { writable, derived  } from "svelte/store";
   import fsm from "svelte-fsm";
+  import { dataFilters, OperatorOptions } from "@budibase/shared-core"
 
   import SuperColumnHeader from "./parts/SuperColumnHeader.svelte";
   import SuperColumnRow from "./parts/SuperColumnRow.svelte";
@@ -37,7 +38,7 @@
   let mouseOver = false;
 
   $: columnType = $tableDataStore.schema[columnOptions.name].type
-
+  $: filteringOperators = dataFilters.getValidOperatorsForType(columnType)
 
   // Super Column Internal State Machine
   const columnState = fsm("view", {
@@ -89,10 +90,12 @@
 
   function handleFilter(event) {
     if (event.detail.filteredValue !== "") {
+      let operator = filteringOperators.find( v => v.label === event.detail.operator )
+
       tableFilterStore?.setFilter({
         id: id,
         field: columnOptions.name,
-        operator: "string",
+        operator: operator.value,
         value: event.detail.filteredValue,
         valueType: "Value",
       });
@@ -143,6 +146,7 @@
     state={$columnState}
     filtering={columnOptions.filtering}
     sorting={columnOptions.sorting}
+    {filteringOperators}
   >
     {columnOptions.displayName}
   </SuperColumnHeader>
