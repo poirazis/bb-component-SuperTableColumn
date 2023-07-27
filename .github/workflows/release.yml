@@ -18,9 +18,10 @@ jobs:
           path: bb-component-SuperTableColumn
       - uses: actions/checkout@v3
         with:
-          repository: nutgood/bb-component-SuperTableCell
+          repository: poirazis/bb-component-SuperTableCell
           ref: main
           path: bb-component-SuperTableCell
+          
       - uses: actions/setup-node@v1
         with:
           node-version: 16
