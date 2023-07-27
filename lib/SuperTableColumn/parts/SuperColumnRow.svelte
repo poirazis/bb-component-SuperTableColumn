@@ -3,7 +3,7 @@
 	import { elementSizeStore } from "svelte-legos";
 	const { Provider } = getContext("sdk")
 
-	import { SuperTableCell } from "../../../bb-component-SuperTableCell/lib/SuperTableCell/index.js";
+	import { SuperTableCell } from "../../../../bb-component-SuperTableCell/lib/SuperTableCell/index.js";
 
 	const dispatch = createEventDispatcher();
 
