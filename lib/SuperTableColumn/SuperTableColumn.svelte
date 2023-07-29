@@ -5,9 +5,9 @@
     beforeUpdate,
     createEventDispatcher,
   } from "svelte";
-  import { writable, derived  } from "svelte/store";
+
+  import { writable, derived } from "svelte/store";
   import fsm from "svelte-fsm";
-  import { dataFilters, OperatorOptions } from "@budibase/shared-core"
 
   import SuperColumnHeader from "./parts/SuperColumnHeader.svelte";
   import SuperColumnRow from "./parts/SuperColumnRow.svelte";
@@ -21,8 +21,14 @@
   const tableHoverStore = getContext("tableHoverStore");
   const tableOptions = getContext("tableOptions");
 
-  // The Super Columns can dispatch a number of events to be handled by the
-  // Super Table for Sorting and Filtering and other operations
+  const columnState = fsm("Idle", {
+    Idle: { sort: "Ascending", filter: "Entering" },
+    Ascending: { sort: "Descending", unsort: "Idle", filter: "Entering" },
+    Descending: { sort: "Ascending", unsort: "Idle", filter: "Entering" },
+    Entering: { apply: "Filtered", cancel: "Idle" },
+    Filtered: { apply: "Filtered", cancel: () => { tableFilterStore?.clearFilter({ id: id }); return "Idle" } }
+  });
+
   const dispatch = createEventDispatcher();
 
   // Props
@@ -37,25 +43,16 @@
   let id = Math.random();
   let mouseOver = false;
 
-  $: columnType = $tableDataStore.schema[columnOptions.name].type
-  $: filteringOperators = dataFilters.getValidOperatorsForType(columnType)
+  $: fieldSchema = $tableDataStore.schema[columnOptions.name]
 
-  // Super Column Internal State Machine
-  const columnState = fsm("view", {
-    view: {
-      filter: "showFilter",
-      sort: "sortedAscending",
-    },
-    showFilter: {
-      clearFilter() {
-        return "view";
-      },
-    },
-    sortedAscending: { filter: "showFilter", sort: "sortedDescending", unsort: "view" },
-    sortedDescending: { filter: "showFilter", sort: "sortedAscending" , unsort: "view" }
-  });
+  $: columnType = fieldSchema.type;
 
-  $: if ( $tableDataStore.sortColumn !== columnOptions.name && $columnState != "view" ) {
+  let defaultOperator = "Like"
+
+  $: if (
+    $tableDataStore.sortColumn !== columnOptions.name &&
+    $columnState != "view"
+  ) {
     columnState.unsort();
   }
 
@@ -84,22 +81,25 @@
   function handleSort() {
     columnState.sort();
     $tableDataStore.sortColumn = columnOptions.name;
-    $tableDataStore.sortDirection =
-      $columnState == "sortedAscending" ? "Ascending" : "Descending";
+    $tableDataStore.sortDirection = $columnState
   }
 
   function handleFilter(event) {
-    if (event.detail.filteredValue !== "") {
-      let operator = filteringOperators.find( v => v.label === event.detail.operator )
+    if (event.detail.filteredValue !== undefined )  {
+      let operator = filteringOperators.find(
+        (v) => v.label === event.detail.operator
+      );
 
       tableFilterStore?.setFilter({
         id: id,
         field: columnOptions.name,
-        operator: operator.value,
+        operator: operator?.value,
         value: event.detail.filteredValue,
         valueType: "Value",
       });
+      columnState.apply();
     } else {
+      columnState.cancel();
       tableFilterStore?.clearFilter({ id: id });
     }
   }
@@ -129,35 +129,44 @@
       tableBodyContainer.scrollTop = $tableScrollPosition;
   });
 
-  onDestroy(() => tableDataStore?.unregisterColumn({ id: id, field: columnOptions.name }));
+  onDestroy(() =>
+    tableDataStore?.unregisterColumn({ id: id, field: columnOptions.name })
+  );
 </script>
 
-<div 
+<div
   class="superTableColumn"
-  style:--super-column-bgcolor={ columnOptions.background }
-  style:--super-column-color={ columnOptions.color }
-  style:--super-column-alignment={ columnOptions.align == "Right" ? "flex-end" : columnOptions.align == "Center" ? "center" : "flex-start"}
-  on:mouseleave={ () => $tableHoverStore = null } >  
+  style:--super-column-bgcolor={columnOptions.background}
+  style:--super-column-color={columnOptions.color}
+  style:--super-column-alignment={columnOptions.align == "Right"
+    ? "flex-end"
+    : columnOptions.align == "Center"
+    ? "center"
+    : "flex-start"}
+  on:mouseleave={() => ($tableHoverStore = null)}
+>
+  <!-- Render Column Header -->
   <SuperColumnHeader
     on:sort={handleSort}
     on:showFilter={columnState.filter}
     on:applyFilter={handleFilter}
-    on:clearFilter={columnState.clearFilter}
+    on:clearFilter={columnState.cancel}
     state={$columnState}
     filtering={columnOptions.filtering}
     sorting={columnOptions.sorting}
-    {filteringOperators}
+    {fieldSchema}
   >
     {columnOptions.displayName}
   </SuperColumnHeader>
 
+  <!-- Render Column Body -->
   <div
     class="spectrum-Table-body"
     bind:this={tableBodyContainer}
     on:scroll|stopPropagation={handleScroll}
     on:mouseenter={() => (mouseOver = true)}
     on:mouseleave={() => (mouseOver = false)}
-  > 
+  >
     {#each $columnStore as row, index}
       <SuperColumnRow
         dynamicHeight={columnOptions.hasChildren}
@@ -165,20 +174,21 @@
         height={$tableStateStore?.rowHeights[index]}
         minHeight={tableOptions.rowHeight}
         rowKey={row.rowKey}
-        value={ row.rowValue }
-        editable={ tableOptions.editable || columnOptions.editable }
-        isHovered={$tableHoverStore == index }
+        value={row.rowValue}
+        editable={tableOptions.editable || columnOptions.editable}
+        isHovered={$tableHoverStore == index}
         isSelected={$tableSelectionStore[row.rowKey]}
-        on:resize={(event) => tableStateStore.resizeRow( id, index, event.detail.height ) }
-        on:hovered={() => $tableHoverStore = index }
+        on:resize={(event) =>
+          tableStateStore.resizeRow(id, index, event.detail.height)}
+        on:hovered={() => ($tableHoverStore = index)}
         on:rowClicked={(e) => ($tableStateStore.rowClicked = row.rowKey)}
-      > 
+      >
         <slot />
       </SuperColumnRow>
     {/each}
   </div>
 
-  {#if tableOptions.showFooter }
+  {#if tableOptions.showFooter}
     <SuperColumnFooter>{columnOptions.displayName}</SuperColumnFooter>
   {/if}
 </div>
