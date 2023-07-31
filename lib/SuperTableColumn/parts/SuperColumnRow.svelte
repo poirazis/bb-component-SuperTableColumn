@@ -1,5 +1,5 @@
 <script>
-	import { getContext , onMount, createEventDispatcher } from "svelte";
+	import { getContext , createEventDispatcher } from "svelte";
 	import { elementSizeStore } from "svelte-legos";
 	const { Provider } = getContext("sdk")
 

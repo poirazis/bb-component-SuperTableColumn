@@ -26,7 +26,7 @@
     Ascending: { sort: "Descending", unsort: "Idle", filter: "Entering" },
     Descending: { sort: "Ascending", unsort: "Idle", filter: "Entering" },
     Entering: { apply: "Filtered", cancel: "Idle" },
-    Filtered: { apply: "Filtered", cancel: () => { tableFilterStore?.clearFilter({ id: id }); return "Idle" } }
+    Filtered: { apply: "Filtered", clear: "Entering", cancel: () => { tableFilterStore?.clearFilter({ id: id }); return "Idle" } }
   });
 
   const dispatch = createEventDispatcher();
@@ -44,10 +44,7 @@
   let mouseOver = false;
 
   $: fieldSchema = $tableDataStore.schema[columnOptions.name]
-
   $: columnType = fieldSchema.type;
-
-  let defaultOperator = "Like"
 
   $: if (
     $tableDataStore.sortColumn !== columnOptions.name &&
@@ -85,21 +82,17 @@
   }
 
   function handleFilter(event) {
-    if (event.detail.filteredValue !== undefined )  {
-      let operator = filteringOperators.find(
-        (v) => v.label === event.detail.operator
-      );
-
+    if (event.detail.value != "" )  {
       tableFilterStore?.setFilter({
         id: id,
         field: columnOptions.name,
-        operator: operator?.value,
-        value: event.detail.filteredValue,
+        operator: event.detail.operator,
+        value: event.detail.value,
         valueType: "Value",
       });
       columnState.apply();
     } else {
-      columnState.cancel();
+      columnState.clear()
       tableFilterStore?.clearFilter({ id: id });
     }
   }
@@ -132,6 +125,8 @@
   onDestroy(() =>
     tableDataStore?.unregisterColumn({ id: id, field: columnOptions.name })
   );
+
+  $: console.log($columnState)
 </script>
 
 <div

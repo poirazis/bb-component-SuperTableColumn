@@ -7,6 +7,7 @@
 	import SuperColumnHeaderSearchArray from "./SuperColumnHeaderSearchArray.svelte";
   import SuperColumnHeaderSearchString from "./SuperColumnHeaderSearchString.svelte";
 	import SuperColumnHeaderSearchDateTime from "./SuperColumnHeaderSearchDateTime.svelte";
+  import SuperColumnHeaderSearchBoolean from "./SuperColumnHeaderSearchBoolean.svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -54,20 +55,25 @@
     }
   }
 
+	const defaultOperatorMap = {
+		 "string" : "fuzzy",
+		 "array" : "contains",
+		 "datetime" : "rangeLow",
+     "boolean" : "equal"
+	}
+
 	$: filteringOperators = dataFilters.getValidOperatorsForType(fieldSchema.type);
-	$: defaultOperator = fieldSchema.type === "string" ? "Like" : "Contains"
+	$: defaultOperator = defaultOperatorMap[fieldSchema.type];
 
-  $: if (filteredValue != undefined) 
-	{ dispatch("applyFilter", {
-    filteredValue: filteredValue,
-    operator: filteringOperator ?? defaultOperator,
-  })
-};
-
-$: console.log(fieldSchema)
+  $: if (filteredValue) 
+			{ dispatch("applyFilter", {
+				value: filteredValue,
+				operator: filteringOperator
+				})
+			};
 </script>
 
-<div class="spectrum-Table-headCell">
+<div class="spectrum-Table-headCell" style:border={state == "Entering" || state == "Filtered" ? "1px solid var(--primaryColor)" : null}>
 
   {#if state === "Idle"}
 
@@ -90,7 +96,7 @@ $: console.log(fieldSchema)
   {:else if state === "Ascending" || state === "Descending"}
 		{#if filtering}
 			<div class="headerActions">
-				<Icon on:click={() => dispatch("showFilter")} size="S" hoverable name="FilterAdd" />
+				<Icon on:click={() => dispatch("showFilter")} size="XS" hoverable name="FilterAdd" />
 			</div>
 		{/if}
 
@@ -98,40 +104,43 @@ $: console.log(fieldSchema)
 		<div
 			on:click={() => { if (sorting) dispatch("sort") } }
 			class="headerLabel"
-			style:--header-label-cellpadding={filtering ? "0.85rem" : null}
+			style:--header-label-cellpadding={filtering ? "0.5rem" : null}
 			class:sortable={sorting}
 		>
 			<div class="headerLabelText"><slot /></div>
 		</div>
 
     <div class="headerSort">
-			<Icon size="S" hoverable name= { state === "Descending" ? "SortOrderDown" : "SortOrderUp"}/>
+			<Icon size="XS" hoverable name= { state === "Descending" ? "SortOrderDown" : "SortOrderUp"}/>
     </div>
   {:else}
 		{#if fieldSchema.type == "string" }
-    <SuperColumnHeaderSearchString
-      bind:value={filteredValue}
-      bind:filteringOperator
-      {filteringOperators}
-			{defaultOperator}
-      on:closeMe={() => dispatch("clearFilter")}
-    />
+      <SuperColumnHeaderSearchString
+        {filteringOperators}
+        {defaultOperator}
+        on:filter={ (e) => dispatch("applyFilter", { value: e.detail.value , operator: e.detail.operator } )}
+        on:closeMe={ () => dispatch("clearFilter") }
+      />
 		{:else if fieldSchema.type  === "array" }
 			<SuperColumnHeaderSearchArray 
-				bind:value={filteredValue}
-				bind:filteringOperator
 				{filteringOperators}
 				{defaultOperator}
 				valueOptions={fieldSchema.constraints.inclusion}
+        on:filter={ (e) => dispatch("applyFilter", { value: e.detail.value , operator: e.detail.operator } )}
 				on:closeMe={() => dispatch("clearFilter")}
 			/>
 		{:else if fieldSchema.type  === "datetime" }
 			<SuperColumnHeaderSearchDateTime 
-				bind:value={filteredValue}
-				bind:filteringOperator
 				{filteringOperators}
 				{defaultOperator}
-				valueOptions={fieldSchema.constraints.inclusion}
+        on:filter={ (e) => dispatch("applyFilter", { value: e.detail.value , operator: e.detail.operator } )}
+				on:closeMe={() => dispatch("clearFilter")}
+			/>
+		{:else if fieldSchema.type  === "boolean" }
+			<SuperColumnHeaderSearchBoolean 
+				{filteringOperators}
+				{defaultOperator}
+        on:filter={ (e) => dispatch("applyFilter", { value: e.detail.value , operator: e.detail.operator } )}
 				on:closeMe={() => dispatch("clearFilter")}
 			/>
 		{/if}
@@ -142,7 +151,7 @@ $: console.log(fieldSchema)
   .spectrum-Table-headCell {
     display: flex;
     flex-direction: row;
-    justify-content: stretch;
+    justify-content: center;
     align-items: stretch;
     height: 2.5rem;
     padding: unset;

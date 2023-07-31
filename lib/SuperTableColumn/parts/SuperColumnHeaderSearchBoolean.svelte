@@ -1,20 +1,24 @@
 <script>
-  import { onMount, createEventDispatcher } from "svelte";
+  import { createEventDispatcher } from "svelte";
   
   import ActionMenu from "../../../node_modules/@budibase/bbui/src/ActionMenu/ActionMenu.svelte"
   import Item from "../../../node_modules/@budibase/bbui/src/Menu/Item.svelte"
   import Icon from "../../../node_modules/@budibase/bbui/src/Icon/Icon.svelte"
+  import Switch from "../../../node_modules/@budibase/bbui/src/Form/Core/Switch.svelte"
 
   const dispatch = createEventDispatcher()
   
-  export let value
   export let defaultOperator
   export let filteringOperators
   
-  let searchInput
-  let timer
+  let timer, value
   
   let filteringOperator = defaultOperator
+  
+  /**
+   * A Function that takes in a value and debounces the assignment
+   * @param v 
+   */
 
 	const debounce = v => {
 		clearTimeout(timer);
@@ -23,15 +27,10 @@
 		}, 500);
 	}
 
-  function handleClearMarkClick ()
-  {
-    dispatch("closeMe")
-  }
-
-  onMount(() => searchInput?.focus())
-
-  $: dispatch("filter", { value: value, operator: filteringOperator } )
-  
+  /**
+   * Whenever the value or the operator changes, notify parent
+  */
+  $: dispatch("filter", { value: value , operator: filteringOperator } )  
 </script>
 
 <div class="searchControl">
@@ -54,11 +53,7 @@
   </div>
 
   <div class="inputControl">
-    <input class="inline-edit"
-    bind:this={searchInput} 
-    on:keyup={({ target: { value } }) => debounce(value)} 
-    type="search" placeholder="Search" name="search" autocomplete="off"
-  >
+    <Switch {value} on:change={ (e) => debounce(e.detail) } />
   </div>
 
   <div class="actionIcon">
@@ -97,16 +92,5 @@
   .selected {
     font-weight: 800;
     color: var(--primaryColor);
-  }
-
-  input.inline-edit {
-    box-sizing: border-box;
-    outline: none;
-    border: none;
-    background: none;
-    height: 100%;
-    width: 100%;
-    color: inherit;
-    background-color: transparent;
   }
 </style>
