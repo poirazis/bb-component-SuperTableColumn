@@ -20,6 +20,7 @@
   export let editable
   export let filtering
   export let sorting
+  export let popup
   export let searchMode
 
   export let header, headerAlign, headerFontColor, headerBackground;
@@ -51,9 +52,10 @@
     editable: editable,
     filtering: filtering,
     sorting: sorting,
+    popup: popup,
     order: order,
     isFirst: isFirst,
-    isLast: isLast 
+    isLast: isLast
   }
 </script>
 

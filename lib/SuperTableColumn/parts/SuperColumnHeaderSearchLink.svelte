@@ -1,5 +1,6 @@
 <script>
   import { onMount, createEventDispatcher } from "svelte";
+  
 
   const dispatch = createEventDispatcher()
   
@@ -7,7 +8,7 @@
   
   let searchInput
   let timer
-  
+
 	const debounce = v => {
 		clearTimeout(timer);
 		timer = setTimeout(() => {
@@ -25,17 +26,20 @@
     <input class="inline-edit"
     bind:this={searchInput} 
     on:keyup={({ target: { value } }) => debounce(value)} 
-    type="search" placeholder="Search" name="search" autocomplete="off" />
+    type="search" placeholder="Search" name="search" autocomplete="off"
+  >
 </div>
 
 <style>
   .searchControl {
-    flex: auto;
-    min-width: 80px;
+    flex-grow: 1;
+    min-width: 100px;
     display: flex;
     align-items: center;
     background-color: var(--spectrum-textfield-m-background-color, var(--spectrum-global-color-gray-50));
+
   }
+
   input.inline-edit {
     box-sizing: border-box;
     outline: none;
@@ -43,7 +47,7 @@
     background: none;
     height: 100%;
     width: 100%;
-    color: var(--primaryColor);
+    color: inherit;
     background-color: transparent;
   }
 </style>

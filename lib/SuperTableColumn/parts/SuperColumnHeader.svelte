@@ -1,4 +1,6 @@
 <script>
+  import SuperTableHeaderFilterOptions from './SuperTableHeaderFilterOptions.svelte';
+
   import { createEventDispatcher } from "svelte";
 
 	import Icon from "../../../node_modules/@budibase/bbui/src/Icon/Icon.svelte"
@@ -8,52 +10,16 @@
   import SuperColumnHeaderSearchString from "./SuperColumnHeaderSearchString.svelte";
 	import SuperColumnHeaderSearchDateTime from "./SuperColumnHeaderSearchDateTime.svelte";
   import SuperColumnHeaderSearchBoolean from "./SuperColumnHeaderSearchBoolean.svelte";
+  import SuperColumnHeaderSearchLink from "./SuperColumnHeaderSearchLink.svelte";
 
   const dispatch = createEventDispatcher();
 
+  // The FSM state of the Column
+  export let state;
 	export let fieldSchema;
   export let filtering;
   export let sorting;
-  export let resizable;
-  export let filteredValue;
-  export let filteringOperator;
-
-  // The FSM state of the Column
-  export let state;
-
-  // When the header is resized, ßnotify the Parent Component to adjust accordingly
-  export let flexBasis = "auto";
-
-  // Column Resize Functionality
-  export let isResizing = false;
-  let startPos;
-  let container;
-  let initialWidth;
-
-  function startResizing(event) {
-    isResizing = true;
-    startPos = event.clientX;
-    initialWidth = container?.getBoundingClientRect().width;
-  }
-
-  function stopResizing() {
-    if (isResizing) {
-      isResizing = false;
-      startPos = null;
-      initialWidth = null;
-    }
-  }
-
-  function resetResizing(event) {
-    flexBasis = "auto";
-  }
-
-  function resize(event) {
-    if (!isResizing) return;
-    else {
-      flexBasis = initialWidth + (event.clientX - startPos) + "px";
-    }
-  }
+  let filteredValue;
 
 	const defaultOperatorMap = {
 		 "string" : "fuzzy",
@@ -62,23 +28,23 @@
      "boolean" : "equal"
 	}
 
-	$: filteringOperators = dataFilters.getValidOperatorsForType(fieldSchema.type);
-	$: defaultOperator = defaultOperatorMap[fieldSchema.type];
+	let filteringOperators = dataFilters.getValidOperatorsForType(fieldSchema.type);
+	let defaultOperator = defaultOperatorMap[fieldSchema.type];
+  let filteringOperator = defaultOperator
 
-  $: if (filteredValue) 
-			{ dispatch("applyFilter", {
-				value: filteredValue,
-				operator: filteringOperator
-				})
-			};
+  function applyFilter ( filter ) {
+    filteredValue = filter.value
+  }
+
+  $: dispatch("applyFilter", { value: filteredValue , operator: filteringOperator } )
 </script>
 
-<div class="spectrum-Table-headCell" style:border={state == "Entering" || state == "Filtered" ? "1px solid var(--primaryColor)" : null}>
+<div class="spectrum-Table-headCell" style:border-bottom={state == "Entering" || state == "Filtered" ? "1px solid var(--primaryColor)" : null}>
 
   {#if state === "Idle"}
 
 		{#if filtering}
-			<div class="headerActions">
+			<div class="actionIcon">
 				<Icon on:click={() => dispatch("showFilter")} size="XS" hoverable name="FilterAdd" />
 			</div>
 		{/if}
@@ -87,7 +53,8 @@
 		<div
 			on:click={() => { if (sorting) dispatch("sort") } }
 			class="headerLabel"
-			style:--header-label-cellpadding={filtering ? "0.5rem" : null}
+      style:padding-left={ !filtering ? "12px" : "0px"}
+      style:padding-right={"12px"}
 			class:sortable={sorting}
 		>
 			<div class="headerLabelText"><slot /></div>
@@ -95,7 +62,7 @@
 
   {:else if state === "Ascending" || state === "Descending"}
 		{#if filtering}
-			<div class="headerActions">
+			<div class="actionIcon">
 				<Icon on:click={() => dispatch("showFilter")} size="XS" hoverable name="FilterAdd" />
 			</div>
 		{/if}
@@ -104,46 +71,48 @@
 		<div
 			on:click={() => { if (sorting) dispatch("sort") } }
 			class="headerLabel"
-			style:--header-label-cellpadding={filtering ? "0.5rem" : null}
 			class:sortable={sorting}
 		>
 			<div class="headerLabelText"><slot /></div>
 		</div>
 
-    <div class="headerSort">
+    <div class="actionIcon sort">
 			<Icon size="XS" hoverable name= { state === "Descending" ? "SortOrderDown" : "SortOrderUp"}/>
     </div>
   {:else}
-		{#if fieldSchema.type == "string" }
-      <SuperColumnHeaderSearchString
-        {filteringOperators}
-        {defaultOperator}
-        on:filter={ (e) => dispatch("applyFilter", { value: e.detail.value , operator: e.detail.operator } )}
-        on:closeMe={ () => dispatch("clearFilter") }
+
+    <SuperTableHeaderFilterOptions 
+      bind:filteringOperator 
+      {filteringOperators} 
+      active={state == "Filtered"}
       />
-		{:else if fieldSchema.type  === "array" }
-			<SuperColumnHeaderSearchArray 
-				{filteringOperators}
-				{defaultOperator}
-				valueOptions={fieldSchema.constraints.inclusion}
-        on:filter={ (e) => dispatch("applyFilter", { value: e.detail.value , operator: e.detail.operator } )}
-				on:closeMe={() => dispatch("clearFilter")}
-			/>
-		{:else if fieldSchema.type  === "datetime" }
-			<SuperColumnHeaderSearchDateTime 
-				{filteringOperators}
-				{defaultOperator}
-        on:filter={ (e) => dispatch("applyFilter", { value: e.detail.value , operator: e.detail.operator } )}
-				on:closeMe={() => dispatch("clearFilter")}
-			/>
-		{:else if fieldSchema.type  === "boolean" }
-			<SuperColumnHeaderSearchBoolean 
-				{filteringOperators}
-				{defaultOperator}
-        on:filter={ (e) => dispatch("applyFilter", { value: e.detail.value , operator: e.detail.operator } )}
-				on:closeMe={() => dispatch("clearFilter")}
-			/>
-		{/if}
+
+    {#if fieldSchema.type == "string" }
+      <SuperColumnHeaderSearchString
+        on:filter={ (e) => applyFilter((e.detail)) }
+      />
+    {:else if fieldSchema.type  === "array" }
+      <SuperColumnHeaderSearchArray 
+        valueOptions={fieldSchema.constraints.inclusion}
+        on:filter={ (e) => applyFilter((e.detail)) }
+      />
+    {:else if fieldSchema.type  === "datetime" }
+      <SuperColumnHeaderSearchDateTime 
+        on:filter={ (e) => applyFilter((e.detail)) }
+      />
+    {:else if fieldSchema.type  === "boolean" }
+      <SuperColumnHeaderSearchBoolean 
+        on:filter={ (e) => applyFilter((e.detail)) }
+      />
+    {:else if fieldSchema.type  === "link" }
+      <SuperColumnHeaderSearchLink 
+        on:filter={ (e) => applyFilter((e.detail)) }
+      />
+    {/if}
+
+    <div class="actionIcon close">
+      <Icon on:click={ () => dispatch("clearFilter") } size="XS" hoverable name="Close"/>
+    </div>
   {/if}
 </div>
 
@@ -151,33 +120,15 @@
   .spectrum-Table-headCell {
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: stretch;
     align-items: stretch;
     height: 2.5rem;
     padding: unset;
     border-bottom: 1px solid var(--spectrum-alias-border-color-mid);
   }
 
-  .headerActions {
-    width: calc(var(--super-table-cell-padding) + 12px);
-    display: flex;
-    background-color: transparent;
-    align-items: center;
-    justify-content: center;
-    fill: var(
-      --spectrum-table-header-text-color,
-      var(--spectrum-alias-label-text-color)
-    );
-    transition: scale 130ms ease-in-out;
-    padding-left: var(--super-table-cell-padding);
-  }
-
-  .headerActions:hover {
-    filter: brightness(120%);
-    cursor: pointer;
-  }
   .headerLabel {
-    flex: auto;
+    flex: 1 0 auto;
     min-width: 0;
     display: flex;
     flex-direction: column;
@@ -186,14 +137,6 @@
     color: var(
       --spectrum-table-header-text-color,
       var(--spectrum-alias-label-text-color)
-    );
-    padding-left: var(
-      --header-label-cellpadding,
-      var(--super-table-cell-padding)
-    );
-    padding-right: var(
-      --header-label-cellpadding,
-      var(--super-table-cell-padding)
     );
   }
 
@@ -207,21 +150,14 @@
     filter: brightness(120%);
     cursor: pointer;
   }
-
-  .headerSort {
-    width: calc(var(--super-table-cell-padding) + 10px);
+  .actionIcon {
+    min-width: 32px;
     display: flex;
     align-items: center;
-    padding-right: var(--super-table-cell-padding);
+    justify-content: center;
   }
 
-  .sortIndicator {
-    max-height: 10px;
-    transition: tranform 300ms ease-in-out;
-    transform: rotate(var(--indicatorRotation));
-    fill: var(
-      --spectrum-table-header-text-color,
-      var(--spectrum-alias-label-text-color)
-    );
+  .close {
+    background-color: var(--spectrum-textfield-m-background-color, var(--spectrum-global-color-gray-50));
   }
 </style>

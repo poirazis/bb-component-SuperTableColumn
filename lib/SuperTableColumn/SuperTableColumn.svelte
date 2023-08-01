@@ -3,7 +3,6 @@
     getContext,
     onDestroy,
     beforeUpdate,
-    createEventDispatcher,
   } from "svelte";
 
   import { writable, derived } from "svelte/store";
@@ -28,8 +27,6 @@
     Entering: { apply: "Filtered", cancel: "Idle" },
     Filtered: { apply: "Filtered", clear: "Entering", cancel: () => { tableFilterStore?.clearFilter({ id: id }); return "Idle" } }
   });
-
-  const dispatch = createEventDispatcher();
 
   // Props
   export let columnOptions;
@@ -165,6 +162,7 @@
     {#each $columnStore as row, index}
       <SuperColumnRow
         dynamicHeight={columnOptions.hasChildren}
+        popup={ columnOptions.hasChildren && columnOptions.popup }
         {columnType}
         height={$tableStateStore?.rowHeights[index]}
         minHeight={tableOptions.rowHeight}

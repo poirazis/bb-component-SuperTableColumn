@@ -36,13 +36,13 @@
     regenerator-runtime "^0.13.11"
 
 "@budibase/backend-core@^2.0.13":
-  version "2.8.28"
-  resolved "https://registry.yarnpkg.com/@budibase/backend-core/-/backend-core-2.8.28.tgz#1e4a4312279b0729865ede7afbfee14356a6cfeb"
-  integrity sha512-ck9T5/4VRG+1xazgQt9MNU+VFBRn9957+bukXoOyQtwgDo5QI/8CQ04500rTUtj+vlTNeZrA1Zto0Fj/ivaT3w==
+  version "2.8.30"
+  resolved "https://registry.yarnpkg.com/@budibase/backend-core/-/backend-core-2.8.30.tgz#a27f57bfe5f3077a38163e674673345199be63d5"
+  integrity sha512-TnB+v2o1f+xmd5SK/8VrwffiS39U3TBQweCytxYD8gTp9sxuqZJyGpMGTNIfuNHuV8bgMpHqLiiF0w2Rb/DgwQ==
   dependencies:
     "@budibase/nano" "10.1.2"
     "@budibase/pouchdb-replication-stream" "1.2.10"
-    "@budibase/types" "2.8.28"
+    "@budibase/types" "2.8.30"
     "@shopify/jest-koa-mocks" "5.0.1"
     "@techpass/passport-openidconnect" "0.3.2"
     aws-cloudfront-sign "2.2.0"
@@ -77,13 +77,13 @@
     uuid "8.3.2"
 
 "@budibase/bbui@^2.8.28":
-  version "2.8.28"
-  resolved "https://registry.yarnpkg.com/@budibase/bbui/-/bbui-2.8.28.tgz#06abd1fe8cc5937d752161bfb9cd69fb21472151"
-  integrity sha512-O9hbHiMJLg3qn4WG25z1ZwJ8oK8mEGWgdg9ABSmFNlSm0Wck7Pg0Sl8ASgA8iBLnnLRSUKNWZ6qJfPmCwheLPg==
+  version "2.8.30"
+  resolved "https://registry.yarnpkg.com/@budibase/bbui/-/bbui-2.8.30.tgz#d0c5c03910590890e0651d84b7564d0750afeb9e"
+  integrity sha512-iSCA2Oyh/FL0mQGETOSefU+lgavEJg1Fw1mIWzmV7O3mjGbp5Jr4M3htHOcFvOc1Rlz4fNWa9Y9Q1N+WyyzuQA==
   dependencies:
     "@adobe/spectrum-css-workflow-icons" "1.2.1"
-    "@budibase/shared-core" "2.8.28"
-    "@budibase/string-templates" "2.8.28"
+    "@budibase/shared-core" "2.8.30"
+    "@budibase/string-templates" "2.8.30"
     "@spectrum-css/accordion" "3.0.24"
     "@spectrum-css/actionbutton" "1.0.1"
     "@spectrum-css/actiongroup" "1.0.1"
@@ -178,17 +178,17 @@
     pouchdb-promise "^6.0.4"
     through2 "^2.0.0"
 
-"@budibase/shared-core@2.8.28":
-  version "2.8.28"
-  resolved "https://registry.yarnpkg.com/@budibase/shared-core/-/shared-core-2.8.28.tgz#e2a2a33dc8b85ca181c85129baa5eed1ab2b095a"
-  integrity sha512-lOCHS/L7CQjZqh3TXRJZGA9JJY2AVO6BHjOx9AgQ7AK+cClHPAHE0Ub5HjBF9EZnIfmCeRv01jKWdSK+n9S7Fg==
+"@budibase/shared-core@2.8.30":
+  version "2.8.30"
+  resolved "https://registry.yarnpkg.com/@budibase/shared-core/-/shared-core-2.8.30.tgz#12dfbb7d04bbce847cf94f63fcefdb9ff3a4bdf2"
+  integrity sha512-659QJ7i0tJF8JlVzSz9ekDz/gwEYnz/YGCsLueOg5NRS/XDSApyGQtAfXoIK/CO7mVqCT9/KDiwLQLy8AIR4iQ==
   dependencies:
-    "@budibase/types" "2.8.28"
+    "@budibase/types" "2.8.30"
 
-"@budibase/string-templates@2.8.28":
-  version "2.8.28"
-  resolved "https://registry.yarnpkg.com/@budibase/string-templates/-/string-templates-2.8.28.tgz#088acb406e811ec2bcdd360df7a8227c2ae60547"
-  integrity sha512-OQz4hGSVr8PEQ4lO/qiSlXXXLH/RvmwePqlLDt/rNeO6epI8mcsPRuEd2ZdZ5NLyamtAlt7xbE4Y/td31oqu7w==
+"@budibase/string-templates@2.8.30":
+  version "2.8.30"
+  resolved "https://registry.yarnpkg.com/@budibase/string-templates/-/string-templates-2.8.30.tgz#ba7c12835e290a4405c49f51c9b1389085d323cb"
+  integrity sha512-LBNCotXUF9C8EvyqDrIYOdleVJKaoqgxQPeZyVvZDI09+PUpxPT2NIyqucktURdqAn1eIuyNUVuU4lrXnfBruw==
   dependencies:
     "@budibase/handlebars-helpers" "^0.11.9"
     dayjs "^1.10.4"
@@ -197,10 +197,10 @@
     lodash "^4.17.20"
     vm2 "^3.9.15"
 
-"@budibase/types@2.8.28":
-  version "2.8.28"
-  resolved "https://registry.yarnpkg.com/@budibase/types/-/types-2.8.28.tgz#1c97a7b870862ec7b4f9eca888932a6d10e022cd"
-  integrity sha512-sEh1DbfwkBE7/95RGhT/8VYetWv3JllqZUx3/WV2MUcgt8KE/UPZDrlkUP0R8HDRZMaDqFwAV8o6nFqxLt46og==
+"@budibase/types@2.8.30":
+  version "2.8.30"
+  resolved "https://registry.yarnpkg.com/@budibase/types/-/types-2.8.30.tgz#5b126cfb7e32c27ca2a7d34a6f4bfa9e8cc67481"
+  integrity sha512-FqkJmCWu0eAnePtjS5t5o6fW7ZlfOI9TvjsisepDinoiXUJVF1YNqfygjWLCvuK11Gi/tfFvSYb6vIdkON3WSw==
   dependencies:
     scim-patch "^0.7.0"
 
@@ -647,7 +647,7 @@
   resolved "https://registry.yarnpkg.com/@types/marked/-/marked-4.3.1.tgz#45fb6dfd47afb595766c71ed7749ead23f137de3"
   integrity sha512-vSSbKZFbNktrQ15v7o1EaH78EbWV+sPQbPjHG+Cp8CaNcPFUEfjZ0Iml/V0bFDwsTlYe8o6XC5Hfdp91cqPV2g==
 
-"@types/node@*":
+"@types/node@*", "@types/node@^20.4.5":
   version "20.4.5"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-20.4.5.tgz#9dc0a5cb1ccce4f7a731660935ab70b9c00a5d69"
   integrity sha512-rt40Nk13II9JwQBdeYqmbn2Q6IVTA5uPhvSO+JVqdXw/6/4glI6oR9ezty/A9Hg5u7JH4OmYmuQ+XvjKm0Datg==
@@ -896,9 +896,9 @@ aws4@^1.8.0:
   integrity sha512-NmWvPnx0F1SfrQbYwOi7OeaNGokp9XhzNioJ/CSBs8Qa4vxug81mhJEAVZwxXuBmYB5KDRfMq/F3RR0BIU7sWg==
 
 axios-retry@^3.1.9:
-  version "3.5.1"
-  resolved "https://registry.yarnpkg.com/axios-retry/-/axios-retry-3.5.1.tgz#d902f69fe1b2a71902e29605318f887bef0981c6"
-  integrity sha512-mQRJ4IyAUnYig14BQ4MnnNHHuH1cNH7NW4JxEUD6mNJwK6pwOY66wKLCwZ6Y0o3POpfStalqRC+J4+Hnn6Om7w==
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/axios-retry/-/axios-retry-3.6.0.tgz#3bf6edbce42e526a3f7ac70b1891b645adb4c301"
+  integrity sha512-jtH4qWTKZ2a17dH6tjq52Y1ssNV0lKge6/Z9Lw67s9Wt01nGTg4hg7/LJBGYfDci44NTANJQlCPHPOT/TSFm9w==
   dependencies:
     "@babel/runtime" "^7.15.4"
     is-retry-allowed "^2.2.0"
@@ -1011,13 +1011,13 @@ braces@^2.3.1:
     to-regex "^3.0.1"
 
 browserslist@^4.0.0, browserslist@^4.21.4:
-  version "4.21.9"
-  resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-4.21.9.tgz#e11bdd3c313d7e2a9e87e8b4b0c7872b13897635"
-  integrity sha512-M0MFoZzbUrRU4KNfCrDLnvyE7gub+peetoTid3TBIqtunaDJyXlwhakT+/VkvSXcfIzFfK/nkCs4nmyTmxdNSg==
+  version "4.21.10"
+  resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-4.21.10.tgz#dbbac576628c13d3b2231332cb2ec5a46e015bb0"
+  integrity sha512-bipEBdZfVH5/pwrvqc+Ub0kUPVfGUhlKxbvfD+z1BDnPEO/X98ruXGA1WP5ASpAFKan7Qr6j736IacbZQuAlKQ==
   dependencies:
-    caniuse-lite "^1.0.30001503"
-    electron-to-chromium "^1.4.431"
-    node-releases "^2.0.12"
+    caniuse-lite "^1.0.30001517"
+    electron-to-chromium "^1.4.477"
+    node-releases "^2.0.13"
     update-browserslist-db "^1.0.11"
 
 buffer-equal-constant-time@1.0.1:
@@ -1121,10 +1121,10 @@ caniuse-api@^3.0.0:
     lodash.memoize "^4.1.2"
     lodash.uniq "^4.5.0"
 
-caniuse-lite@^1.0.0, caniuse-lite@^1.0.30001503:
-  version "1.0.30001517"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001517.tgz#90fabae294215c3495807eb24fc809e11dc2f0a8"
-  integrity sha512-Vdhm5S11DaFVLlyiKu4hiUTkpZu+y1KA/rZZqVQfOD5YdDT/eQKlkt7NaE0WGOFgX32diqt9MiP9CAiFeRklaA==
+caniuse-lite@^1.0.0, caniuse-lite@^1.0.30001517:
+  version "1.0.30001518"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001518.tgz#b3ca93904cb4699c01218246c4d77a71dbe97150"
+  integrity sha512-rup09/e3I0BKjncL+FesTayKtPrdwKhUufQFd3riFw1hHg8JmIFoInYfB102cFcY/pPgGmdyl/iy+jgiDi2vdA==
 
 canvas-confetti@^1.6.0:
   version "1.6.0"
@@ -1663,10 +1663,10 @@ ee-first@1.1.1:
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
   integrity sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==
 
-electron-to-chromium@^1.4.431:
-  version "1.4.473"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.473.tgz#4853de13a335c70fe1f9df8d4029be54068767d1"
-  integrity sha512-aVfC8+440vGfl06l8HKKn8/PD5jRfSnLkTTD65EFvU46igbpQRri1gxSzW9/+TeUlwYzrXk1sw867T96zlyECA==
+electron-to-chromium@^1.4.477:
+  version "1.4.478"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.478.tgz#687198cfcef9b854a79a229feaa6cd8961206290"
+  integrity sha512-qjTA8djMXd+ruoODDFGnRCRBpID+AAfYWCyGtYTNhsuwxI19s8q19gbjKTwRS5z/LyVf5wICaIiPQGLekmbJbA==
 
 emitter-listener@1.1.2:
   version "1.1.2"
@@ -1914,9 +1914,9 @@ fast-json-stable-stringify@^2.0.0:
   integrity sha512-lhd/wF+Lk98HZoTCtlVraHtfh5XYijIjalXck7saUtuanSDyLMxnHhSXEDJqHxD7msR8D0uCmqlkwjCV8xvwHw==
 
 fast-redact@^3.0.0, fast-redact@^3.1.1:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/fast-redact/-/fast-redact-3.2.0.tgz#b1e2d39bc731376d28bde844454fa23e26919987"
-  integrity sha512-zaTadChr+NekyzallAMXATXLOR8MNx3zqpZ0MUF2aGf4EathnG0f32VLODNlY8IuGY3HoRO2L6/6fSzNsLaHIw==
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/fast-redact/-/fast-redact-3.3.0.tgz#7c83ce3a7be4898241a46560d51de10f653f7634"
+  integrity sha512-6T5V1QK1u4oF+ATxs1lWUmlEk6P2T9HqJG3e2DnHOdVgZy2rFJBoEnrIedcTXlkAHU/zKC+7KETJ+KGGKwxgMQ==
 
 fast-url-parser@^1.1.3:
   version "1.1.3"
@@ -3439,7 +3439,7 @@ node-mocks-http@^1.11.0:
     range-parser "^1.2.0"
     type-is "^1.6.18"
 
-node-releases@^2.0.12:
+node-releases@^2.0.13:
   version "2.0.13"
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-2.0.13.tgz#d5ed1627c23e3461e819b02e57b75e4899b1c81d"
   integrity sha512-uYr7J37ae/ORWdZeQ1xxMJe3NtdmqMC/JZK+geofDrkLUApKRHPd18/TxtBOJ4A0/+uUIliorNrfYV6s1b02eQ==
@@ -3846,9 +3846,9 @@ pino@^7.5.0:
     thread-stream "^0.15.1"
 
 pino@^8.0.0:
-  version "8.14.1"
-  resolved "https://registry.yarnpkg.com/pino/-/pino-8.14.1.tgz#bb38dcda8b500dd90c1193b6c9171eb777a47ac8"
-  integrity sha512-8LYNv7BKWXSfS+k6oEc6occy5La+q2sPwU3q2ljTX5AZk7v+5kND2o5W794FyRaqha6DJajmkNRsWtPpFyMUdw==
+  version "8.14.2"
+  resolved "https://registry.yarnpkg.com/pino/-/pino-8.14.2.tgz#99148b3400527fec168691044ba367cc7b7cd605"
+  integrity sha512-zKu9aWeSWTy1JgvxIpZveJKKsAr4+6uNMZ0Vf0KRwzl/UNZA3XjHiIl/0WwqLMkDwuHuDkT5xAgPA2jpKq4whA==
   dependencies:
     atomic-sleep "^1.0.0"
     fast-redact "^3.1.1"
@@ -4759,10 +4759,11 @@ sax@>=0.1.1, sax@>=0.6.0:
   integrity sha512-NqVDv9TpANUjFm0N8uM5GxL36UgKi9/atZw+x7YFnQ8ckwFGKrl4xX4yWtrey3UJm5nP1kUbnYgLopqWNSRhWw==
 
 scim-patch@^0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/scim-patch/-/scim-patch-0.7.0.tgz#3f6d94256c07be415a74a49c0ff48dc91e4e0219"
-  integrity sha512-wXKcsZl+aLfE0yId7MjiOd91v8as6dEYLFvm1gGu3yJxSPhl1Fl3vWiNN4V3D68UKpqO/umK5rwWc8wGpBaOHw==
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/scim-patch/-/scim-patch-0.7.1.tgz#e333da8d235d9df5715139eefb1ce51bf2bf216d"
+  integrity sha512-dT3EwFuZ3EqhEUtseA2y3M72Fd5gTNGE6jOyI8vH5iAtvzPX70Mzh0Ocs7DyhvJCCpNsTJmZ448CD6p4IKaRCQ==
   dependencies:
+    "@types/node" "^20.4.5"
     fast-deep-equal "3.1.3"
     scim2-parse-filter "0.2.8"
 

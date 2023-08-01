@@ -88,6 +88,12 @@
         "defaultValue": true
       },
       {
+        "type": "boolean",
+        "key": "popup",
+        "label": "Slot In Popup",
+        "defaultValue": true
+      },
+      {
         "type": "select",
         "label": "Search Mode",
         "key": "searchMode",

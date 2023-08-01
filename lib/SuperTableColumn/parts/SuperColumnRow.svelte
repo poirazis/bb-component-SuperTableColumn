@@ -3,7 +3,9 @@
 	import { elementSizeStore } from "svelte-legos";
 	const { Provider } = getContext("sdk")
 
+	import Popover from "../../../node_modules/@budibase/bbui/src/Popover/Popover.svelte";
 	import { SuperTableCell } from "../../../bb-component-SuperTableCell/lib/SuperTableCell/index.js";
+	import Icon from "../../../node_modules/@budibase/bbui/src/Icon/Icon.svelte"
 
 	const dispatch = createEventDispatcher();
 
@@ -12,6 +14,7 @@
 	export let isSelected
 	export let isHovered
 	export let dynamicHeight
+	export let popup
 	export let columnType
 	export let editable
 
@@ -20,7 +23,7 @@
 
 	export let minHeight
 
-	let contents, size, cellHeight
+	let contents, size, cellHeight, rowElement, open 
 
 	// Ractive request for additional height if needed 
 	$: if ( size && dynamicHeight ) 
@@ -41,6 +44,7 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div 
+	bind:this={rowElement}
 	class="spectrum-Table-row" 
 	class:is-selected={isSelected} 
 	class:is-hovered={isHovered}
@@ -51,6 +55,16 @@
 	>
 		{#if !dynamicHeight }
 			<SuperTableCell {rowKey} {value} {editable} {columnType} /> 
+		{:else if popup}
+			<div class="wrapper">
+				<SuperTableCell {rowKey} {value} {editable} {columnType} /> 
+				<Icon on:click={() => open = !open } size="XS" hoverable name="InfoOutline" />
+				<Popover {open} anchor={rowElement} >
+					<Provider data={ {rowKey: rowKey, cellValue: value} }>
+							<slot /> 
+					</Provider>
+				</Popover>
+			</div>
 		{:else}
 			<div bind:this={contents} class="contentsWrapper"> 
 				<Provider data={ {rowKey: rowKey, cellValue: value} }>
@@ -61,6 +75,13 @@
 </div>
 
 <style>
+	.wrapper {
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding-right: 12px;
+	}
 	.contentsWrapper {
 		height: fit-content;
 	}
