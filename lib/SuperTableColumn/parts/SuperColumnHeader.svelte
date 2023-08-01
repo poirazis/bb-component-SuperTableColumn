@@ -1,5 +1,6 @@
 <script>
   import SuperTableHeaderFilterOptions from './SuperTableHeaderFilterOptions.svelte';
+  import { clickOutsideAction } from 'svelte-legos';
 
   import { createEventDispatcher } from "svelte";
 
@@ -37,9 +38,18 @@
   }
 
   $: dispatch("applyFilter", { value: filteredValue , operator: filteringOperator } )
+
+  function handleClickOutside () {
+    if ( state === "Entering" ) dispatch("clearFilter")
+  }
 </script>
 
-<div class="spectrum-Table-headCell" style:border-bottom={state == "Entering" || state == "Filtered" ? "1px solid var(--primaryColor)" : null}>
+<div 
+  class="spectrum-Table-headCell" 
+  style:border-left={state == "Entering" || state == "Filtered" ? "2px solid #63CCCA" : null}
+  use:clickOutsideAction
+  on:clickoutside={handleClickOutside}
+  >
 
   {#if state === "Idle"}
 

@@ -123,7 +123,6 @@
     tableDataStore?.unregisterColumn({ id: id, field: columnOptions.name })
   );
 
-  $: console.log($columnState)
 </script>
 
 <div
@@ -145,7 +144,7 @@
     on:clearFilter={columnState.cancel}
     state={$columnState}
     filtering={columnOptions.filtering}
-    sorting={columnOptions.sorting}
+    sorting={columnOptions.sorting && (fieldSchema?.sortable ?? true) }
     {fieldSchema}
   >
     {columnOptions.displayName}
