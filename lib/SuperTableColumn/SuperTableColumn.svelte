@@ -45,7 +45,7 @@
 
   $: if (
     $tableDataStore.sortColumn !== columnOptions.name &&
-    $columnState != "view"
+    $columnState != "Idle"
   ) {
     columnState.unsort();
   }
@@ -122,8 +122,9 @@
   onDestroy(() =>
     tableDataStore?.unregisterColumn({ id: id, field: columnOptions.name })
   );
-
 </script>
+
+
 
 <div
   class="superTableColumn"
@@ -154,7 +155,7 @@
   <div
     class="spectrum-Table-body"
     bind:this={tableBodyContainer}
-    on:scroll|stopPropagation={handleScroll}
+    on:scroll={handleScroll}
     on:mouseenter={() => (mouseOver = true)}
     on:mouseleave={() => (mouseOver = false)}
   >
@@ -162,7 +163,8 @@
       <SuperColumnRow
         dynamicHeight={columnOptions.hasChildren}
         popup={ columnOptions.hasChildren && columnOptions.popup }
-        {columnType}
+        valueTemplate = { columnOptions.template }
+        {fieldSchema}
         height={$tableStateStore?.rowHeights[index]}
         minHeight={tableOptions.rowHeight}
         rowKey={row.rowKey}
@@ -170,8 +172,7 @@
         editable={tableOptions.editable || columnOptions.editable}
         isHovered={$tableHoverStore == index}
         isSelected={$tableSelectionStore[row.rowKey]}
-        on:resize={(event) =>
-          tableStateStore.resizeRow(id, index, event.detail.height)}
+        on:resize={(event) => tableStateStore.resizeRow(id, index, event.detail.height)}
         on:hovered={() => ($tableHoverStore = index)}
         on:rowClicked={(e) => ($tableStateStore.rowClicked = row.rowKey)}
       >

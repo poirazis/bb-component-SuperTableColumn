@@ -5,13 +5,15 @@
   import { createEventDispatcher } from "svelte";
 
 	import Icon from "../../../node_modules/@budibase/bbui/src/Icon/Icon.svelte"
-	import { dataFilters } from "@budibase/shared-core";
+	import { dataFilters } from '@budibase/shared-core';
 
-	import SuperColumnHeaderSearchArray from "./SuperColumnHeaderSearchArray.svelte";
   import SuperColumnHeaderSearchString from "./SuperColumnHeaderSearchString.svelte";
-	import SuperColumnHeaderSearchDateTime from "./SuperColumnHeaderSearchDateTime.svelte";
   import SuperColumnHeaderSearchBoolean from "./SuperColumnHeaderSearchBoolean.svelte";
   import SuperColumnHeaderSearchLink from "./SuperColumnHeaderSearchLink.svelte";
+  import CellOptions from "../../../bb-component-SuperTableCell/lib/SuperTableCell/cells/CellOptions.svelte"
+  import CellDatetime from '../../../bb-component-SuperTableCell/lib/SuperTableCell/cells/CellDatetime.svelte';
+  import CellNumber from '../../../bb-component-SuperTableCell/lib/SuperTableCell/cells/CellNumber.svelte';
+  import { now } from 'svelte/internal';
 
   const dispatch = createEventDispatcher();
 
@@ -20,13 +22,16 @@
 	export let fieldSchema;
   export let filtering;
   export let sorting;
+
   let filteredValue;
 
 	const defaultOperatorMap = {
 		 "string" : "fuzzy",
 		 "array" : "contains",
+		 "options" : "equal",
 		 "datetime" : "rangeLow",
-     "boolean" : "equal"
+     "boolean" : "equal",
+     "number" : "equal"
 	}
 
 	let filteringOperators = dataFilters.getValidOperatorsForType(fieldSchema.type);
@@ -42,16 +47,15 @@
   function handleClickOutside () {
     if ( state === "Entering" ) dispatch("clearFilter")
   }
+
 </script>
 
 <div 
   class="spectrum-Table-headCell" 
   style:border-left={state == "Entering" || state == "Filtered" ? "2px solid #63CCCA" : null}
-  use:clickOutsideAction
-  on:clickoutside={handleClickOutside}
   >
 
-  {#if state === "Idle"}
+  {#if state === "Idle" || state === "Ascending" || state === "Descending" }
 
 		{#if filtering}
 			<div class="actionIcon">
@@ -59,36 +63,19 @@
 			</div>
 		{/if}
 
-		  <!-- svelte-ignore a11y-click-events-have-key-events -->
-		<div
-			on:click={() => { if (sorting) dispatch("sort") } }
-			class="headerLabel"
-      style:padding-left={ !filtering ? "12px" : "0px"}
-      style:padding-right={"12px"}
-			class:sortable={sorting}
-		>
-			<div class="headerLabelText"><slot /></div>
+		<!-- svelte-ignore a11y-click-events-have-key-events -->
+		<div class="headerLabel" style:padding-left={ !filtering ? "var(--super-table-cell-padding)" : null }>
+			<div class="innerText" class:sortable={sorting} on:click={() => { if (sorting) dispatch("sort") } }>
+         <slot />
+      </div>
 		</div>
 
-  {:else if state === "Ascending" || state === "Descending"}
-		{#if filtering}
-			<div class="actionIcon">
-				<Icon on:click={() => dispatch("showFilter")} size="XS" hoverable name="FilterAdd" />
-			</div>
-		{/if}
-
-		  <!-- svelte-ignore a11y-click-events-have-key-events -->
-		<div
-			on:click={() => { if (sorting) dispatch("sort") } }
-			class="headerLabel"
-			class:sortable={sorting}
-		>
-			<div class="headerLabelText"><slot /></div>
-		</div>
-
-    <div class="actionIcon sort">
-			<Icon size="XS" hoverable name= { state === "Descending" ? "SortOrderDown" : "SortOrderUp"}/>
-    </div>
+    {#if state !== "Idle" }
+      <div class="actionIcon sort">
+        <Icon size="XS" name= { state === "Descending" ? "SortOrderDown" : "SortOrderUp"}/>
+      </div>
+    {/if}
+  
   {:else}
 
     <SuperTableHeaderFilterOptions 
@@ -102,13 +89,35 @@
         on:filter={ (e) => applyFilter((e.detail)) }
       />
     {:else if fieldSchema.type  === "array" }
-      <SuperColumnHeaderSearchArray 
-        valueOptions={fieldSchema.constraints.inclusion}
-        on:filter={ (e) => applyFilter((e.detail)) }
+      <CellOptions
+        on:change={(e) => { filteredValue = e.detail.value } }
+        inEdit
+        value={ filteredValue }
+        multi
+        editable={true}
+        {fieldSchema}
       />
+    {:else if fieldSchema.type  === "options" }
+      <CellOptions
+        on:change={(e) => { filteredValue = e.detail.value.length > 0 ? e.detail.value[0] : null }}
+        inEdit
+        value={ filteredValue }
+        editable={true}
+        {fieldSchema}
+      />
+    {:else if fieldSchema.type  === "number" }
+      <CellNumber
+        on:change={(e) => { filteredValue = Number(e.detail.value) }}
+        inEdit
+        value={ filteredValue }
+        {fieldSchema}
+      />
+
     {:else if fieldSchema.type  === "datetime" }
-      <SuperColumnHeaderSearchDateTime 
-        on:filter={ (e) => applyFilter((e.detail)) }
+      <CellDatetime
+        inEdit
+        value = { now() }
+        on:change={(e) => { filteredValue = e.detail.value }}
       />
     {:else if fieldSchema.type  === "boolean" }
       <SuperColumnHeaderSearchBoolean 
@@ -141,24 +150,30 @@
     flex: 1 0 auto;
     min-width: 0;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-content: center;
+    justify-content: stretch;
+    align-items: stretch;
     color: var(
       --spectrum-table-header-text-color,
       var(--spectrum-alias-label-text-color)
     );
+    padding-right: var(--super-table-cell-padding);
   }
 
-  .headerLabelText {
+  .innerText {
+    flex: auto;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
   }
-  .sortable:hover {
-    white-space: nowrap;
-    filter: brightness(120%);
+
+  .sortable {
     cursor: pointer;
+  }
+  .sortable:hover {
+    filter: brightness(120%);
   }
   .actionIcon {
     min-width: 32px;

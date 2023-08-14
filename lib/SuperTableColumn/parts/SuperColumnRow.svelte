@@ -15,8 +15,10 @@
 	export let isHovered
 	export let dynamicHeight
 	export let popup
-	export let columnType
 	export let editable
+	export let fieldSchema
+	export let valueTemplate
+
 
 	// the proposed height
 	export let height
@@ -39,7 +41,6 @@
 	}
 
 	$: if ( dynamicHeight && contents ) size = elementSizeStore(contents) 
-
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -54,20 +55,22 @@
 	on:click={ () => dispatch("rowClicked", {rowKey : rowKey}) }
 	>
 		{#if !dynamicHeight }
-			<SuperTableCell {rowKey} {value} {editable} {columnType} /> 
+			<Provider data={ value } >
+				<SuperTableCell {rowKey} {valueTemplate} {value} {editable} {fieldSchema} /> 
+			</Provider>
 		{:else if popup}
 			<div class="wrapper">
-				<SuperTableCell {rowKey} {value} {editable} {columnType} /> 
+				<SuperTableCell {rowKey} {value} {editable} {fieldSchema} /> 
 				<Icon on:click={() => open = !open } size="XS" hoverable name="InfoOutline" />
 				<Popover {open} anchor={rowElement} >
-					<Provider data={ {rowKey: rowKey, cellValue: value} }>
+					<Provider data={ {rowKey: rowKey, Value: value} }>
 							<slot /> 
 					</Provider>
 				</Popover>
 			</div>
 		{:else}
 			<div bind:this={contents} class="contentsWrapper"> 
-				<Provider data={ {rowKey: rowKey, cellValue: value} }>
+				<Provider data={ {rowKey: rowKey, Value: value} }>
 						<slot /> 
 				</Provider>
 			</div>	

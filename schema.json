@@ -311,12 +311,12 @@
           {
             "label": "Row ID",
             "key": "rowKey",
-            "type": "text"
+            "type": "object"
           },
           {
             "label": "Cell Value",
-            "key": "cellValue",
-            "type": "text"
+            "key": "Value",
+            "type": "object"
           }
         ]
       }
