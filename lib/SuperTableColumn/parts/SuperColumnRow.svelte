@@ -97,4 +97,8 @@
 	.is-hovered.is-selected {
 		background-color: var(--spectrum-table-m-regular-row-background-color-selected-hover, var(--spectrum-alias-highlight-selected-hover));
 	}
+
+	.is-selected {
+		background-color: var(--spectrum-table-m-regular-row-background-color-selected, var(--spectrum-alias-highlight-selected));
+	}
 </style>

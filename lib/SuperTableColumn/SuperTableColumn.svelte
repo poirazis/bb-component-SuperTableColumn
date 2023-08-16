@@ -122,6 +122,7 @@
   onDestroy(() =>
     tableDataStore?.unregisterColumn({ id: id, field: columnOptions.name })
   );
+
 </script>
 
 
