@@ -41,7 +41,6 @@
   let mouseOver = false;
 
   $: fieldSchema = $tableDataStore.schema[columnOptions.name]
-  $: columnType = fieldSchema.type;
 
   $: if (
     $tableDataStore.sortColumn !== columnOptions.name &&
@@ -122,10 +121,7 @@
   onDestroy(() =>
     tableDataStore?.unregisterColumn({ id: id, field: columnOptions.name })
   );
-
 </script>
-
-
 
 <div
   class="superTableColumn"

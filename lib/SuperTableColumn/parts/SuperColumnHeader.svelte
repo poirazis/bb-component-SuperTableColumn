@@ -10,10 +10,10 @@
   import SuperColumnHeaderSearchString from "./SuperColumnHeaderSearchString.svelte";
   import SuperColumnHeaderSearchBoolean from "./SuperColumnHeaderSearchBoolean.svelte";
   import SuperColumnHeaderSearchLink from "./SuperColumnHeaderSearchLink.svelte";
+
   import CellOptions from "../../../bb-component-SuperTableCell/lib/SuperTableCell/cells/CellOptions.svelte"
   import CellDatetime from '../../../bb-component-SuperTableCell/lib/SuperTableCell/cells/CellDatetime.svelte';
   import CellNumber from '../../../bb-component-SuperTableCell/lib/SuperTableCell/cells/CellNumber.svelte';
-  import { now } from 'svelte/internal';
 
   const dispatch = createEventDispatcher();
 
@@ -116,7 +116,7 @@
     {:else if fieldSchema.type  === "datetime" }
       <CellDatetime
         inEdit
-        value = { now() }
+        value = { new Date() }
         on:change={(e) => { filteredValue = e.detail.value }}
       />
     {:else if fieldSchema.type  === "boolean" }
@@ -150,7 +150,6 @@
     flex: 1 0 auto;
     min-width: 0;
     display: flex;
-    justify-content: stretch;
     align-items: stretch;
     color: var(
       --spectrum-table-header-text-color,
@@ -162,7 +161,7 @@
   .innerText {
     flex: auto;
     display: flex;
-    justify-content: flex-start;
+    justify-content: var(--super-column-alignment);
     align-items: center;
     white-space: nowrap;
     text-overflow: ellipsis;
