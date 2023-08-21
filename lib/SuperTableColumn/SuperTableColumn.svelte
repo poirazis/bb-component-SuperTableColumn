@@ -21,7 +21,7 @@
   const tableOptions = getContext("tableOptions");
 
   const columnState = fsm("Idle", {
-    Idle: { sort: "Ascending", filter: "Entering" },
+    Idle: { sort: "Ascending", filter: () => { return filterable ? "Entering" : "Idle" } },
     Ascending: { sort: "Descending", unsort: "Idle", filter: "Entering" },
     Descending: { sort: "Ascending", unsort: "Idle", filter: "Entering" },
     Entering: { apply: "Filtered", cancel: "Idle" },
@@ -39,8 +39,11 @@
   let resizing = false;
   let id = Math.random();
   let mouseOver = false;
+  let filterable
 
   $: fieldSchema = $tableDataStore.schema[columnOptions.name]
+  $: filterable = fieldSchema.type != "formula"
+  $: console.log(fieldSchema)
 
   $: if (
     $tableDataStore.sortColumn !== columnOptions.name &&
@@ -141,7 +144,7 @@
     on:applyFilter={handleFilter}
     on:clearFilter={columnState.cancel}
     state={$columnState}
-    filtering={columnOptions.filtering}
+    filtering={columnOptions.filtering && filterable}
     sorting={columnOptions.sorting && (fieldSchema?.sortable ?? true) }
     {fieldSchema}
   >

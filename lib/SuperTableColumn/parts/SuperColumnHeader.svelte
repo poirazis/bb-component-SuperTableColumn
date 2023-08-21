@@ -27,6 +27,7 @@
 
 	const defaultOperatorMap = {
 		 "string" : "fuzzy",
+		 "formula" : "fuzzy",
 		 "array" : "contains",
 		 "options" : "equal",
 		 "datetime" : "rangeLow",
@@ -59,7 +60,7 @@
 
 		{#if filtering}
 			<div class="actionIcon">
-				<Icon on:click={() => dispatch("showFilter")} size="XS" hoverable name="FilterAdd" />
+				<Icon on:click={() => dispatch("showFilter")} size="XS" hoverable name="Filter" color={ "var(--spectrum-global-color-gray-700)" } />
 			</div>
 		{/if}
 
@@ -85,6 +86,10 @@
       />
 
     {#if fieldSchema.type == "string" }
+      <SuperColumnHeaderSearchString
+        on:filter={ (e) => applyFilter((e.detail)) }
+      />
+    {:else if fieldSchema.type == "formula" }
       <SuperColumnHeaderSearchString
         on:filter={ (e) => applyFilter((e.detail)) }
       />
@@ -147,7 +152,7 @@
   }
 
   .headerLabel {
-    flex: 1 0 auto;
+    flex: 1 1 auto;
     min-width: 0;
     display: flex;
     align-items: stretch;
