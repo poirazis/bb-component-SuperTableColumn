@@ -6,6 +6,13 @@
   import Item from "../../../node_modules/@budibase/bbui/src/Menu/Item.svelte"
 
   export let filteringOperators, filteringOperator, active
+
+  const handleOperatorSelect = ( e, val ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    filteringOperator = val
+  }
+
 </script>
 
   <ActionMenu>
@@ -13,7 +20,7 @@
       <Icon size="XS" hoverable name="FilterEdit" color={ active ? "var(--primaryColor)" : null } />
     </div>
     {#each filteringOperators as option}
-      <Item on:click={ () => ( filteringOperator = option.value ) }>
+      <Item on:click={ (e) => handleOperatorSelect(e, option.value ) }>
         {#if option.value === filteringOperator }
           <span class="selected"> { option.label } </span>
         {:else}

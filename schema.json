@@ -9,7 +9,7 @@
     "icon": "TableColumnAddRight",
     "hasChildren": true,
     "illegalChildren": ["plugins/bb-component-SuperTableColumn"],
-    "showSettingsBar": false,
+    "showSettingsBar": true,
     "showEmptyState": false, 
     "settings": [
       {

@@ -8,6 +8,7 @@
   import { writable, derived } from "svelte/store";
   import fsm from "svelte-fsm";
 
+
   import SuperColumnHeader from "./parts/SuperColumnHeader.svelte";
   import SuperColumnRow from "./parts/SuperColumnRow.svelte";
   import SuperColumnFooter from "./parts/SuperColumnFooter.svelte";
@@ -28,6 +29,7 @@
     Filtered: { apply: "Filtered", clear: "Entering", cancel: () => { tableFilterStore?.clearFilter({ id: id }); return "Idle" } }
   });
 
+
   // Props
   export let columnOptions;
   export let columnWidth;
@@ -41,9 +43,18 @@
   let mouseOver = false;
   let filterable
 
+  let timer
+  
+	const debounce = ( v, e ) => {
+		clearTimeout(timer);
+		timer = setTimeout(() => {
+      console.log("Firing!", v );
+			v(e);
+		}, tableOptions.debounce ?? 750 );
+	}
+
   $: fieldSchema = $tableDataStore.schema[columnOptions.name]
-  $: filterable = fieldSchema.type != "formula"
-  $: console.log(fieldSchema)
+  $: filterable = fieldSchema.type != "formula" && fieldSchema.type != "attachment" && fieldSchema.type != "link" 
 
   $: if (
     $tableDataStore.sortColumn !== columnOptions.name &&
@@ -81,6 +92,7 @@
   }
 
   function handleFilter(event) {
+    console.log("Filtering")
     if (event.detail.value != "" )  {
       tableFilterStore?.setFilter({
         id: id,
@@ -124,6 +136,7 @@
   onDestroy(() =>
     tableDataStore?.unregisterColumn({ id: id, field: columnOptions.name })
   );
+
 </script>
 
 <div
@@ -141,7 +154,7 @@
   <SuperColumnHeader
     on:sort={handleSort}
     on:showFilter={columnState.filter}
-    on:applyFilter={handleFilter}
+    on:applyFilter={ ( e ) => debounce( handleFilter, e ) }
     on:clearFilter={columnState.cancel}
     state={$columnState}
     filtering={columnOptions.filtering && filterable}

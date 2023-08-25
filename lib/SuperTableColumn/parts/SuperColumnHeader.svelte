@@ -1,19 +1,17 @@
 <script>
-  import SuperTableHeaderFilterOptions from './SuperTableHeaderFilterOptions.svelte';
-  import { clickOutsideAction } from 'svelte-legos';
-
   import { createEventDispatcher } from "svelte";
+  import clickOutside from "../../../node_modules/@budibase/bbui/src/Actions/click_outside"
 
 	import Icon from "../../../node_modules/@budibase/bbui/src/Icon/Icon.svelte"
 	import { dataFilters } from '@budibase/shared-core';
 
-  import SuperColumnHeaderSearchString from "./SuperColumnHeaderSearchString.svelte";
-  import SuperColumnHeaderSearchBoolean from "./SuperColumnHeaderSearchBoolean.svelte";
-  import SuperColumnHeaderSearchLink from "./SuperColumnHeaderSearchLink.svelte";
+  import SuperTableHeaderFilterOptions from './SuperTableHeaderFilterOptions.svelte';
 
   import CellOptions from "../../../bb-component-SuperTableCell/lib/SuperTableCell/cells/CellOptions.svelte"
   import CellDatetime from '../../../bb-component-SuperTableCell/lib/SuperTableCell/cells/CellDatetime.svelte';
   import CellNumber from '../../../bb-component-SuperTableCell/lib/SuperTableCell/cells/CellNumber.svelte';
+  import CellString from '../../../bb-component-SuperTableCell/lib/SuperTableCell/cells/CellString.svelte';
+  import CellBoolean from "../../../bb-component-SuperTableCell/lib/SuperTableCell/cells/CellBoolean.svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -32,7 +30,8 @@
 		 "options" : "equal",
 		 "datetime" : "rangeLow",
      "boolean" : "equal",
-     "number" : "equal"
+     "number" : "equal",
+     "bigint" : "equal",
 	}
 
 	let filteringOperators = dataFilters.getValidOperatorsForType(fieldSchema.type);
@@ -51,10 +50,7 @@
 
 </script>
 
-<div 
-  class="spectrum-Table-headCell" 
-  style:border-left={state == "Entering" || state == "Filtered" ? "2px solid #63CCCA" : null}
-  >
+<div class="spectrum-Table-headCell" class:enterting={ state == "Entering" } use:clickOutside={ handleClickOutside } >
 
   {#if state === "Idle" || state === "Ascending" || state === "Descending" }
 
@@ -83,19 +79,27 @@
       bind:filteringOperator 
       {filteringOperators} 
       active={state == "Filtered"}
-      />
+    />
 
     {#if fieldSchema.type == "string" }
-      <SuperColumnHeaderSearchString
-        on:filter={ (e) => applyFilter((e.detail)) }
+      <CellString 
+        on:change={ (e) => { filteredValue = e.detail.value; } }
+        inEdit
+        value = { filteredValue }
+        editable
+        {fieldSchema}
       />
     {:else if fieldSchema.type == "formula" }
-      <SuperColumnHeaderSearchString
-        on:filter={ (e) => applyFilter((e.detail)) }
+      <CellString 
+        on:change={ (e) => { filteredValue = e.detail.value; } }
+        inEdit
+        value = { filteredValue }
+        editable
+        {fieldSchema}
       />
     {:else if fieldSchema.type  === "array" }
       <CellOptions
-        on:change={(e) => { filteredValue = e.detail.value } }
+        on:change={ (e) => { filteredValue = e.detail.value } }
         inEdit
         value={ filteredValue }
         multi
@@ -110,14 +114,13 @@
         editable={true}
         {fieldSchema}
       />
-    {:else if fieldSchema.type  === "number" }
+    {:else if ( fieldSchema.type == "number" || fieldSchema.type == "bigint" )}
       <CellNumber
         on:change={(e) => { filteredValue = Number(e.detail.value) }}
         inEdit
         value={ filteredValue }
         {fieldSchema}
       />
-
     {:else if fieldSchema.type  === "datetime" }
       <CellDatetime
         inEdit
@@ -125,12 +128,11 @@
         on:change={(e) => { filteredValue = e.detail.value }}
       />
     {:else if fieldSchema.type  === "boolean" }
-      <SuperColumnHeaderSearchBoolean 
-        on:filter={ (e) => applyFilter((e.detail)) }
-      />
-    {:else if fieldSchema.type  === "link" }
-      <SuperColumnHeaderSearchLink 
-        on:filter={ (e) => applyFilter((e.detail)) }
+      <CellBoolean
+        on:change={(e) => { filteredValue = e.detail.value }}
+        inEdit
+        value={ filteredValue }
+        {fieldSchema}
       />
     {/if}
 
@@ -149,6 +151,11 @@
     height: 2.5rem;
     padding: unset;
     border-bottom: 1px solid var(--spectrum-alias-border-color-mid);
+    transition: all 130ms ease-in-out;
+  }
+
+  .enterting {
+    border-bottom: 1px solid var(--primaryColor);
   }
 
   .headerLabel {
