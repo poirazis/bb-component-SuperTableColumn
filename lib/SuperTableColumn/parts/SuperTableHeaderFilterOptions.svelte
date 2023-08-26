@@ -1,6 +1,4 @@
 <script>
-  import { createEventDispatcher } from "svelte";
-
 	import Icon from "../../../node_modules/@budibase/bbui/src/Icon/Icon.svelte"
   import ActionMenu from "../../../node_modules/@budibase/bbui/src/ActionMenu/ActionMenu.svelte"
   import Item from "../../../node_modules/@budibase/bbui/src/Menu/Item.svelte"
@@ -17,7 +15,7 @@
 
   <ActionMenu>
     <div slot="control" class="control icon">
-      <Icon size="XS" hoverable name="FilterEdit" color={ active ? "var(--primaryColor)" : null } />
+      <Icon size="XS" hoverable name="FilterEdit" color={ active ? "lime" : null } />
     </div>
     {#each filteringOperators as option}
       <Item on:click={ (e) => handleOperatorSelect(e, option.value ) }>
@@ -32,10 +30,10 @@
 
 <style>
   .control {
-    width: 32px;
     height: 100%;
     display: flex;
     justify-content: center;
+    align-items: center;
     background-color: var(--spectrum-textfield-m-background-color, var(--spectrum-global-color-gray-50));
   }
   

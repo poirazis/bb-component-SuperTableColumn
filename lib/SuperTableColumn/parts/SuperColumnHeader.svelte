@@ -48,9 +48,18 @@
     if ( state === "Entering" ) dispatch("clearFilter")
   }
 
+  function handleKeyboard (e) {
+    if (e.key == "Escape") 
+      dispatch("clearFilter")
+  }
 </script>
 
-<div class="spectrum-Table-headCell" class:enterting={ state == "Entering" } use:clickOutside={ handleClickOutside } >
+<div 
+  class="spectrum-Table-headCell" 
+  class:enterting={ state == "Entering" } 
+  class:filtered={ state == "Filtered" } 
+  on:keydown={handleKeyboard}
+  use:clickOutside={ handleClickOutside } >
 
   {#if state === "Idle" || state === "Ascending" || state === "Descending" }
 
@@ -61,7 +70,7 @@
 		{/if}
 
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
-		<div class="headerLabel" style:padding-left={ !filtering ? "var(--super-table-cell-padding)" : null }>
+		<div class="headerLabel" >
 			<div class="innerText" class:sortable={sorting} on:click={() => { if (sorting) dispatch("sort") } }>
          <slot />
       </div>
@@ -87,6 +96,7 @@
         inEdit
         value = { filteredValue }
         editable
+        padded = {false}
         {fieldSchema}
       />
     {:else if fieldSchema.type == "formula" }
@@ -95,6 +105,7 @@
         inEdit
         value = { filteredValue }
         editable
+        padded = {false}
         {fieldSchema}
       />
     {:else if fieldSchema.type  === "array" }
@@ -144,30 +155,36 @@
 
 <style>
   .spectrum-Table-headCell {
+    flex: auto;
     display: flex;
-    flex-direction: row;
-    justify-content: stretch;
     align-items: stretch;
     height: 2.5rem;
+    gap: 0.5rem;
     padding: unset;
+    padding-right: var(--super-table-cell-padding);
+    padding-left: var(--super-table-cell-padding);
     border-bottom: 1px solid var(--spectrum-alias-border-color-mid);
     transition: all 130ms ease-in-out;
   }
-
   .enterting {
-    border-bottom: 1px solid var(--primaryColor);
+    border-bottom: 1px solid rgba( 50, 205 , 50, 0.5 );
+    background-color: var(--spectrum-textfield-m-background-color, var(--spectrum-global-color-gray-50));
+  }
+  .filtered {
+    border-bottom: 1px solid rgba( 50, 205 , 50, 0.85 );
+    filter: brightness(125%);
+    background-color: var(--spectrum-textfield-m-background-color, var(--spectrum-global-color-gray-50));
   }
 
   .headerLabel {
     flex: 1 1 auto;
     min-width: 0;
     display: flex;
-    align-items: stretch;
+    align-items: center;
     color: var(
       --spectrum-table-header-text-color,
       var(--spectrum-alias-label-text-color)
     );
-    padding-right: var(--super-table-cell-padding);
   }
 
   .innerText {
@@ -187,7 +204,6 @@
     filter: brightness(120%);
   }
   .actionIcon {
-    min-width: 32px;
     display: flex;
     align-items: center;
     justify-content: center;

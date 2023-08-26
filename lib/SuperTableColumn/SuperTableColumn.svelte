@@ -54,7 +54,7 @@
 	}
 
   $: fieldSchema = $tableDataStore.schema[columnOptions.name]
-  $: filterable = fieldSchema.type != "formula" && fieldSchema.type != "attachment" && fieldSchema.type != "link" 
+  $: filterable = fieldSchema.type != "attachment" && fieldSchema.type != "link" 
 
   $: if (
     $tableDataStore.sortColumn !== columnOptions.name &&
@@ -137,10 +137,13 @@
     tableDataStore?.unregisterColumn({ id: id, field: columnOptions.name })
   );
 
+  $: console.log( columnOptions )
 </script>
 
 <div
   class="superTableColumn"
+  style:width={ columnOptions.width }
+  style:max-width={ columnOptions.maxWidth }
   style:--super-column-bgcolor={columnOptions.background}
   style:--super-column-color={columnOptions.color}
   style:--super-column-alignment={columnOptions.align == "Right"
@@ -201,11 +204,17 @@
 
 <style>
   .superTableColumn {
-    flex: auto;
+    flex-grow: 1;
+    flex-shrink: 0;
+    flex-basis: auto;
     border-right: var(--super-table-vertical-dividers);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;  
   }
 
   .spectrum-Table-body {
+    flex: auto;
     height: var(--super-table-body-height);
     border-radius: 0px;
     overflow-y: scroll !important;
