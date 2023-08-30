@@ -4,10 +4,12 @@
 	const { Provider } = getContext("sdk")
 
 	import Popover from "../../../node_modules/@budibase/bbui/src/Popover/Popover.svelte";
-	import { SuperTableCell } from "../../../bb-component-SuperTableCell/lib/SuperTableCell/index.js";
+	import { SuperTableCell, SuperTableCellOptions } from "../../../bb-component-SuperTableCell/lib/SuperTableCell/index.js";
 	import Icon from "../../../node_modules/@budibase/bbui/src/Icon/Icon.svelte"
 
 	const dispatch = createEventDispatcher();
+
+	const tableOptions = getContext("tableOptions");
 
 	export let rowKey
 	export let value
@@ -56,7 +58,7 @@
 	>
 		{#if !dynamicHeight }
 			<Provider data={ value } >
-				<SuperTableCell {rowKey} {valueTemplate} {value} {editable} {fieldSchema} /> 
+				<SuperTableCell {rowKey} {valueTemplate} {value} {editable} {fieldSchema} submitOn = { tableOptions.submitOn} /> 
 			</Provider>
 		{:else if popup}
 			<div class="wrapper">
