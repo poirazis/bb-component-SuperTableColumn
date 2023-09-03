@@ -9,7 +9,7 @@
 
 	const dispatch = createEventDispatcher();
 
-	const tableOptions = getContext("tableOptions");
+	const tableOptionStore = getContext("tableOptionStore");
 
 	export let rowKey
 	export let value
@@ -20,7 +20,6 @@
 	export let editable
 	export let fieldSchema
 	export let valueTemplate
-
 
 	// the proposed height
 	export let height
@@ -43,6 +42,7 @@
 	}
 
 	$: if ( dynamicHeight && contents ) size = elementSizeStore(contents) 
+
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -58,7 +58,15 @@
 	>
 		{#if !dynamicHeight }
 			<Provider data={ value } >
-				<SuperTableCell {rowKey} {valueTemplate} {value} {editable} {fieldSchema} submitOn = { tableOptions.submitOn} /> 
+				<SuperTableCell 
+					{rowKey} 
+					{valueTemplate}
+					{value} 
+					{editable} 
+					{fieldSchema} 
+					submitOn = { $tableOptionStore?.submitOn }
+					{isHovered} 
+					/> 
 			</Provider>
 		{:else if popup}
 			<div class="wrapper">
@@ -80,6 +88,11 @@
 </div>
 
 <style>
+	.spectrum-Table-row {
+		display: flex;
+		align-items: stretch;
+		justify-content: stretch;
+	}
 	.wrapper {
 		height: 100%;
 		display: flex;

@@ -16,7 +16,7 @@
   const dispatch = createEventDispatcher();
 
   // The FSM state of the Column
-  export let state;
+  export let columnState;
 	export let fieldSchema;
   export let filtering;
   export let sorting;
@@ -37,6 +37,8 @@
 	let filteringOperators = dataFilters.getValidOperatorsForType(fieldSchema.type);
 	let defaultOperator = defaultOperatorMap[fieldSchema.type];
   let filteringOperator = defaultOperator
+  let headerAnchor
+  let width 
 
   function applyFilter ( filter ) {
     filteredValue = filter.value
@@ -44,28 +46,30 @@
 
   $: dispatch("applyFilter", { value: filteredValue , operator: filteringOperator } )
 
-  function handleClickOutside () {
-    if ( state === "Entering" ) dispatch("clearFilter")
-  }
-
   function handleKeyboard (e) {
     if (e.key == "Escape") 
       dispatch("clearFilter")
+  }
+
+  const showFilters = () => {
+    width = headerAnchor.clientWidth - 50; 
+    columnState.filter();
   }
 </script>
 
 <div 
   class="spectrum-Table-headCell" 
-  class:enterting={ state == "Entering" } 
-  class:filtered={ state == "Filtered" } 
+  class:enterting={ $columnState == "Entering" } 
+  class:filtered={ $columnState == "Filtered" } 
+  bind:this={headerAnchor}
   on:keydown={handleKeyboard}
-  use:clickOutside={ handleClickOutside } >
+  use:clickOutside={ columnState.cancel } >
 
-  {#if state === "Idle" || state === "Ascending" || state === "Descending" }
+  {#if $columnState === "Idle" || $columnState === "Ascending" || $columnState === "Descending" }
 
 		{#if filtering}
 			<div class="actionIcon">
-				<Icon on:click={() => dispatch("showFilter")} size="XS" hoverable name="Filter" color={ "var(--spectrum-global-color-gray-700)" } />
+				<Icon on:click={showFilters} size="XS" hoverable name="Filter" color={ "var(--spectrum-global-color-gray-700)" } />
 			</div>
 		{/if}
 
@@ -76,9 +80,9 @@
       </div>
 		</div>
 
-    {#if state !== "Idle" }
+    {#if $columnState !== "Idle" }
       <div class="actionIcon sort">
-        <Icon size="XS" name= { state === "Descending" ? "SortOrderDown" : "SortOrderUp"}/>
+        <Icon size="XS" name= { $columnState === "Descending" ? "SortOrderDown" : "SortOrderUp"}/>
       </div>
     {/if}
   
@@ -87,7 +91,7 @@
     <SuperTableHeaderFilterOptions 
       bind:filteringOperator 
       {filteringOperators} 
-      active={state == "Filtered"}
+      active={$columnState == "Filtered"}
     />
 
     {#if fieldSchema.type == "string" }
@@ -96,7 +100,9 @@
         inEdit
         value = { filteredValue }
         editable
+        {width}
         padded = {false}
+        placeholder={"Search..."}
         {fieldSchema}
       />
     {:else if fieldSchema.type == "formula" }
@@ -148,14 +154,15 @@
     {/if}
 
     <div class="actionIcon close">
-      <Icon on:click={ () => dispatch("clearFilter") } size="XS" hoverable name="Close"/>
+      <Icon on:click={ columnState.cancel } size="XS" hoverable name="Close"/>
     </div>
   {/if}
+
+
 </div>
 
 <style>
   .spectrum-Table-headCell {
-    flex: auto;
     display: flex;
     align-items: stretch;
     height: 2.5rem;
@@ -164,15 +171,13 @@
     padding-right: var(--super-table-cell-padding);
     padding-left: var(--super-table-cell-padding);
     border-bottom: 1px solid var(--spectrum-alias-border-color-mid);
-    transition: all 130ms ease-in-out;
   }
   .enterting {
-    border-bottom: 1px solid rgba( 50, 205 , 50, 0.5 );
+    border-bottom: 1px solid var(--spectrum-global-color-gray-400);
     background-color: var(--spectrum-textfield-m-background-color, var(--spectrum-global-color-gray-50));
   }
   .filtered {
-    border-bottom: 1px solid rgba( 50, 205 , 50, 0.85 );
-    filter: brightness(125%);
+    border-bottom: 1px solid var(--primaryColor);
     background-color: var(--spectrum-textfield-m-background-color, var(--spectrum-global-color-gray-50));
   }
 
