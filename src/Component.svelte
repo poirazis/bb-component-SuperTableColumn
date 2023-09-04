@@ -55,7 +55,8 @@
     popup: popup,
     order: order,
     isFirst: isFirst,
-    isLast: isLast
+    isLast: isLast,
+    superColumn: true
   }
 </script>
 

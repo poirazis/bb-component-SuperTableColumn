@@ -59,6 +59,28 @@
         "label": "Footer"
       },
       {
+        "type": "select",
+        "key": "columnType",
+        "label" : "Column Type",
+        "options" : [
+          {"label" : "Auto", "value": "auto" },
+          {"label" : "Relationship", "value": "link" }
+        ],
+        "defaultValue" : "auto"
+      },
+      {
+        "section" : true,
+        "name": "Relationship Options",
+        "dependsOn": { "setting": "columnType", "value" : "link" },
+        "settings": [
+          { 
+            "type" : "dataSource",
+            "key": "datasource",
+            "label" : "Data Source"
+          }
+        ]
+      },
+      {
         "type": "icon",
         "key": "icon",
         "label": "Icon"
@@ -88,10 +110,20 @@
         "defaultValue": true
       },
       {
+        "type" : "select",
+        "key": "hideOn",
+        "label": "Hide On",
+        "options": [
+          { "label": "Tablet", "value" : "tablet" },
+          { "label": "Mobile", "value" : "mobile" },
+          { "label": "Desktop", "value" : "desktop" }
+        ]
+      },
+      {
         "type": "boolean",
         "key": "popup",
         "label": "Slot In Popup",
-        "defaultValue": true
+        "defaultValue": false
       },
       {
         "type": "select",

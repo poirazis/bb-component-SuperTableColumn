@@ -3,23 +3,23 @@
   import ActionMenu from "../../../node_modules/@budibase/bbui/src/ActionMenu/ActionMenu.svelte"
   import Item from "../../../node_modules/@budibase/bbui/src/Menu/Item.svelte"
 
-  export let filteringOperators, filteringOperator, active
+  export let filteringOperators, filterOperator, active
 
   const handleOperatorSelect = ( e, val ) => {
     e.preventDefault();
     e.stopPropagation();
-    filteringOperator = val
+    filterOperator = val
   }
 
 </script>
 
   <ActionMenu>
     <div slot="control" class="control icon">
-      <Icon size="XS" hoverable name="FilterEdit" color={ active ? "lime" : null } />
+      <Icon size="XS" hoverable name="FilterEdit" color={ active ? "var(--primaryColor)" : null } />
     </div>
     {#each filteringOperators as option}
       <Item on:click={ (e) => handleOperatorSelect(e, option.value ) }>
-        {#if option.value === filteringOperator }
+        {#if option.value === filterOperator }
           <span class="selected"> { option.label } </span>
         {:else}
           {option.label}
@@ -34,7 +34,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: var(--spectrum-textfield-m-background-color, var(--spectrum-global-color-gray-50));
   }
   
   .selected {

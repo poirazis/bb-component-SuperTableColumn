@@ -16,60 +16,65 @@
   const tableHoverStore = getContext("tableHoverStore");
   const tableOptionStore = getContext("tableOptionStore");
 
+  const { builderStore } = getContext("sdk");
+  const dispatch = createEventDispatcher();
+  
   const columnState = fsm("Idle", {
-    Idle: { sort: "Ascending", filter: () => { return filterable ? "Entering" : "Idle" } },
-    Ascending: { sort: "Descending", unsort: "Idle", filter: "Entering" },
-    Descending: { sort: "Ascending", unsort: "Idle", filter: "Entering" },
-    Entering: { apply: "Filtered", cancel: "Idle" },
+    Idle: { 
+      sort () { $tableDataStore.sortColumn = enrichedColumnOptions.name; return "Ascending"; } , 
+      filter () { return enrichedColumnOptions.canFilter ? "Entering" : "Idle" } 
+    },
+    Ascending: { 
+      _enter () { $tableDataStore.sortDirection = "Ascending"; },
+      sort () { return "Descending" }, 
+      unsort: "Idle", 
+      filter: "Entering" 
+    },
+    Descending: { 
+      _enter() { $tableDataStore.sortDirection = "Descending"; },
+      sort() { return "Ascending" },  
+      unsort: "Idle", 
+      filter: "Entering" 
+    },
+    Entering: { 
+      _enter() { tableFilterStore?.clearFilter({ id: id }); width = column ? column.clientWidth : null },
+      filter( operator , value ) { if ( value ) { setFilter(operator , value ); return "Filtered" } },
+      cancel() { return "Idle" }
+    },
     Resizing: { stop: () => { return "Idle" } },
     Dragging: { stop: () => { return "Idle" } },
-    Filtered: { apply: "Filtered", clear: "Entering", cancel: () => { tableFilterStore?.clearFilter({ id: id }); return "Idle" } }
+    EditingCell: { stop: () => { return "Idle" } },
+    Filtered: { 
+      filter(operator, value) { value != "" ? setFilter(operator,value) : this.clear() },
+      clear() { console.log("Clearing");  return "Entering" },
+      cancel() { tableFilterStore?.clearFilter({ id: id }); return "Idle" } 
+      }
   });
 
   // Props
   export let columnOptions;
-  export let columnWidth;
-  export let searchMode;
+  export let tableOptions;
 
   // Internal Variables
   let id = uuidv4();
   let mouseOver = false;
-  let filterable
-  let timer
-  let debounceDelay = $tableOptionStore.debounce
-  
-	const debounce = ( v, e ) => {
-		clearTimeout(timer);
-		timer = setTimeout(() => {
-      console.log("Firing!", v );
-			v(e);
-		}, debounceDelay ?? 750 );
-	}
+  let enrichedColumnOptions 
+  let resizing = false
+  let considerResizing = false
+  let startPoint 
+  let startWidth
+  let width
+  let column
+  let tableBodyContainer
+  let filterValue
+  let filterOperator
 
-  const dispatch = createEventDispatcher();
+  $: filterValue != undefined && filterOperator ? columnState.filter ( filterOperator , filterValue ) : null 
 
-  $: fieldSchema = $tableDataStore?.schema ? $tableDataStore?.schema[columnOptions.name] : {}
-  $: filterable = fieldSchema?.type != "attachment" && fieldSchema?.type != "link" 
-  $: editable = columnOptions.editable && $tableOptionStore?.editable && fieldSchema?.type != "formula"
-
-  $: if (
-    $tableDataStore.sortColumn !== columnOptions.name &&
-    $columnState != "Idle"
-  ) {
-    columnState.unsort();
-  }
-
-  // Remove Dynamic Heights if all children have been removed
-  $: if (!columnOptions.hasChildren) {
-    tableStateStore?.removeRowHeights(id);
-  }
-
-  // Component Code
-  // Create our derived store and make sure we grab only the selected field rows.
-  // If the field changes, the store will update to reflect the change
-  let nameStore = writable();
-  $: nameStore.set(columnOptions.name);
-
+  // Reactive declaration.
+  // nameStore is used in our derived store that holds the column data
+  let nameStore = writable(columnOptions.name);
+  $: nameStore.set(enrichedColumnOptions.name);
   let columnStore =
     derived([tableDataStore, nameStore], ([$tableDataStore, $nameStore]) => {
       return $tableDataStore?.data.map((row) => ({
@@ -78,67 +83,37 @@
       }));
     }) || null;
 
-  // Reinitialize when another field is selεcted or after a DND
-  $: initializeColumn(columnOptions.name);
-  $: tableDataStore?.updateColumn({ id: id, field: columnOptions.name });
+  $: enrichedColumnOptions = enrichdOptions(columnOptions)
 
-  function handleSort() {
-    columnState.sort();
-    $tableDataStore.sortColumn = columnOptions.name;
-    $tableDataStore.sortDirection = $columnState
+  $: if (
+    $tableDataStore.sortColumn !== enrichedColumnOptions.name &&
+    $columnState != "Idle"
+  ) {
+    columnState.unsort();
   }
 
-  function handleFilter(event) {
-    console.log("Filtering")
-    if (event.detail.value != "" )  {
+  $: if (!enrichedColumnOptions.hasChildren) { tableStateStore?.removeRowHeights(id); }
+  $: initializeColumn(enrichedColumnOptions.name);
+  $: tableDataStore?.updateColumn({ id: id, field: enrichedColumnOptions.name });
+
+  const enrichdOptions = ( columnOptions ) => {
+    return { ...columnOptions, 
+      "schema" : $tableDataStore.schema[columnOptions.name] ?? {}
+    }
+  }
+
+  const setFilter = ( operator , value ) => {
+    console.log("Set Filter")
+
+    if ( value )
       tableFilterStore?.setFilter({
         id: id,
-        field: columnOptions.name,
-        operator: event.detail.operator,
-        value: event.detail.value,
+        field: enrichedColumnOptions.name,
+        operator: operator,
+        value: value,
         valueType: "Value",
-      });
-      columnState.apply();
-    } else {
-      columnState.clear()
-      tableFilterStore?.clearFilter({ id: id });
-    }
+    })
   }
-
-  function initializeColumn(field) {
-    if (!field) return;
-    // unregister before registering to cover for in builder DND
-    tableDataStore?.unregisterColumn({ id: id, field: field });
-    // Register the column to the tableStore, and get back a writable store
-    tableDataStore?.registerColumn({ id: id, field: field });
-  }
-
-  // Scrolling Synchonicity Code
-  // Notify the tableStateStore that you have been scrolled
-  let tableBodyContainer;
-  function handleScroll(e) {
-    if (mouseOver) {
-      $tableScrollPosition = tableBodyContainer?.scrollTop;
-    }
-  }
-
-  beforeUpdate(() => {
-    if (
-      tableBodyContainer &&
-      tableBodyContainer.scrollTop != $tableScrollPosition
-    )
-      tableBodyContainer.scrollTop = $tableScrollPosition;
-  });
-
-  onDestroy( () => tableDataStore?.unregisterColumn({ id: id, field: columnOptions.name }) );
-
-  // Resizing Code 
-  let resizing = false
-  let considerResizing = false
-  let startPoint 
-  let startWidth
-  let width
-  let column
 
   const startResizing = ( e ) => {
     e.preventDefault();
@@ -165,6 +140,7 @@
     e.preventDefault();
     e.stopPropagation();
     width = undefined
+    saveBuilderSizing (null);
   }
 
   const saveBuilderSizing = ( width ) => {
@@ -176,7 +152,40 @@
     }
   }
 
-  onMount( () => startWidth = column ? column.clientWidth : "auto" )
+  function initializeColumn(field) {
+    if (!field) return;
+
+    tableDataStore?.unregisterColumn({ id: id, field: field });
+    tableDataStore?.registerColumn({ id: id, field: field });
+  }
+
+  function handleScroll(e) {
+    if (mouseOver) {
+      $tableScrollPosition = tableBodyContainer?.scrollTop;
+    }
+  }
+
+  function handleKeyboard ( e ) {
+    if (e.key == "Enter") 
+     columnState.filter ( filterOperator, filterValue )
+    if (e.key == "Escape") {
+      filterValue = ""
+      columnState.cancel();
+    }
+  }
+
+  beforeUpdate(() => {
+    if (
+      tableBodyContainer &&
+      tableBodyContainer.scrollTop != $tableScrollPosition
+    )
+      tableBodyContainer.scrollTop = $tableScrollPosition;
+  });
+
+  onDestroy( () => tableDataStore?.unregisterColumn({ id: id, field: columnOptions.name }) );
+  onMount( () => startWidth = column ? column.clientWidth : null )
+
+  $: console.log("State :", $columnState)
 </script>
 
 <svelte:window
@@ -186,23 +195,27 @@
 
 <div
   class="superTableColumn"
-  class:fixed={ columnOptions.sizing == "fixed" }
+  class:fixed={ enrichedColumnOptions.sizing == "fixed" }
   class:resizing
   class:considerResizing={considerResizing && !resizing}
-  style:min-width={ width ? width : columnOptions.sizing == "fixed" ? columnOptions.width : "auto" }
-  style:max-width={ width ? width : columnOptions.sizing == "fixed" ? columnOptions.width : columnOptions.maxWidth }
+  style:min-width={ width ? width : enrichedColumnOptions.sizing == "fixed" ? enrichedColumnOptions.width : "auto" }
+  style:max-width={ width ? width : enrichedColumnOptions.sizing == "fixed" ? enrichedColumnOptions.width : columnOptions.maxWidth }
   style:--super-cell-control-width={ width ?? startWidth }
-  style:--super-column-bgcolor={ columnOptions.backgroundColor }
-  style:--super-column-color={columnOptions.color}
-  style:--super-column-alignment={columnOptions.align == "Right"
+  style:--super-column-bgcolor={ enrichedColumnOptions.backgroundColor }
+  style:--super-column-color={enrichedColumnOptions.color}
+  style:--super-column-alignment={enrichedColumnOptions.align == "Right"
     ? "flex-end"
-    : columnOptions.align == "Center"
+    : enrichedColumnOptions.align == "Center"
     ? "center"
     : "flex-start"}
   bind:this={column}
+  on:keydown={handleKeyboard}
   on:mouseleave={() => ($tableHoverStore = null)}
-
 >
+
+  {#if columnOptions.superColumn && $builderStore.inBuilder }
+    <div class="superBadge">⚡️</div>
+  {/if}
 
   <!-- svelte-ignore a11y-click-events-have-key-events -->
     <div 
@@ -212,20 +225,12 @@
       on:mouseenter={ () => ( considerResizing = true ) } on:mouseleave={ () => ( considerResizing = false ) } /> 
 
   <!-- Render Column Header -->
-  <SuperColumnHeader
-    on:sort={handleSort}
-    on:applyFilter={ ( e ) => debounce( handleFilter, e ) }
-    {columnState}
-    filtering={columnOptions.filtering && filterable}
-    sorting={columnOptions.sorting && (fieldSchema?.sortable ?? true) }
-    {fieldSchema}
-  >
-    {columnOptions.displayName}
-  </SuperColumnHeader>
+  <SuperColumnHeader bind:filterValue bind:filterOperator {columnState} {enrichedColumnOptions} {width} />
 
   <!-- Render Column Body -->
   <div
     class="spectrum-Table-body"
+    style:background-color={$columnState == "Filtered" || $columnState == "Entering" ? "var(--spectrum-global-color-gray-75)" : "var(--spectrum-global-color-gray-50)" }
     bind:this={tableBodyContainer}
     on:scroll={handleScroll}
     on:mouseenter={ () => (mouseOver = true) }
@@ -233,15 +238,15 @@
   >
     {#each $columnStore as row, index}
       <SuperColumnRow
-        dynamicHeight={columnOptions.hasChildren}
-        popup={ columnOptions.hasChildren && columnOptions.popup }
-        valueTemplate = { columnOptions.template }
-        {fieldSchema}
+        dynamicHeight={enrichedColumnOptions.hasChildren}
+        popup={ enrichedColumnOptions.hasChildren && enrichedColumnOptions.popup }
+        valueTemplate = { enrichedColumnOptions.template }
+        fieldSchema={enrichedColumnOptions.schema ?? {}}
         height={$tableStateStore?.rowHeights[index]}
         minHeight={$tableOptionStore?.rowHeight}
         rowKey={row.rowKey}
         value={row.rowValue}
-        {editable}
+        editable={enrichedColumnOptions.canEdit}
         isHovered={$tableHoverStore == index}
         isSelected={$tableSelectionStore[row.rowKey]}
         on:resize={(event) => tableStateStore.resizeRow(id, index, event.detail.height)}
@@ -253,8 +258,8 @@
     {/each}
   </div>
 
-  {#if columnOptions.showFooter }
-    <SuperColumnFooter>{columnOptions.displayName}</SuperColumnFooter>
+  {#if enrichedColumnOptions.showFooter }
+    <SuperColumnFooter>{enrichedColumnOptions.displayName}</SuperColumnFooter>
   {/if}
 </div>
 
@@ -275,7 +280,7 @@
     width: var(--super-column-width);
   }
   .grabber {
-    width: 4px;
+    width: 3px;
     position: absolute;
     right: 2px;
     top: 12px;
@@ -287,6 +292,7 @@
   }
 
   .grabber:hover {
+    width: 8px;
     background-color: var(--spectrum-global-color-gray-600);
     cursor: col-resize;
   }
@@ -316,4 +322,27 @@
     border-right: 1px solid var(--spectrum-global-color-gray-500);
   }
 
+  .superBadge {
+    position: absolute;
+    top: 10px;
+    right: 24px;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    z-index: 100;
+    font-size: 11px;
+    display: grid;
+    align-items: center;
+    justify-items: center;
+    opacity: 0.8;
+    background-color: var(--spectrum-global-color-gray-300);
+    border: 1px solid var(--spectrum-global-color-gray-300);
+    transition: all 130ms ease-in-out;
+  }
+
+  .superBadge:hover {
+    opacity: 1;
+    filter: drop-shadow(5px 5px 6px #00000050);
+    border: 1px solid var(--spectrum-global-color-gray-400);
+  }
 </style>
