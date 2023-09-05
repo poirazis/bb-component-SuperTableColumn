@@ -4,22 +4,29 @@
 	const { Provider } = getContext("sdk")
 
 	import Popover from "../../../node_modules/@budibase/bbui/src/Popover/Popover.svelte";
-	import { SuperTableCell, SuperTableCellOptions } from "../../../bb-component-SuperTableCell/lib/SuperTableCell/index.js";
+	import { SuperTableCell } from "../../../bb-component-SuperTableCell/lib/SuperTableCell/index.js";
 	import Icon from "../../../node_modules/@budibase/bbui/src/Icon/Icon.svelte"
 
 	const dispatch = createEventDispatcher();
 
 	const tableOptionStore = getContext("tableOptionStore");
+	const tableStateStore = getContext("tableStateStore");
 
-	export let rowKey
-	export let value
+	export let row
+	export let index
+	export let enrichedColumnOptions
 	export let isSelected
 	export let isHovered
-	export let dynamicHeight
-	export let popup
-	export let editable
-	export let fieldSchema
-	export let valueTemplate
+
+	$: dynamicHeight = enrichedColumnOptions?.hasChildren ?? false
+	$: popup = enrichedColumnOptions?.hasChildren && enrichedColumnOptions?.popup
+	$: valueTemplate = enrichedColumnOptions?.template
+	$: fieldSchema = enrichedColumnOptions?.schema ?? {}
+	$: height = $tableStateStore?.rowHeights[index]
+	$: minHeight = $tableOptionStore?.rowHeight
+	$: rowKey = row?.rowKey
+	$: value = row?.rowValue
+	$: editable = enrichedColumnOptions?.canEdit
 
 	// the proposed height
 	export let height
@@ -70,7 +77,15 @@
 			</Provider>
 		{:else if popup}
 			<div class="wrapper">
-				<SuperTableCell {rowKey} {value} {editable} {fieldSchema} /> 
+				<SuperTableCell 
+					{rowKey} 
+					{valueTemplate}
+					{value} 
+					{editable} 
+					{fieldSchema} 
+					submitOn = { $tableOptionStore?.submitOn }
+					{isHovered} 
+				/> 
 				<Icon on:click={() => open = !open } size="XS" hoverable name="InfoOutline" />
 				<Popover {open} anchor={rowElement} >
 					<Provider data={ {rowKey: rowKey, Value: value} }>

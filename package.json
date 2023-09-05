@@ -17,8 +17,8 @@
     "svelte-legos": "^0.2.1"
   },
   "devDependencies": {
-    "@budibase/bbui": "2.9.36",
     "@budibase/backend-core": "^2.9.19",
+    "@budibase/bbui": "2.9.36",
     "@budibase/shared-core": "^2.9.19",
     "@rollup/plugin-commonjs": "^25.0.0",
     "@rollup/plugin-json": "^6.0.0",

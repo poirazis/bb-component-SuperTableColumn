@@ -86,27 +86,34 @@
         "label": "Icon"
       },
       {
+        "type": "select",
+        "key": "canEdit",
+        "label": "Edit",
+        "showInBar": true,
+        "barStyle": "buttons",
+        "options": [
+          { "label" : "Inherit", "value": "inherit", "barIcon" : "Table" },
+          { "label" : "On", "value": true, "barIcon" : "Checkmark"  },
+          { "label" : "Off", "value": false, "barIcon" : "Cancel" }
+        ],
+        "defaultValue": "inherit"
+      },
+      {
         "type": "boolean",
-        "key": "editable",
-        "label": "Editable",
+        "key": "canFilter",
+        "label": "Filter",
         "defaultValue": true
       },
       {
         "type": "boolean",
-        "key": "resizable",
-        "label": "Resizable",
+        "key": "canSort",
+        "label": "Sort",
         "defaultValue": true
       },
       {
         "type": "boolean",
-        "key": "filtering",
-        "label": "Filtering",
-        "defaultValue": true
-      },
-      {
-        "type": "boolean",
-        "key": "sorting",
-        "label": "Sorting",
+        "key": "canResize",
+        "label": "Resize",
         "defaultValue": true
       },
       {

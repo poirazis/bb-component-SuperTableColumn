@@ -1,32 +1,35 @@
 <script>
 	import Icon from "../../../node_modules/@budibase/bbui/src/Icon/Icon.svelte"
-  import ActionMenu from "../../../node_modules/@budibase/bbui/src/ActionMenu/ActionMenu.svelte"
-  import Item from "../../../node_modules/@budibase/bbui/src/Menu/Item.svelte"
+  import Popover from "../../../node_modules/@budibase/bbui/src/Popover/Popover.svelte"
 
   export let filteringOperators, filterOperator, active
+  export let open = false
 
-  const handleOperatorSelect = ( e, val ) => {
-    e.preventDefault();
-    e.stopPropagation();
-    filterOperator = val
-  }
+  let controlAnchor
 
 </script>
+  
+  <div bind:this={controlAnchor} class="control" class:active> 
+    <Icon size="XS" hoverable name="FilterEdit" 
+      color={ active ? "var(--primaryColor)" : null } 
+      on:click={ () => open = !open }
+    />
+  </div>
 
-  <ActionMenu>
-    <div slot="control" class="control icon">
-      <Icon size="XS" hoverable name="FilterEdit" color={ active ? "var(--primaryColor)" : null } />
-    </div>
-    {#each filteringOperators as option}
-      <Item on:click={ (e) => handleOperatorSelect(e, option.value ) }>
-        {#if option.value === filterOperator }
-          <span class="selected"> { option.label } </span>
-        {:else}
+  <Popover on:close={() => open = false } anchor={controlAnchor} align={"left"} {open}>
+    <div class="options"> 
+      {#each filteringOperators as option }
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <div 
+          class="option text" 
+          class:selected={ option.value == filterOperator }
+          on:click|stopPropagation={() => { filterOperator = option.value; open = false; } }
+        >
           {option.label}
-        {/if}
-      </Item>
-    {/each}
-  </ActionMenu>
+        </div>
+      {/each}
+    </div>
+  </Popover>
 
 <style>
   .control {
@@ -39,6 +42,29 @@
   .selected {
     font-weight: 800;
     color: var(--primaryColor);
+  }
+
+  .options {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    overflow-y: auto;
+  }
+  .option {
+    padding: 0 0.85rem;
+    display: flex;
+    gap: 0.3rem;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    height: 2rem;
+  }
+  .option:hover,
+  .option.focused {
+    background-color: var(--spectrum-global-color-gray-200);
+    border-radius: 4px;
   }
 </style>
 

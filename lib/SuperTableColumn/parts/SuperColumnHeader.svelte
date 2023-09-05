@@ -32,19 +32,33 @@
 	let defaultOperator = defaultOperatorMap[enrichedColumnOptions.schema.type];
   $: filterOperator = defaultOperator
 
+  let isOpen = () => { return false }
+  let openFilteringOptions = false
+
   const handleClickOutside = () => {
-    if ( $columnState == "Entering") 
+    if ( $columnState == "Entering" && isOpen && !isOpen() && !openFilteringOptions ) 
       columnState.cancel();
   }
 
+  const handleKeyboard = ( e ) => {
+
+    if (e.key == "Enter") {
+     columnState.filter ( filterOperator, filterValue )
+    }
+    if (e.key == "Escape") {
+      columnState.cancel();
+    }
+  }
 </script>
 
 <div 
   class="spectrum-Table-headCell" 
   class:enterting={ $columnState == "Entering" } 
   class:filtered={ $columnState == "Filtered" } 
+  tabindex="-1"
   use:clickOutsideAction
   on:clickoutside={handleClickOutside}
+  on:keydown={handleKeyboard}
  >
 
   {#if $columnState === "Idle" || $columnState === "Ascending" || $columnState === "Descending" }
@@ -71,7 +85,8 @@
   {:else}
 
     <SuperTableHeaderFilterOptions 
-      bind:filterOperator 
+      bind:filterOperator
+      bind:open={openFilteringOptions} 
       {filteringOperators} 
       active={$columnState == "Filtered"}
     />
@@ -88,6 +103,7 @@
     {:else if enrichedColumnOptions.schema.type == "formula" }
       <CellString 
         bind:value={filterValue}
+        debounced={800}
         inEdit
         editable
         padded = {false}
@@ -96,6 +112,7 @@
     {:else if enrichedColumnOptions.schema.type  === "array" }
       <CellOptions
         bind:value={filterValue}
+        bind:isOpen
         inEdit
         multi
         editable={true}
@@ -103,11 +120,11 @@
       />
     {:else if enrichedColumnOptions.schema.type  === "options" }
       <CellOptions
-        on:change={(e) => { filterValue = e.detail.value.length > 0 ? e.detail.value[0] : null }}
         inEdit
-        value={ filterValue }
         editable={true}
         fieldSchema = {enrichedColumnOptions.schema}
+        bind:isOpen
+        bind:value={filterValue}
       />
     {:else if ( enrichedColumnOptions.schema.type == "number" || enrichedColumnOptions.schema.type == "bigint" )}
       <CellNumber
@@ -151,12 +168,15 @@
   }
   .enterting {
     gap: 0rem;
-    border: 1px solid var(--spectrum-global-color-gray-300);
-    background-color: var(--spectrum-textfield-m-background-color, var(--spectrum-global-color-gray-100));
+
+    background-color: var(--spectrum-textfield-m-background-color, var(--spectrum-global-color-gray-50));
   }
   .filtered {
     gap: 0rem;
-    background-color: var(--spectrum-textfield-m-background-color, var(--spectrum-global-color-gray-100));
+    color: var(--spectrum-global-color-gray-800);
+    border: 1px solid var(--spectrum-global-color-gray-500);
+    font-weight: 700;
+    background-color: var(--spectrum-textfield-m-background-color, var(--spectrum-global-color-gray-50));
   }
 
   .headerLabel {

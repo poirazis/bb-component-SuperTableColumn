@@ -1,18 +1,16 @@
 <script>
-  import { getContext, onDestroy, beforeUpdate, onMount, createEventDispatcher } from "svelte";
+  import { getContext, onDestroy, onMount, createEventDispatcher } from "svelte";
   import { v4 as uuidv4 } from "uuid";
   import { writable, derived } from "svelte/store";
   import fsm from "svelte-fsm";
 
   import SuperColumnHeader from "./parts/SuperColumnHeader.svelte";
-  import SuperColumnRow from "./parts/SuperColumnRow.svelte";
+  import SuperColumnBody from "./parts/SuperColumnBody.svelte";
   import SuperColumnFooter from "./parts/SuperColumnFooter.svelte";
 
   const tableDataStore = getContext("tableDataStore");
   const tableStateStore = getContext("tableStateStore");
   const tableFilterStore = getContext("tableFilterStore");
-  const tableSelectionStore = getContext("tableSelectionStore");
-  const tableScrollPosition = getContext("tableScrollPosition");
   const tableHoverStore = getContext("tableHoverStore");
   const tableOptionStore = getContext("tableOptionStore");
 
@@ -38,16 +36,16 @@
     },
     Entering: { 
       _enter() { tableFilterStore?.clearFilter({ id: id }); width = column ? column.clientWidth : null },
-      filter( operator , value ) { if ( value ) { setFilter(operator , value ); return "Filtered" } },
+      filter( operator , value ) { if ( value && value.length > 0 ) { setFilter(operator , value ); return "Filtered" } },
       cancel() { return "Idle" }
     },
     Resizing: { stop: () => { return "Idle" } },
     Dragging: { stop: () => { return "Idle" } },
     EditingCell: { stop: () => { return "Idle" } },
     Filtered: { 
-      filter(operator, value) { value != "" ? setFilter(operator,value) : this.clear() },
+      filter(operator, value) { value != "" && value.length > 0 ? setFilter(operator,value) : this.clear() },
       clear() { console.log("Clearing");  return "Entering" },
-      cancel() { tableFilterStore?.clearFilter({ id: id }); return "Idle" } 
+      cancel() {  filterValue = undefined; tableFilterStore?.clearFilter({ id: id });return "Idle" } 
       }
   });
 
@@ -57,7 +55,6 @@
 
   // Internal Variables
   let id = uuidv4();
-  let mouseOver = false;
   let enrichedColumnOptions 
   let resizing = false
   let considerResizing = false
@@ -65,7 +62,6 @@
   let startWidth
   let width
   let column
-  let tableBodyContainer
   let filterValue
   let filterOperator
 
@@ -98,6 +94,7 @@
 
   const enrichdOptions = ( columnOptions ) => {
     return { ...columnOptions, 
+      "id": id,
       "schema" : $tableDataStore.schema[columnOptions.name] ?? {}
     }
   }
@@ -159,28 +156,7 @@
     tableDataStore?.registerColumn({ id: id, field: field });
   }
 
-  function handleScroll(e) {
-    if (mouseOver) {
-      $tableScrollPosition = tableBodyContainer?.scrollTop;
-    }
-  }
 
-  function handleKeyboard ( e ) {
-    if (e.key == "Enter") 
-     columnState.filter ( filterOperator, filterValue )
-    if (e.key == "Escape") {
-      filterValue = ""
-      columnState.cancel();
-    }
-  }
-
-  beforeUpdate(() => {
-    if (
-      tableBodyContainer &&
-      tableBodyContainer.scrollTop != $tableScrollPosition
-    )
-      tableBodyContainer.scrollTop = $tableScrollPosition;
-  });
 
   onDestroy( () => tableDataStore?.unregisterColumn({ id: id, field: columnOptions.name }) );
   onMount( () => startWidth = column ? column.clientWidth : null )
@@ -209,7 +185,6 @@
     ? "center"
     : "flex-start"}
   bind:this={column}
-  on:keydown={handleKeyboard}
   on:mouseleave={() => ($tableHoverStore = null)}
 >
 
@@ -217,46 +192,16 @@
     <div class="superBadge">⚡️</div>
   {/if}
 
-  <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <div 
-      class="grabber" 
-      on:mousedown={ startResizing }
-      on:dblclick={ resetSize }
-      on:mouseenter={ () => ( considerResizing = true ) } on:mouseleave={ () => ( considerResizing = false ) } /> 
+  <div 
+    class="grabber" 
+    on:mousedown={ startResizing }
+    on:dblclick={ resetSize }
+    on:mouseenter={ () => ( considerResizing = true ) } on:mouseleave={ () => ( considerResizing = false ) } /> 
 
-  <!-- Render Column Header -->
   <SuperColumnHeader bind:filterValue bind:filterOperator {columnState} {enrichedColumnOptions} {width} />
-
-  <!-- Render Column Body -->
-  <div
-    class="spectrum-Table-body"
-    style:background-color={$columnState == "Filtered" || $columnState == "Entering" ? "var(--spectrum-global-color-gray-75)" : "var(--spectrum-global-color-gray-50)" }
-    bind:this={tableBodyContainer}
-    on:scroll={handleScroll}
-    on:mouseenter={ () => (mouseOver = true) }
-    on:mouseleave={ () => (mouseOver = false) }
-  >
-    {#each $columnStore as row, index}
-      <SuperColumnRow
-        dynamicHeight={enrichedColumnOptions.hasChildren}
-        popup={ enrichedColumnOptions.hasChildren && enrichedColumnOptions.popup }
-        valueTemplate = { enrichedColumnOptions.template }
-        fieldSchema={enrichedColumnOptions.schema ?? {}}
-        height={$tableStateStore?.rowHeights[index]}
-        minHeight={$tableOptionStore?.rowHeight}
-        rowKey={row.rowKey}
-        value={row.rowValue}
-        editable={enrichedColumnOptions.canEdit}
-        isHovered={$tableHoverStore == index}
-        isSelected={$tableSelectionStore[row.rowKey]}
-        on:resize={(event) => tableStateStore.resizeRow(id, index, event.detail.height)}
-        on:hovered={() => ($tableHoverStore = index)}
-        on:rowClicked={(e) => ($tableStateStore.rowClicked = row.rowKey)}
-      >
-        <slot />
-      </SuperColumnRow>
-    {/each}
-  </div>
+  <SuperColumnBody {columnState} {enrichedColumnOptions} {width} rows={$columnStore}>
+    <slot />
+  </SuperColumnBody>
 
   {#if enrichedColumnOptions.showFooter }
     <SuperColumnFooter>{enrichedColumnOptions.displayName}</SuperColumnFooter>
@@ -297,24 +242,7 @@
     cursor: col-resize;
   }
 
-  :global( .spectrum-Table-body > .spectrum-Table-row:last-of-type ){
-    border-bottom-style: none;
-  }
-  .spectrum-Table-body {
-    height: var(--super-table-body-height);
-    border-radius: 0px;
-    overflow-y: scroll !important;
-    overflow-x: hidden;
-    padding: 0px;
-    margin: 0px;
-    border: none;
-    scrollbar-width: none;
-    border-bottom: none;
-  }
 
-  .spectrum-Table-body::-webkit-scrollbar {
-    display: none;
-  }
   .resizing {
     border-right: 1px solid var(--primaryColor);
   }
