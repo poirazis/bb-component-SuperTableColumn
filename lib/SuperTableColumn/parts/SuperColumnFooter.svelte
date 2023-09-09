@@ -1,16 +1,18 @@
-<div class="spectrum-Table-headCell">
+<div class="spectrum-Table-headcell">
     <slot />
 </div>
 
 <style>
-	.spectrum-Table-headCell {
-		white-space: nowrap;
+  .spectrum-Table-headcell {
+    width: 100%;
 		display: flex;
-		flex-direction: row;
-		justify-content: var(--super-table-footer-horizontal-align);
-		color: var(--super-table-footer-font-color);
 		align-items: center;
-		min-height: 2.3rem;
-		background-color: var(--super-table-footer-background-color);
-	}
+		padding-left: var(--super-table-cell-padding);
+		padding-right: var(--super-table-cell-padding);
+    height: var(--super-table-footer-height);
+		color: var(--super-table-footer-color);
+    background-color: var(--super-table-footer-bg-color);
+    border-right: var(--super-table-vertical-dividers);
+    overflow: hidden;
+  }
 </style>

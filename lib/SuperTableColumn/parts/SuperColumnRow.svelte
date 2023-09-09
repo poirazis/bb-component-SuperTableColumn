@@ -6,6 +6,7 @@
 	import Popover from "../../../node_modules/@budibase/bbui/src/Popover/Popover.svelte";
 	import { SuperTableCell } from "../../../bb-component-SuperTableCell/lib/SuperTableCell/index.js";
 	import Icon from "../../../node_modules/@budibase/bbui/src/Icon/Icon.svelte"
+	import CellSkeleton from "../../../bb-component-SuperTableCell/lib/SuperTableCell/cells/CellSkeleton.svelte";
 
 	const dispatch = createEventDispatcher();
 
@@ -17,6 +18,7 @@
 	export let enrichedColumnOptions
 	export let isSelected
 	export let isHovered
+	export let isLoading
 
 	$: dynamicHeight = enrichedColumnOptions?.hasChildren ?? false
 	$: popup = enrichedColumnOptions?.hasChildren && enrichedColumnOptions?.popup
@@ -63,18 +65,19 @@
 	on:mouseleave={ () => dispatch("unHovered") }
 	on:click={ () => dispatch("rowClicked", {rowKey : rowKey}) }
 	>
+	{#if isLoading }
+		<CellSkeleton />
+	{:else}
 		{#if !dynamicHeight }
-			<Provider data={ value } >
-				<SuperTableCell 
-					{rowKey} 
-					{valueTemplate}
-					{value} 
-					{editable} 
-					{fieldSchema} 
-					submitOn = { $tableOptionStore?.submitOn }
-					{isHovered} 
-					/> 
-			</Provider>
+			<SuperTableCell 
+				{rowKey} 
+				{valueTemplate}
+				{value} 
+				{editable} 
+				{fieldSchema} 
+				submitOn = { $tableOptionStore?.submitOn }
+				{isHovered} 
+				/> 
 		{:else if popup}
 			<div class="wrapper">
 				<SuperTableCell 
@@ -100,14 +103,14 @@
 				</Provider>
 			</div>	
 		{/if}
+	{/if}
 </div>
 
 <style>
 	.spectrum-Table-row {
 		display: flex;
 		align-items: stretch;
-		justify-content: stretch;
-	}
+		justify-content: stretch;	}
 	.wrapper {
 		height: 100%;
 		display: flex;
@@ -117,9 +120,6 @@
 	}
 	.contentsWrapper {
 		height: fit-content;
-	}
-	.spectrum-Table-row {
-		background: var(--super-column-bgcolor);
 	}
 	.is-hovered {
 		background-color: var(--spectrum-table-m-regular-row-background-color-hover, var(--spectrum-alias-highlight-hover));

@@ -17,10 +17,22 @@
   const { builderStore } = getContext("sdk");
   const dispatch = createEventDispatcher();
   
-  const columnState = fsm("Idle", {
+  // Props
+  export let columnOptions;
+  export let tableState
+  export let tableOptions;
+
+  // Allow the Super Table to bind to the Super Column State Machine to control it
+  export const columnState = fsm("Idle", {
+    "*": {
+      tableState( state ) { if ( state == "Loading") { return "Loading" } else return "Idle" }
+    },
     Idle: { 
       sort () { $tableDataStore.sortColumn = enrichedColumnOptions.name; return "Ascending"; } , 
-      filter () { return enrichedColumnOptions.canFilter ? "Entering" : "Idle" } 
+      filter () { return enrichedColumnOptions.canFilter ? "Entering" : "Idle" },
+    },
+    Loading :{ 
+      loaded() { return "Idle" } 
     },
     Ascending: { 
       _enter () { $tableDataStore.sortDirection = "Ascending"; },
@@ -49,10 +61,6 @@
       }
   });
 
-  // Props
-  export let columnOptions;
-  export let tableOptions;
-
   // Internal Variables
   let id = uuidv4();
   let enrichedColumnOptions 
@@ -66,6 +74,7 @@
   let filterOperator
 
   $: filterValue != undefined && filterOperator ? columnState.filter ( filterOperator , filterValue ) : null 
+  $: columnState.tableState($tableState)
 
   // Reactive declaration.
   // nameStore is used in our derived store that holds the column data
@@ -95,7 +104,16 @@
   const enrichdOptions = ( columnOptions ) => {
     return { ...columnOptions, 
       "id": id,
-      "schema" : $tableDataStore.schema[columnOptions.name] ?? {}
+      "schema" : $tableDataStore.schema[columnOptions.name] ?? {},
+      "sizing": columnOptions.width ? "fixed" : tableOptions.columnSizing,
+      "width": columnOptions.width ? columnOptions.width : tableOptions.columnWidth,
+      "maxWidth": tableOptions.columnMaxWidth,
+      "showFooter": tableOptions.showFooter,
+      "showHeader": tableOptions.showHeader,
+      "hasChildren": false,
+      "canEdit": tableOptions.canEdit,
+      "canEdit": tableOptions.canEdit,
+      "canFilter": tableOptions.canFilter
     }
   }
 
@@ -156,12 +174,10 @@
     tableDataStore?.registerColumn({ id: id, field: field });
   }
 
-
-
   onDestroy( () => tableDataStore?.unregisterColumn({ id: id, field: columnOptions.name }) );
   onMount( () => startWidth = column ? column.clientWidth : null )
 
-  $: console.log("State :", $columnState)
+  $: console.log("Column :", $columnState)
 </script>
 
 <svelte:window
@@ -175,7 +191,7 @@
   class:resizing
   class:considerResizing={considerResizing && !resizing}
   style:min-width={ width ? width : enrichedColumnOptions.sizing == "fixed" ? enrichedColumnOptions.width : "auto" }
-  style:max-width={ width ? width : enrichedColumnOptions.sizing == "fixed" ? enrichedColumnOptions.width : columnOptions.maxWidth }
+  style:max-width={ width ? width : enrichedColumnOptions.sizing == "fixed" ? enrichedColumnOptions.width : enrichedColumnOptions.maxWidth }
   style:--super-cell-control-width={ width ?? startWidth }
   style:--super-column-bgcolor={ enrichedColumnOptions.backgroundColor }
   style:--super-column-color={enrichedColumnOptions.color}
@@ -198,8 +214,11 @@
     on:dblclick={ resetSize }
     on:mouseenter={ () => ( considerResizing = true ) } on:mouseleave={ () => ( considerResizing = false ) } /> 
 
-  <SuperColumnHeader bind:filterValue bind:filterOperator {columnState} {enrichedColumnOptions} {width} />
-  <SuperColumnBody {columnState} {enrichedColumnOptions} {width} rows={$columnStore}>
+  {#if enrichedColumnOptions.showHeader}
+    <SuperColumnHeader bind:filterValue bind:filterOperator {columnState} {enrichedColumnOptions} {width} />
+  {/if}
+
+  <SuperColumnBody {columnState} {enrichedColumnOptions} {width} rows= {$columnStore}>
     <slot />
   </SuperColumnBody>
 
@@ -213,10 +232,10 @@
     flex: 1 1 auto;
     position: relative;
     border-right: var(--super-table-vertical-dividers);
+    color: var(--super-table-color);
     display: flex;
     flex-direction: column;
     align-items: stretch;  
-    background-color: var(--spectrum-global-color-gray-75);
   }
   
   .fixed {

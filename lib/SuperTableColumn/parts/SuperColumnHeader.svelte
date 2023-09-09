@@ -55,7 +55,6 @@
   class="spectrum-Table-headCell" 
   class:enterting={ $columnState == "Entering" } 
   class:filtered={ $columnState == "Filtered" } 
-  tabindex="-1"
   use:clickOutsideAction
   on:clickoutside={handleClickOutside}
   on:keydown={handleKeyboard}
@@ -165,10 +164,10 @@
     padding-left: var(--super-table-cell-padding);
     border: 1px solid transparent;
     border-bottom: 1px solid var(--spectrum-alias-border-color-mid);
+    background-color: var(--super-table-header-bg-color);
   }
   .enterting {
     gap: 0rem;
-
     background-color: var(--spectrum-textfield-m-background-color, var(--spectrum-global-color-gray-50));
   }
   .filtered {
@@ -184,20 +183,14 @@
     min-width: 0;
     display: flex;
     align-items: center;
-    color: var(
-      --spectrum-table-header-text-color,
-      var(--spectrum-alias-label-text-color)
-    );
+    justify-content: stretch;
+    min-width: 0;
   }
-
   .innerText {
-    flex: auto;
-    display: flex;
-    justify-content: var(--super-column-alignment);
-    align-items: center;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+    color: var(--super-table-header-color);
   }
 
   .sortable {

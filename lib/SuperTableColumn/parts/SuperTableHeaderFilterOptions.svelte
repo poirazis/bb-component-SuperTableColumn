@@ -15,20 +15,20 @@
       on:click={ () => open = !open }
     />
   </div>
-
+      
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
   <Popover on:close={() => open = false } anchor={controlAnchor} align={"left"} {open}>
-    <div class="options"> 
+    <ul class="spectrum-Menu" role="menu">
       {#each filteringOperators as option }
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <div 
-          class="option text" 
+        <li class="spectrum-Menu-item" 
           class:selected={ option.value == filterOperator }
+          role="menuitem" tabindex="0" 
           on:click|stopPropagation={() => { filterOperator = option.value; open = false; } }
         >
-          {option.label}
-        </div>
+            <span class="spectrum-Menu-itemLabel">{option.label}</span>
+        </li>
       {/each}
-    </div>
+    </ul>
   </Popover>
 
 <style>
@@ -38,33 +38,10 @@
     justify-content: center;
     align-items: center;
   }
-  
   .selected {
     font-weight: 800;
     color: var(--primaryColor);
   }
-
-  .options {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: stretch;
-    overflow-y: auto;
-  }
-  .option {
-    padding: 0 0.85rem;
-    display: flex;
-    gap: 0.3rem;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    height: 2rem;
-  }
-  .option:hover,
-  .option.focused {
-    background-color: var(--spectrum-global-color-gray-200);
-    border-radius: 4px;
-  }
+  
 </style>
 

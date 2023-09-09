@@ -11,28 +11,28 @@
   export let columnState
   export let enrichedColumnOptions
 
-  let tableBodyContainer
+  let columnBodyAnchor
   let mouseOver
   
   const handleScroll = () => {
     if (mouseOver) {
-      $tableScrollPosition = tableBodyContainer?.scrollTop;
+      $tableScrollPosition = columnBodyAnchor?.scrollTop;
     }
   }
 
   const synchScrollPosition = ( position ) => { 
-    if (tableBodyContainer) 
-      if ( position != tableBodyContainer.scrollTop)
-       tableBodyContainer.scrollTop = position 
+    if (columnBodyAnchor) 
+      if ( position != columnBodyAnchor.scrollTop)
+      columnBodyAnchor.scrollTop = position 
   }
 
   $: synchScrollPosition($tableScrollPosition)
 </script>
 
 <div
+  bind:this={columnBodyAnchor}
   class="spectrum-Table-body"
-  style:background-color={$columnState == "Filtered" || $columnState == "Entering" ? "var(--spectrum-global-color-gray-75)" : "var(--spectrum-global-color-gray-50)" }
-  bind:this={tableBodyContainer}
+  style:background-color={$columnState == "Filtered" || $columnState == "Entering" ? "var(--spectrum-global-color-gray-75)" : "var(--super-table-bg-color)" }
   on:scroll={handleScroll}
   on:mouseenter={ () => (mouseOver = true) }
   on:mouseleave={ () => (mouseOver = false) }
@@ -42,6 +42,7 @@
         {row} 
         {index} 
         {enrichedColumnOptions}
+        isLoading={ $columnState == "Loading" }
         isHovered={ $tableHoverStore == index}
         isSelected={ $tableSelectionStore[row.rowKey] }
         on:resize={ (event) => tableStateStore.resizeRow(enrichedColumnOptions.id, index, event.detail.height)}
@@ -59,6 +60,7 @@
   }
   .spectrum-Table-body {
     height: var(--super-table-body-height);
+    color: var(--super-table-color);
     border-radius: 0px;
     overflow-y: scroll !important;
     overflow-x: hidden;
