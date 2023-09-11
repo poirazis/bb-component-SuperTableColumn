@@ -11,6 +11,8 @@
   import CellString from '../../../bb-component-SuperTableCell/lib/SuperTableCell/cells/CellString.svelte';
   import CellBoolean from "../../../bb-component-SuperTableCell/lib/SuperTableCell/cells/CellBoolean.svelte";
 
+  import SuperTableCell from "../../../bb-component-SuperTableCell/lib/SuperTableCell/SuperTableCell.svelte";
+
   export let columnState;
   export let enrichedColumnOptions
   export let filterValue
@@ -49,6 +51,8 @@
       columnState.cancel();
     }
   }
+
+  $: console.log("Header")
 </script>
 
 <div 
@@ -91,14 +95,12 @@
     />
 
     {#if enrichedColumnOptions.schema.type == "string" }
-      <CellString 
-        inEdit
-        bind:value={filterValue}
-        debounced={800}
-        editable
-        {width}
-        placeholder={"Search..."}
-      />
+      <SuperTableCell
+          bind:value={filterValue}
+          fieldSchema={enrichedColumnOptions.schema}
+          initialState="Editing"
+          editable
+        />
     {:else if enrichedColumnOptions.schema.type == "formula" }
       <CellString 
         bind:value={filterValue}

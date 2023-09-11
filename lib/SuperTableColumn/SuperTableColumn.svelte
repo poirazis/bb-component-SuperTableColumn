@@ -1,5 +1,5 @@
 <script>
-  import { getContext, onDestroy, onMount, createEventDispatcher } from "svelte";
+  import { getContext, onDestroy, onMount, createEventDispatcher, setContext } from "svelte";
   import { v4 as uuidv4 } from "uuid";
   import { writable, derived } from "svelte/store";
   import fsm from "svelte-fsm";
@@ -12,7 +12,6 @@
   const tableStateStore = getContext("tableStateStore");
   const tableFilterStore = getContext("tableFilterStore");
   const tableHoverStore = getContext("tableHoverStore");
-  const tableOptionStore = getContext("tableOptionStore");
 
   const { builderStore } = getContext("sdk");
   const dispatch = createEventDispatcher();
@@ -110,7 +109,6 @@
       "maxWidth": tableOptions.columnMaxWidth,
       "showFooter": tableOptions.showFooter,
       "showHeader": tableOptions.showHeader,
-      "hasChildren": false,
       "canEdit": tableOptions.canEdit,
       "canEdit": tableOptions.canEdit,
       "canFilter": tableOptions.canFilter
@@ -159,9 +157,9 @@
   }
 
   const saveBuilderSizing = ( width ) => {
-    let column = $tableOptionStore.columns.findIndex( (col) => ( col.name == columnOptions.name) ) 
+    let column = tableOptions.columns.findIndex( (col) => ( col.name == columnOptions.name) ) 
     if ( column > -1 ) {
-      let newColumns = [ ...$tableOptionStore.columns ]
+      let newColumns = [ ...tableOptions.columns ]
       newColumns[column].width = width
       dispatch("saveSettings", newColumns )
     }
@@ -177,7 +175,12 @@
   onDestroy( () => tableDataStore?.unregisterColumn({ id: id, field: columnOptions.name }) );
   onMount( () => startWidth = column ? column.clientWidth : null )
 
-  $: console.log("Column :", $columnState)
+  $: console.log("Column Enriched  :", enrichedColumnOptions)
+  let columnOptionsStore = new writable({})
+  setContext ("superColumnOptions", columnOptionsStore );
+
+  $: $columnOptionsStore = enrichedColumnOptions
+
 </script>
 
 <svelte:window
@@ -218,7 +221,7 @@
     <SuperColumnHeader bind:filterValue bind:filterOperator {columnState} {enrichedColumnOptions} {width} />
   {/if}
 
-  <SuperColumnBody {columnState} {enrichedColumnOptions} {width} rows= {$columnStore}>
+  <SuperColumnBody {columnState} {enrichedColumnOptions} {width} rows={$columnStore}>
     <slot />
   </SuperColumnBody>
 

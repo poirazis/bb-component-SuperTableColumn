@@ -1,5 +1,6 @@
 <script>
-	import { getContext , createEventDispatcher } from "svelte";
+	import { getContext , createEventDispatcher, setContext } from "svelte";
+	import { writable } from "svelte/store"
 	import { elementSizeStore } from "svelte-legos";
 	const { Provider } = getContext("sdk")
 
@@ -20,7 +21,6 @@
 	export let isHovered
 	export let isLoading
 
-	$: dynamicHeight = enrichedColumnOptions?.hasChildren ?? false
 	$: popup = enrichedColumnOptions?.hasChildren && enrichedColumnOptions?.popup
 	$: valueTemplate = enrichedColumnOptions?.template
 	$: fieldSchema = enrichedColumnOptions?.schema ?? {}
@@ -38,7 +38,7 @@
 	let contents, size, cellHeight, rowElement, open 
 
 	// Ractive request for additional height if needed 
-	$: if ( size && dynamicHeight ) 
+	$: if ( size &&  enrichedColumnOptions.hasChildren ) 
 	{ 
 		cellHeight = Math.ceil (parseFloat($size.height))
 
@@ -50,8 +50,7 @@
 		}
 	}
 
-	$: if ( dynamicHeight && contents ) size = elementSizeStore(contents) 
-
+	$: if ( enrichedColumnOptions.hasChildren && contents ) size = elementSizeStore(contents) 
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -68,7 +67,7 @@
 	{#if isLoading }
 		<CellSkeleton />
 	{:else}
-		{#if !dynamicHeight }
+		{#if !enrichedColumnOptions.hasChildren }
 			<SuperTableCell 
 				{rowKey} 
 				{valueTemplate}
@@ -99,7 +98,7 @@
 		{:else}
 			<div bind:this={contents} class="contentsWrapper"> 
 				<Provider data={ {rowKey: rowKey, Value: value} }>
-						<slot /> 
+					<slot /> 
 				</Provider>
 			</div>	
 		{/if}

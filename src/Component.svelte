@@ -1,5 +1,5 @@
 <script>
-  // Budibase Minimum
+
   const component = getContext("component");
   import { getContext } from "svelte";
   const { styleable, builderStore, screenStore } = getContext("sdk");
@@ -7,7 +7,9 @@
   // SuperTable Component
   import { SuperTableColumn } from "../lib/SuperTableColumn/index.js";
   import { findComponentById } from "../lib/builderHelpers" 
-  const tableDataStore = getContext("tableDataStore")
+
+  const tableOptions = getContext("tableOptionStore")
+  const tableState = getContext("tableState")
 
   // We keep a hidden property of type "dataprovider" so we can use the "field" property type
   export let dataProvider 
@@ -16,10 +18,10 @@
   export let icon 
   export let columnWidth
   export let minWidth
-  export let resizable
-  export let editable
-  export let filtering
-  export let sorting
+  export let canResize
+  export let canEdit
+  export let canFilter
+  export let canSort
   export let popup
   export let searchMode
 
@@ -34,9 +36,9 @@
   // to adjust various properties
   $: getOrderAmongstSiblings( $screenStore )
   function getOrderAmongstSiblings ( ) {
-    if (!tableDataStore ) return;
+    if (!tableOptions ) return;
 
-    let parentTableID = $tableDataStore?._parentID
+    let parentTableID = $tableOptions.componentID;
     let parentTableObj = findComponentById ( $screenStore.activeScreen.props, parentTableID )
     order = parentTableObj?._children?.findIndex ( v => v._id == id )
     isLast = order == parentTableObj?._children?.length - 1
@@ -49,9 +51,11 @@
     hasChildren: $component.children > 0,
     asComponent: $builderStore.inBuilder,
     header: header ?? "",
-    editable: editable,
-    filtering: filtering,
-    sorting: sorting,
+    canEdit: canEdit,
+    canFilter: canFilter,
+    canSort: canSort,
+    columnSizing: "flex",
+    columnMaxWidth: null,
     popup: popup,
     order: order,
     isFirst: isFirst,
@@ -60,16 +64,10 @@
   }
 </script>
 
-<div class="superColumnWrapper" use:styleable={$component.styles}>
-  { #if !tableDataStore }
+<div use:styleable={$component.styles}>
+  { #if !tableOptions }
     <p> Super Table Column can olny be placed inside a Super Table </p>
   {:else}    
-    <SuperTableColumn {columnOptions} > <slot /> </SuperTableColumn>
+    <SuperTableColumn {columnOptions} tableOptions={$tableOptions} {tableState}> <slot /> </SuperTableColumn>
   {/if}
 </div>
-
-<style>
-  .superColumnWrapper {
-    flex: auto;
-  }
-</style>
