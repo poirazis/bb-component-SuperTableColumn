@@ -24,7 +24,8 @@
   // Allow the Super Table to bind to the Super Column State Machine to control it
   export const columnState = fsm("Idle", {
     "*": {
-      tableState( state ) { if ( state == "Loading") { return "Loading" } else return "Idle" }
+      tableState( state ) { if ( state == "Loading") { return "Loading" } else return "Idle" },
+      cancel() { return "Idle"}
     },
     Idle: { 
       sort () { $tableDataStore.sortColumn = enrichedColumnOptions.name; return "Ascending"; } , 
@@ -56,7 +57,7 @@
     Filtered: { 
       filter(operator, value) { value != "" && value.length > 0 ? setFilter(operator,value) : this.clear() },
       clear() { console.log("Clearing");  return "Entering" },
-      cancel() {  filterValue = undefined; tableFilterStore?.clearFilter({ id: id });return "Idle" } 
+      cancel() { tableFilterStore?.clearFilter({ id: id }); return "Idle" } 
       }
   });
 
@@ -69,10 +70,8 @@
   let startWidth
   let width
   let column
-  let filterValue
-  let filterOperator
+  let columnOptionsStore = new writable({})
 
-  $: filterValue != undefined && filterOperator ? columnState.filter ( filterOperator , filterValue ) : null 
   $: columnState.tableState($tableState)
 
   // Reactive declaration.
@@ -99,6 +98,11 @@
   $: if (!enrichedColumnOptions.hasChildren) { tableStateStore?.removeRowHeights(id); }
   $: initializeColumn(enrichedColumnOptions.name);
   $: tableDataStore?.updateColumn({ id: id, field: enrichedColumnOptions.name });
+
+  // Pass Context to possible Super Table Cell Component Children
+  $: $columnOptionsStore = enrichedColumnOptions
+  setContext ("superColumnOptions", columnOptionsStore );
+
 
   const enrichdOptions = ( columnOptions ) => {
     return { ...columnOptions, 
@@ -175,11 +179,7 @@
   onDestroy( () => tableDataStore?.unregisterColumn({ id: id, field: columnOptions.name }) );
   onMount( () => startWidth = column ? column.clientWidth : null )
 
-  $: console.log("Column Enriched  :", enrichedColumnOptions)
-  let columnOptionsStore = new writable({})
-  setContext ("superColumnOptions", columnOptionsStore );
-
-  $: $columnOptionsStore = enrichedColumnOptions
+  $: console.log("Column State", $columnState)
 
 </script>
 
@@ -189,6 +189,7 @@
   />
 
 <div
+  bind:this={column}
   class="superTableColumn"
   class:fixed={ enrichedColumnOptions.sizing == "fixed" }
   class:resizing
@@ -203,7 +204,6 @@
     : enrichedColumnOptions.align == "Center"
     ? "center"
     : "flex-start"}
-  bind:this={column}
   on:mouseleave={() => ($tableHoverStore = null)}
 >
 
@@ -218,7 +218,10 @@
     on:mouseenter={ () => ( considerResizing = true ) } on:mouseleave={ () => ( considerResizing = false ) } /> 
 
   {#if enrichedColumnOptions.showHeader}
-    <SuperColumnHeader bind:filterValue bind:filterOperator {columnState} {enrichedColumnOptions} {width} />
+    <SuperColumnHeader 
+      {columnState} 
+      {enrichedColumnOptions}
+     />
   {/if}
 
   <SuperColumnBody {columnState} {enrichedColumnOptions} {width} rows={$columnStore}>

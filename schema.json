@@ -3,7 +3,7 @@
   "metadata": {},
   "schema": {
     "name": "bb-component-SuperTableColumn",
-    "friendlyName": "⚡️ Super Data Column",
+    "friendlyName": "⚡️ Super Column",
     "description": "Customizable columns for the SuperTable Component",
     "info": "You can add components to customize how cell values are displayed.",
     "icon": "TableColumnAddRight",

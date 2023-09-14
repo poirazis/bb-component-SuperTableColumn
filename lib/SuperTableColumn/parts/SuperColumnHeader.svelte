@@ -1,23 +1,13 @@
 <script>
 	import Icon from "../../../node_modules/@budibase/bbui/src/Icon/Icon.svelte"
+  import Popover from "../../../node_modules/@budibase/bbui/src/Popover/Popover.svelte"
 	import { dataFilters } from '@budibase/shared-core';
-  import { clickOutsideAction } from "svelte-legos";
-
-  import SuperTableHeaderFilterOptions from './SuperTableHeaderFilterOptions.svelte';
-
-  import CellOptions from "../../../bb-component-SuperTableCell/lib/SuperTableCell/cells/CellOptions.svelte"
-  import CellDatetime from '../../../bb-component-SuperTableCell/lib/SuperTableCell/cells/CellDatetime.svelte';
-  import CellNumber from '../../../bb-component-SuperTableCell/lib/SuperTableCell/cells/CellNumber.svelte';
-  import CellString from '../../../bb-component-SuperTableCell/lib/SuperTableCell/cells/CellString.svelte';
-  import CellBoolean from "../../../bb-component-SuperTableCell/lib/SuperTableCell/cells/CellBoolean.svelte";
-
-  import SuperTableCell from "../../../bb-component-SuperTableCell/lib/SuperTableCell/SuperTableCell.svelte";
+  import SuperCell from "../../../bb-component-SuperTableCell/lib/SuperTableCell/SuperCell.svelte";
 
   export let columnState;
   export let enrichedColumnOptions
-  export let filterValue
+  export let filterValue = []
   export let filterOperator
-  export let width
 
 	const defaultOperatorMap = {
 		 "string" : "fuzzy",
@@ -30,17 +20,12 @@
      "bigint" : "equal",
 	}
 
+  let headerAnchor 
+  let showFilteringOptions = false  
+
 	let filteringOperators = dataFilters.getValidOperatorsForType(enrichedColumnOptions.schema.type);
 	let defaultOperator = defaultOperatorMap[enrichedColumnOptions.schema.type];
   $: filterOperator = defaultOperator
-
-  let isOpen = () => { return false }
-  let openFilteringOptions = false
-
-  const handleClickOutside = () => {
-    if ( $columnState == "Entering" && isOpen && !isOpen() && !openFilteringOptions ) 
-      columnState.cancel();
-  }
 
   const handleKeyboard = ( e ) => {
 
@@ -52,19 +37,20 @@
     }
   }
 
-  $: console.log("Header")
+  $: console.log ("Column State in Header ", $columnState)
+
 </script>
 
+<!-- svelte-ignore a11y-click-events-have-key-events -->
 <div 
+  bind:this={headerAnchor}
   class="spectrum-Table-headCell" 
   class:enterting={ $columnState == "Entering" } 
-  class:filtered={ $columnState == "Filtered" } 
-  use:clickOutsideAction
-  on:clickoutside={handleClickOutside}
+  class:filtered={ $columnState == "Filtered" }
   on:keydown={handleKeyboard}
  >
 
-  {#if $columnState === "Idle" || $columnState === "Ascending" || $columnState === "Descending" }
+  {#if $columnState == "Idle" || $columnState == "Ascending" || $columnState == "Descending" }
 
 		{#if enrichedColumnOptions.canFilter }
 			<div class="actionIcon">
@@ -72,7 +58,7 @@
 			</div>
 		{/if}
 
-		<!-- svelte-ignore a11y-click-events-have-key-events -->
+
 		<div class="headerLabel" >
 			<div class="innerText" class:sortable={enrichedColumnOptions.canSort} on:click={columnState.sort}>
          {enrichedColumnOptions.displayName}
@@ -85,73 +71,40 @@
       </div>
     {/if}
   
-  {:else}
-
-    <SuperTableHeaderFilterOptions 
-      bind:filterOperator
-      bind:open={openFilteringOptions} 
-      {filteringOperators} 
-      active={$columnState == "Filtered"}
+  {:else if $columnState == "Entering" || $columnState == "Filtered" }
+    <SuperCell
+      fieldSchema={enrichedColumnOptions.schema}
+      initialState="Editing"
+      lockState
+      unstyled
+      on:change={ ( e ) => 
+      { 
+        console.log("Super Cell Change", e.detail )
+        columnState.filter(defaultOperator, e.detail )
+      }}
     />
 
-    {#if enrichedColumnOptions.schema.type == "string" }
-      <SuperTableCell
-          bind:value={filterValue}
-          fieldSchema={enrichedColumnOptions.schema}
-          initialState="Editing"
-          editable
-        />
-    {:else if enrichedColumnOptions.schema.type == "formula" }
-      <CellString 
-        bind:value={filterValue}
-        debounced={800}
-        inEdit
-        editable
-        padded = {false}
-        fieldSchema = {enrichedColumnOptions.schema}
-      />
-    {:else if enrichedColumnOptions.schema.type  === "array" }
-      <CellOptions
-        bind:value={filterValue}
-        bind:isOpen
-        inEdit
-        multi
-        editable={true}
-        fieldSchema = {enrichedColumnOptions.schema}
-      />
-    {:else if enrichedColumnOptions.schema.type  === "options" }
-      <CellOptions
-        inEdit
-        editable={true}
-        fieldSchema = {enrichedColumnOptions.schema}
-        bind:isOpen
-        bind:value={filterValue}
-      />
-    {:else if ( enrichedColumnOptions.schema.type == "number" || enrichedColumnOptions.schema.type == "bigint" )}
-      <CellNumber
-        bind:value={ filterValue }
-        inEdit
-        fieldSchema = {enrichedColumnOptions.schema}
-      />
-    {:else if enrichedColumnOptions.schema.type  === "datetime" }
-      <CellDatetime
-        inEdit
-        value = { new Date() }
-        on:change={(e) => { filterValue = e.detail.value }}
-      />
-    {:else if enrichedColumnOptions.schema.type  === "boolean" }
-      <CellBoolean
-        on:change={(e) => { filterValue = e.detail.value }}
-        inEdit
-        value={ filterValue }
-        fieldSchema = {enrichedColumnOptions.schema}
-      />
-    {/if}
-
     <div class="actionIcon">
-      <Icon on:click={ columnState.cancel } size="XS" hoverable name="Close"/>
+      <Icon size="M" hoverable name="Close" color={ "var(--spectrum-global-color-red-500)" }  on:click={ columnState.cancel } />
     </div>
+  {:else if $columnState == "Loading" }
+    <p> ... </p>
   {/if}
+
+
+  <Popover anchor={headerAnchor} align="left" open={showFilteringOptions} on:close={ () => { showFilteringOptions = false; }}>
+    <ul class="spectrum-Menu" role="menu">
+      {#each filteringOperators as option }
+        <li class="spectrum-Menu-item" 
+          class:selected={ option.value == filterOperator }
+          role="menuitem" tabindex="0" 
+          on:click|stopPropagation={() => { filterOperator = option.value; open = false; } }
+        >
+            <span class="spectrum-Menu-itemLabel">{option.label}</span>
+        </li>
+      {/each}
+    </ul>
+  </Popover>
 </div>
 
 <style>
@@ -169,7 +122,7 @@
     background-color: var(--super-table-header-bg-color);
   }
   .enterting {
-    gap: 0rem;
+    gap: 0.5rem;
     background-color: var(--spectrum-textfield-m-background-color, var(--spectrum-global-color-gray-50));
   }
   .filtered {
