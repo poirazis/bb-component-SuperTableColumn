@@ -1,6 +1,13 @@
-<div class="spectrum-Table-headcell">
-    <slot />
-</div>
+<script>
+  export let columnState
+  export let enrichedColumnOptions
+</script>
+
+{#if enrichedColumnOptions.showFooter}
+  <div class="spectrum-Table-headcell">
+      {enrichedColumnOptions.displayName}
+  </div>
+{/if}
 
 <style>
   .spectrum-Table-headcell {

@@ -1,13 +1,10 @@
 <script>
-
-  const component = getContext("component");
   import { getContext } from "svelte";
-  const { styleable, builderStore, screenStore } = getContext("sdk");
-
-  // SuperTable Component
   import { SuperTableColumn } from "../lib/SuperTableColumn/index.js";
   import { findComponentById } from "../lib/builderHelpers" 
 
+  const { styleable, builderStore, screenStore } = getContext("sdk");
+  const component = getContext("component");
   const tableOptions = getContext("tableOptionStore")
   const tableState = getContext("tableState")
 
@@ -15,18 +12,26 @@
   export let dataProvider 
   export let field
 
-  export let icon 
-  export let columnWidth
+  export let valueTemplate
+
+  export let sizing
+  export let flexFactor
   export let minWidth
+  export let maxWidth
+  export let fixedWidth
+
   export let canResize
   export let canEdit
   export let canFilter
   export let canSort
-  export let popup
-  export let searchMode
+
+  export let icon
+  export let iconColor
 
   export let header, headerAlign, headerFontColor, headerBackground;
-  export let rowHorizontalAlign, rowVerticalAlign, rowFontColor, rowBackground;
+
+  export let rowHorizontalAlign, rowFontColor, rowBackground, fontWeight;
+
   export let footer, footerAlign, footerFontColor, footerBackground;
 
   let id = $component.id;
@@ -35,6 +40,46 @@
   // We nned to know the position of the Super Columns amonsgt other siblings
   // to adjust various properties
   $: getOrderAmongstSiblings( $screenStore )
+  $: columnOptions = {
+    name: field,
+    align: rowHorizontalAlign,
+    displayName: header ? header : field, 
+    hasChildren: $component.children > 0,
+    asComponent: $builderStore.inBuilder,
+    color: rowFontColor,
+    background: rowBackground,
+    fontWeight: fontWeight,
+    header: header ?? "",
+    template: valueTemplate,
+    canEdit: canEdit,
+    canFilter: canFilter,
+    canSort: canSort,
+    sizing: sizing,
+    minWidth: minWidth,
+    maxWidth: maxWidth,
+    fixedWidth: fixedWidth,
+    order: order,
+    isFirst: isFirst,
+    isLast: isLast,
+    superColumn: true
+  }
+
+  // When the Super Columns is used as a Component, the sizing variables need to be applied to the wrapping div and not the 
+  // SuperColumn itself.
+  $: $component.styles = {
+    ...$component.styles,
+    normal: {
+      ...$component.styles.normal,
+      "flex": $tableOptions?.columnSizing == "flexible" && sizing == "flexible" ? flexFactor + " 1 auto" : "0 0 auto",
+      "width" : sizing == "fixed" || $tableOptions?.columnSizing == "fixed" 
+        ? fixedWidth ? fixedWidth : $tableOptions?.columnFixedWidth 
+        ? $tableOptions?.columnFixedWidth : "auto"
+        : "auto",
+      "min-width" : sizing == "flexible" && minWidth ? minWidth : "auto",
+      "max-width" : sizing == "flexible" && $tableOptions?.columnSizing == "flexible" ? maxWidth ? maxWidth : $tableOptions.columnMaxWidth : "auto",
+    }
+  }
+
   function getOrderAmongstSiblings ( ) {
     if (!tableOptions ) return;
 
@@ -44,30 +89,17 @@
     isLast = order == parentTableObj?._children?.length - 1
     isFirst = order == 0  
   }
-  
-  $: columnOptions = {
-    name: field,
-    displayName: header ? header : field, 
-    hasChildren: $component.children > 0,
-    asComponent: $builderStore.inBuilder,
-    header: header ?? "",
-    canEdit: canEdit,
-    canFilter: canFilter,
-    canSort: canSort,
-    columnSizing: "flex",
-    columnMaxWidth: null,
-    popup: popup,
-    order: order,
-    isFirst: isFirst,
-    isLast: isLast,
-    superColumn: true
-  }
 </script>
 
 <div use:styleable={$component.styles}>
-  { #if !tableOptions }
-    <p> Super Table Column can olny be placed inside a Super Table </p>
-  {:else}    
-    <SuperTableColumn {columnOptions} tableOptions={$tableOptions} {tableState}> <slot /> </SuperTableColumn>
+  {#if !tableOptions }
+    <p> Super Column can olny be placed inside a Super Table </p>
+  {:else}   
+    <SuperTableColumn 
+      {columnOptions} 
+      tableOptions={$tableOptions} 
+      {tableState}> 
+        <slot /> 
+    </SuperTableColumn>
   {/if}
 </div>

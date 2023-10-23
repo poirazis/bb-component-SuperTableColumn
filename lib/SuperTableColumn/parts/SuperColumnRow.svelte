@@ -1,15 +1,14 @@
 <script>
 	import { getContext , createEventDispatcher } from "svelte";
-	import Popover from "../../../node_modules/@budibase/bbui/src/Popover/Popover.svelte";
-	import Icon from "../../../node_modules/@budibase/bbui/src/Icon/Icon.svelte"
 	import { SuperTableCell } from "../../../bb-component-SuperTableCell/lib/SuperTableCell/index.js";
 	import CellSkeleton from "../../../bb-component-SuperTableCell/lib/SuperTableCell/cells/CellSkeleton.svelte";
 	import { elementSizeStore } from "svelte-legos";
 
-	const dispatch = createEventDispatcher();
 	const { Provider } = getContext("sdk")
 	const tableOptionStore = getContext("tableOptionStore");
 	const tableStateStore = getContext("tableStateStore");
+
+	const dispatch = createEventDispatcher();
 
 	export let row
 	export let index
@@ -18,7 +17,6 @@
 	export let isHovered
 	export let isLoading
 
-	$: popup = enrichedColumnOptions?.hasChildren && enrichedColumnOptions?.popup
 	$: valueTemplate = enrichedColumnOptions?.template
 	$: fieldSchema = enrichedColumnOptions?.schema ?? {}
 	$: height = $tableStateStore?.rowHeights[index]
@@ -73,27 +71,11 @@
 				{fieldSchema} 
 				submitOn = { $tableOptionStore?.submitOn }
 				{isHovered} 
+				{enrichedColumnOptions}
 				/> 
-		{:else if popup}
-			<div class="wrapper" on:click={() => open = !open } >
-				<Icon size="XS" hoverable color={"var(--spectrum-global-color-gray-500)"} name="InfoOutline" />
-				<SuperTableCell 
-					{rowKey} 
-					{valueTemplate}
-					{value} 
-					{fieldSchema} 
-					submitOn = { $tableOptionStore?.submitOn }
-					{isHovered} 
-				/> 
-				<Popover {open} anchor={rowElement} align="left" dismissible >
-					<Provider data={ {rowKey: rowKey, Value: value} }>
-							<slot /> 
-					</Provider>
-				</Popover>
-			</div>
 		{:else}
 			<div bind:this={contents} class="contentsWrapper"> 
-				<Provider data={ {rowKey: rowKey, Value: value} }>
+				<Provider data={ { rowKey: rowKey, Value: value } }>
 					<slot /> 
 				</Provider>
 			</div>	
@@ -107,23 +89,11 @@
 		align-items: stretch;
 		justify-content: stretch;	
 	}
-
-	.wrapper {
-		flex: auto;
-		display: flex;
-		align-items: stretch;
-		justify-content: stretch;
-		padding-right: var(--super-table-cell-padding);
-		padding-left: var(--super-table-cell-padding);
-	}
-
-	.wrapper:hover {
-		color: var(--primaryColor);
-		cursor: pointer;
-	}
 	.contentsWrapper {
 		flex: auto;
 		height: fit-content;
+		display: flex;
+		justify-items: var(--super-column-alignment);
 	}
 	.is-hovered {
 		background-color: var(--spectrum-table-m-regular-row-background-color-hover, var(--spectrum-alias-highlight-hover));

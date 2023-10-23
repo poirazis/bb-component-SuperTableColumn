@@ -32,7 +32,7 @@
 <div
   bind:this={columnBodyAnchor}
   class="spectrum-Table-body"
-  style:background-color={$columnState == "Filtered" || $columnState == "Entering" ? "var(--spectrum-global-color-gray-75)" : "var(--super-table-bg-color)" }
+  class:filtered={$columnState == "Filtered"}
   on:scroll={handleScroll}
   on:mouseenter={ () => (mouseOver = true) }
   on:mouseleave={ () => (mouseOver = false) }
@@ -55,7 +55,7 @@
 </div>
 
 <style>
-    :global( .spectrum-Table-body > .spectrum-Table-row:last-of-type ){
+  :global( .spectrum-Table-body > .spectrum-Table-row:last-of-type ){
     border-bottom-style: none;
   }
   .spectrum-Table-body {
@@ -70,7 +70,9 @@
     scrollbar-width: none;
     border-bottom: none;
   }
-
+  .spectrum-Table-body.filtered {
+    background-color: var(--spectrum-global-color-gray-75);
+  }
   .spectrum-Table-body::-webkit-scrollbar {
     display: none;
   }

@@ -13,7 +13,6 @@
   const tableFilterStore = getContext("tableFilterStore");
   const tableHoverStore = getContext("tableHoverStore");
 
-  const { builderStore } = getContext("sdk");
   const dispatch = createEventDispatcher();
   
   // Props
@@ -47,18 +46,19 @@
       filter: "Entering" 
     },
     Entering: { 
-      _enter() { tableFilterStore?.clearFilter({ id: id }); width = column ? column.clientWidth : null },
-      filter( operator , value ) { if ( value && value.length > 0 ) { setFilter(operator , value ); return "Filtered" } },
+        filter( filterObj ) { 
+          tableState.setFilter( { ...filterObj, id: id } )  
+          return "Filtered" },
       cancel() { return "Idle" }
     },
     Resizing: { stop: () => { return "Idle" } },
     Dragging: { stop: () => { return "Idle" } },
     EditingCell: { stop: () => { return "Idle" } },
     Filtered: { 
-      filter(operator, value) { value != "" && value.length > 0 ? setFilter(operator,value) : this.clear() },
-      clear() { console.log("Clearing");  return "Entering" },
-      cancel() { tableFilterStore?.clearFilter({ id: id }); return "Idle" } 
-      }
+      filter( filterObj ) { tableState.setFilter( { ...filterObj, id: id } ) },
+      clear() { tableFilterStore?.clearFilter({ id: id }); return "Entering" },
+      cancel() { this.clear(); return "Idle" }
+    }
   });
 
   // Internal Variables
@@ -86,7 +86,7 @@
       }));
     }) || null;
 
-  $: enrichedColumnOptions = enrichdOptions(columnOptions)
+  $: enrichedColumnOptions = enrichOptions(columnOptions)
 
   $: if (
     $tableDataStore.sortColumn !== enrichedColumnOptions.name &&
@@ -102,34 +102,33 @@
   // Pass Context to possible Super Table Cell Component Children
   $: $columnOptionsStore = enrichedColumnOptions
   setContext ("superColumnOptions", columnOptionsStore );
-
-
-  const enrichdOptions = ( columnOptions ) => {
-    return { ...columnOptions, 
-      "id": id,
-      "schema" : $tableDataStore.schema[columnOptions.name] ?? {},
-      "sizing": columnOptions.width ? "fixed" : tableOptions.columnSizing,
-      "width": columnOptions.width ? columnOptions.width : tableOptions.columnWidth,
-      "maxWidth": tableOptions.columnMaxWidth,
-      "showFooter": tableOptions.showFooter,
-      "showHeader": tableOptions.showHeader,
-      "canEdit": tableOptions.canEdit,
-      "canEdit": tableOptions.canEdit,
-      "canFilter": tableOptions.canFilter
+  
+  const enrichOptions = ( columnOptionsIn ) => {
+    // if the Super Column was instantiated as a BB Component
+    if ( columnOptionsIn.superColumn ) {
+      return { 
+        ...columnOptionsIn, 
+        "id": id,
+        "schema" : $tableDataStore.schema[columnOptionsIn.name] ?? {},
+        "showFooter": tableOptions.showFooter,
+        "showHeader": tableOptions.showHeader,
+      }
+    // if the Super Column was instantiated by the Super Table
+    } else {
+      return { 
+        ...columnOptionsIn, 
+        "id": id,
+        "schema" : $tableDataStore.schema[columnOptionsIn.name] ?? {},
+        "sizing": columnOptionsIn.width ? "fixed" : tableOptions.columnSizing,
+        "fixedWidth": tableOptions.columnFixedWidth,
+        "maxWidth": tableOptions.columnMaxWidth,
+        "minWidth": tableOptions.columnMinWidth,
+        "showFooter": tableOptions.showFooter,
+        "showHeader": tableOptions.showHeader,
+        "canEdit": tableOptions.canEdit,
+        "canFilter": tableOptions.canFilter
+      }
     }
-  }
-
-  const setFilter = ( operator , value ) => {
-    console.log("Set Filter")
-
-    if ( value )
-      tableFilterStore?.setFilter({
-        id: id,
-        field: enrichedColumnOptions.name,
-        operator: operator,
-        value: value,
-        valueType: "Value",
-    })
   }
 
   const startResizing = ( e ) => {
@@ -178,9 +177,6 @@
 
   onDestroy( () => tableDataStore?.unregisterColumn({ id: id, field: columnOptions.name }) );
   onMount( () => startWidth = column ? column.clientWidth : null )
-
-  $: console.log("Column State", $columnState)
-
 </script>
 
 <svelte:window
@@ -191,63 +187,38 @@
 <div
   bind:this={column}
   class="superTableColumn"
-  class:fixed={ enrichedColumnOptions.sizing == "fixed" }
   class:resizing
   class:considerResizing={considerResizing && !resizing}
-  style:min-width={ width ? width : enrichedColumnOptions.sizing == "fixed" ? enrichedColumnOptions.width : "auto" }
-  style:max-width={ width ? width : enrichedColumnOptions.sizing == "fixed" ? enrichedColumnOptions.width : enrichedColumnOptions.maxWidth }
-  style:--super-cell-control-width={ width ?? startWidth }
-  style:--super-column-bgcolor={ enrichedColumnOptions.backgroundColor }
-  style:--super-column-color={enrichedColumnOptions.color}
-  style:--super-column-alignment={enrichedColumnOptions.align == "Right"
-    ? "flex-end"
-    : enrichedColumnOptions.align == "Center"
-    ? "center"
-    : "flex-start"}
+  style:flex={ enrichedColumnOptions.sizing == "fixed" ? "0 0 auto" : "1 0 auto" }
+  style:width={ enrichedColumnOptions.sizing == "fixed" ? enrichedColumnOptions.fixedWidth : "auto"}
+  style:min-width={ enrichedColumnOptions.sizing == "flexible" ? enrichedColumnOptions.minWidth : null}
+  style:max-width={ enrichedColumnOptions.sizing == "flexible" ? enrichedColumnOptions.maxWidth : null}
   on:mouseleave={() => ($tableHoverStore = null)}
 >
-
-  {#if columnOptions.superColumn && $builderStore.inBuilder }
-    <div class="superBadge">⚡️</div>
-  {/if}
-
   <div 
     class="grabber" 
     on:mousedown={ startResizing }
     on:dblclick={ resetSize }
-    on:mouseenter={ () => ( considerResizing = true ) } on:mouseleave={ () => ( considerResizing = false ) } /> 
+    on:mouseenter={ () => ( considerResizing = true ) } on:mouseleave={ () => ( considerResizing = false ) } 
+  /> 
 
-  {#if enrichedColumnOptions.showHeader}
-    <SuperColumnHeader 
-      {columnState} 
-      {enrichedColumnOptions}
-     />
-  {/if}
+  <SuperColumnHeader {columnState} {enrichedColumnOptions} />
 
-  <SuperColumnBody {columnState} {enrichedColumnOptions} {width} rows={$columnStore}>
+  <SuperColumnBody {columnState} {enrichedColumnOptions} rows={$columnStore}>
     <slot />
   </SuperColumnBody>
 
-  {#if enrichedColumnOptions.showFooter }
-    <SuperColumnFooter>{enrichedColumnOptions.displayName}</SuperColumnFooter>
-  {/if}
+  <SuperColumnFooter {columnState} {enrichedColumnOptions} />
 </div>
 
 <style>
   .superTableColumn {
-    flex: 1 1 auto;
     position: relative;
     border-right: var(--super-table-vertical-dividers);
     color: var(--super-table-color);
     display: flex;
     flex-direction: column;
     align-items: stretch;  
-  }
-  
-  .fixed {
-    flex: 0 0;
-    min-width: var(--super-column-width);
-    width: var(--super-column-width);
   }
   .grabber {
     width: 3px;
@@ -260,42 +231,15 @@
     background-color: var(--spectrum-global-color-gray-200);
     transition: all 130ms ease-in-out;
   }
-
   .grabber:hover {
     width: 8px;
     background-color: var(--spectrum-global-color-gray-600);
     cursor: col-resize;
   }
-
-
   .resizing {
     border-right: 1px solid var(--primaryColor);
   }
   .considerResizing {
     border-right: 1px solid var(--spectrum-global-color-gray-500);
-  }
-
-  .superBadge {
-    position: absolute;
-    top: 10px;
-    right: 24px;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    z-index: 100;
-    font-size: 11px;
-    display: grid;
-    align-items: center;
-    justify-items: center;
-    opacity: 0.8;
-    background-color: var(--spectrum-global-color-gray-300);
-    border: 1px solid var(--spectrum-global-color-gray-300);
-    transition: all 130ms ease-in-out;
-  }
-
-  .superBadge:hover {
-    opacity: 1;
-    filter: drop-shadow(5px 5px 6px #00000050);
-    border: 1px solid var(--spectrum-global-color-gray-400);
   }
 </style>

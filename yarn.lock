@@ -159,12 +159,19 @@
     pouchdb-promise "^6.0.4"
     through2 "^2.0.0"
 
-"@budibase/shared-core@2.10.2", "@budibase/shared-core@^2.10.0":
+"@budibase/shared-core@2.10.2":
   version "2.10.2"
   resolved "https://registry.yarnpkg.com/@budibase/shared-core/-/shared-core-2.10.2.tgz#969979cb4837cced3bee129a1f70195ebeeb659e"
   integrity sha512-RvKapUSh6eaC0Qy8i1EcgphKhZHQY9SFWSkn1OAFjrEaYujwVPQFGXTcoJQWvBKbzjcmULTmj2H8IZpgL06EoQ==
   dependencies:
     "@budibase/types" "2.10.2"
+
+"@budibase/shared-core@^2.11.41":
+  version "2.11.41"
+  resolved "https://registry.yarnpkg.com/@budibase/shared-core/-/shared-core-2.11.41.tgz#61c9a4964a5fb0fd6c5ffc9752751f1c275bf5b5"
+  integrity sha512-8doDkJi9DZcE7aH02Qg8yKs5gM/C688JFOwcE4cete9KyqJ+pK7LIje+JZ4JzZEE05SzlwEJGHTm9LY9fIfCMw==
+  dependencies:
+    "@budibase/types" "2.11.41"
 
 "@budibase/string-templates@2.10.2":
   version "2.10.2"
@@ -182,6 +189,13 @@
   version "2.10.2"
   resolved "https://registry.yarnpkg.com/@budibase/types/-/types-2.10.2.tgz#c4f9544da9c1b6d49350bcc2635def48eebab03c"
   integrity sha512-0kSDpgBcL8+wmKECCgahvnZaItSkLwL0xgpFr5Uw77QM0+kU69bG7CgeDBPuVMbVmzMR/ekiq1CowndM1MrhdA==
+  dependencies:
+    scim-patch "^0.7.0"
+
+"@budibase/types@2.11.41":
+  version "2.11.41"
+  resolved "https://registry.yarnpkg.com/@budibase/types/-/types-2.11.41.tgz#e9dd7a3a5e9601ae830e0974444015841318d962"
+  integrity sha512-isVggr3VmLK/eYh6JHioCxTywU07/nJ1DuUOAcpwobtlKRiyD8F8M8FBiSyxm67FzRxW6o/ErPcUGaU3GdIoTQ==
   dependencies:
     scim-patch "^0.7.0"
 

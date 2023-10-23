@@ -3,8 +3,8 @@
   "metadata": {},
   "schema": {
     "name": "bb-component-SuperTableColumn",
-    "friendlyName": "⚡️ Super Column",
-    "description": "Customizable columns for the SuperTable Component",
+    "friendlyName": "Super Column",
+    "description": "Customizable columns for the Super Table Component",
     "info": "You can add components to customize how cell values are displayed.",
     "icon": "TableColumnAddRight",
     "hasChildren": true,
@@ -27,26 +27,13 @@
       },
       {
         "type": "select",
-        "key": "columnWidth",
-        "label": "Column Width",
-        "options": [
-          {"label": "Fixed Minimum Width", "value": "0"},
-          {"label": "Responsive Tiny", "value": "0.1"},
-          {"label": "Responsive Extra Small", "value": "0.25"},
-          {"label": "Responsive Small", "value": "0.5"},
-          {"label": "Responsive Medium", "value": "1"},
-          {"label": "Responsive Large", "value": "1.5"},
-          {"label": "Responsive Double", "value": "2"},
-          {"label": "Responsive Triple", "value": "3"}   
+        "key": "columnType",
+        "label" : "Field Type",
+        "options" : [
+          {"label" : "Auto", "value": "auto" },
+          {"label" : "Relationship", "value": "link" }
         ],
-        "defaultValue": "1"
-      },
-      {
-        "type": "text",
-        "key": "minWidth",
-        "label": "Minimum Width",
-        "dependsOn": { "setting": "columnWidth", "value": "0" },
-        "defaultValue": "fit-contents"
+        "defaultValue" : "auto"
       },
       {
         "type": "text",
@@ -55,18 +42,14 @@
       },
       {
         "type": "text",
-        "key": "footer",
-        "label": "Footer"
+        "key": "valueTemplate",
+        "label": "Value",
+        "nested" : "true"
       },
       {
-        "type": "select",
-        "key": "columnType",
-        "label" : "Column Type",
-        "options" : [
-          {"label" : "Auto", "value": "auto" },
-          {"label" : "Relationship", "value": "link" }
-        ],
-        "defaultValue" : "auto"
+        "type": "text",
+        "key": "footer",
+        "label": "Footer"
       },
       {
         "section" : true,
@@ -79,6 +62,42 @@
             "label" : "Data Source"
           }
         ]
+      },
+      {
+        "type": "select",
+        "key": "sizing",
+        "label": "Column Sizing",
+        "options": [
+          {"label": "Fixed", "value": "fixed"},
+          {"label": "Flexible", "value": "flexible"}
+        ],
+        "defaultValue" : "flexible"
+      },
+      {
+        "type" : "number",
+        "key" : "flexFactor",
+        "label" : "Flex Factor",
+        "min" : 1,
+        "defaultValue" : 1,
+        "dependsOn" : { "setting" : "sizing", "value" : "flexible"}
+      },
+      {
+        "type" : "text",
+        "key" : "minWidth",
+        "label" : "Min Width",
+        "dependsOn" : { "setting" : "sizing", "value" : "flexible"}
+      },
+      {
+        "type" : "text",
+        "key" : "maxWidth",
+        "label" : "Max Width",
+        "dependsOn" : { "setting" : "sizing", "value" : "flexible"}
+      },
+      {
+        "type" : "text",
+        "key" : "fixedWidth",
+        "label" : "Width",
+        "dependsOn" : { "setting" : "sizing", "value" : "fixed"}
       },
       {
         "type": "icon",
@@ -117,22 +136,6 @@
         "defaultValue": true
       },
       {
-        "type" : "select",
-        "key": "hideOn",
-        "label": "Hide On",
-        "options": [
-          { "label": "Tablet", "value" : "tablet" },
-          { "label": "Mobile", "value" : "mobile" },
-          { "label": "Desktop", "value" : "desktop" }
-        ]
-      },
-      {
-        "type": "boolean",
-        "key": "popup",
-        "label": "Slot In Popup",
-        "defaultValue": false
-      },
-      {
         "type": "select",
         "label": "Search Mode",
         "key": "searchMode",
@@ -162,31 +165,25 @@
             "barStyle": "buttons",
             "options": [
               {
-                "label": "Inherit",
-                "value": "inherit",
-                "barIcon": "Table",
-                "barTitle": "Inherit Setting From Table"
-              },
-              {
                 "label": "Left",
-                "value": "left",
+                "value": "flex-start",
                 "barIcon": "TextAlignLeft",
-                "barTitle": "Text Align Left"
+                "barTitle": "Header Align Left"
               },
               {
                 "label": "Center",
                 "value": "center",
                 "barIcon": "TextAlignCenter",
-                "barTitle": "Text Align Center"
+                "barTitle": "Header Align Center"
               },
               {
                 "label": "Right",
-                "value": "right",
+                "value": "flex-end",
                 "barIcon": "TextAlignRight",
-                "barTitle": "Text Align Right"
+                "barTitle": "Header Align Right"
               }
             ],
-            "defaultValue": "inherit"
+            "defaultValue": "flex-start"
           },
           {
             "type": "color",
@@ -196,104 +193,66 @@
           {
             "type": "color",
             "key": "headerBackground",
-            "label": "Background Color"
+            "label": "BG Color"
           }
         ]
       },
       {
         "section": true,
-        "name": "Customize Row Settings",
+        "name": "Row Settings",
         "dependsOn": "customize",
         "settings": [
           {
             "type": "select",
-            "label": "Row Horizontal Align",
+            "label": "Hor. Align",
             "key": "rowHorizontalAlign",
             "showInBar": true,
             "barStyle": "buttons",
             "options": [
               {
-                "label": "Inherit",
-                "value": "inherit",
-                "barIcon": "Table",
-                "barTitle": "Inherit Setting From Table"
-              },
-              {
                 "label": "Left",
                 "value": "flex-start",
                 "barIcon": "AlignLeft",
-                "barTitle": "Align left"
+                "barTitle": "Cell Align left"
               },
               {
                 "label": "Center",
                 "value": "center",
                 "barIcon": "AlignCenter",
-                "barTitle": "Align center"
+                "barTitle": "Cell Align center"
               },
               {
                 "label": "Right",
                 "value": "flex-end",
                 "barIcon": "AlignRight",
-                "barTitle": "Align right"
-              },
-              {
-                "label": "Stretch",
-                "value": "stretch",
-                "barIcon": "MoveLeftRight",
-                "barTitle": "Align stretched horizontally"
+                "barTitle": "Cell Align right"
               }
             ],
-            "defaultValue": "inherit"
+            "defaultValue": "flex-start"
           },
           {
-            "type": "select",
-            "label": "Row Vertical Align",
-            "key": "rowVerticalAlign",
-            "showInBar": true,
-            "barStyle": "buttons",
-            "options": [
-              {
-                "label": "Inherit",
-                "value": "inherit",
-                "barIcon": "Table",
-                "barTitle": "Inherit Setting From Table"
-              },
-              {
-                "label": "Top",
-                "value": "flex-start",
-                "barIcon": "AlignTop",
-                "barTitle": "Align top"
-              },
-              {
-                "label": "Middle",
-                "value": "center",
-                "barIcon": "AlignMiddle",
-                "barTitle": "Align middle"
-              },
-              {
-                "label": "Bottom",
-                "value": "flex-end",
-                "barIcon": "AlignBottom",
-                "barTitle": "Align bottom"
-              }
-            ],
-            "defaultValue": "inherit"
-          },
-          {
-            "type": "color",
+            "type": "text",
             "key": "rowFontColor",
-            "label": "Text Color"
+            "label": "Font Color",
+            "nested" : "true"
           },
           {
-            "type": "color",
+            "type": "text",
             "key": "rowBackground",
-            "label": "Background Color"
+            "label": "Bg Color",
+            "nested" : "true"
+          },
+          {
+            "type": "text",
+            "key": "fontWeight",
+            "label": "Font Weight",
+            "nested" : "true"
           }
         ]
       },
       {
         "section": true,
-        "name": "Customize Footer Settings",
+        "name": "Footer Settings",
         "dependsOn": "customize",
         "settings": [
           {
@@ -304,41 +263,35 @@
             "barStyle": "buttons",
             "options": [
               {
-                "label": "Inherit",
-                "value": "inherit",
-                "barIcon": "Table",
-                "barTitle": "Inherit Setting From Table"
-              },
-              {
                 "label": "Left",
-                "value": "left",
+                "value": "flex-start",
                 "barIcon": "TextAlignLeft",
-                "barTitle": "Text Align Left"
+                "barTitle": "Footer Align Left"
               },
               {
                 "label": "Center",
                 "value": "center",
                 "barIcon": "TextAlignCenter",
-                "barTitle": "Text Align Center"
+                "barTitle": "Footer Align Center"
               },
               {
                 "label": "Right",
-                "value": "right",
+                "value": "flex-end",
                 "barIcon": "TextAlignRight",
-                "barTitle": "Text Align Right"
+                "barTitle": "Footer Align Right"
               }
             ],
-            "defaultValue": "inherit"
+            "defaultValue": "flex-start"
           },
           {
             "type": "color",
             "key": "footerFontColor",
-            "label": "Text Color"
+            "label": "Font Color"
           },
           {
             "type": "color",
             "key": "footerBackground",
-            "label": "Background Color"
+            "label": "Bg Color"
           }
         ]
       }
@@ -348,12 +301,12 @@
         "type": "static",
         "values": [
           {
-            "label": "Row ID",
+            "label": "id",
             "key": "rowKey",
             "type": "object"
           },
           {
-            "label": "Cell Value",
+            "label": "Value",
             "key": "Value",
             "type": "object"
           }
