@@ -1,27 +1,12 @@
 <script>
-  import { createEventDispatcher } from "svelte";
-  import clickOutside from "../../../node_modules/@budibase/bbui/src/Actions/click_outside"
-
 	import Icon from "../../../node_modules/@budibase/bbui/src/Icon/Icon.svelte"
-	import { dataFilters } from '@budibase/shared-core';
+  import Popover  from "../../../node_modules/@budibase/bbui/src/Popover/Popover.svelte"
+	import { dataFilters } from '@budibase/shared-core/';
+  import { clickOutsideAction } from "svelte-legos";
+  import SuperCell from "../../../bb-component-SuperTableCell/lib/SuperTableCell/SuperCell.svelte";
 
-  import SuperTableHeaderFilterOptions from './SuperTableHeaderFilterOptions.svelte';
-
-  import CellOptions from "../../../bb-component-SuperTableCell/lib/SuperTableCell/cells/CellOptions.svelte"
-  import CellDatetime from '../../../bb-component-SuperTableCell/lib/SuperTableCell/cells/CellDatetime.svelte';
-  import CellNumber from '../../../bb-component-SuperTableCell/lib/SuperTableCell/cells/CellNumber.svelte';
-  import CellString from '../../../bb-component-SuperTableCell/lib/SuperTableCell/cells/CellString.svelte';
-  import CellBoolean from "../../../bb-component-SuperTableCell/lib/SuperTableCell/cells/CellBoolean.svelte";
-
-  const dispatch = createEventDispatcher();
-
-  // The FSM state of the Column
   export let columnState;
-	export let fieldSchema;
-  export let filtering;
-  export let sorting;
-
-  let filteredValue;
+  export let columnOptions
 
 	const defaultOperatorMap = {
 		 "string" : "fuzzy",
@@ -34,172 +19,170 @@
      "bigint" : "equal",
 	}
 
-	let filteringOperators = dataFilters.getValidOperatorsForType(fieldSchema.type);
-	let defaultOperator = defaultOperatorMap[fieldSchema.type];
-  let filteringOperator = defaultOperator
-  let headerAnchor
-  let width 
+  let headerAnchor 
+  let showFilteringOptions = false  
+  let cellState
+  let filterValue
 
-  function applyFilter ( filter ) {
-    filteredValue = filter.value
+	let filteringOperators = dataFilters.getValidOperatorsForType(columnOptions?.schema?.type);
+	let defaultOperator = defaultOperatorMap[columnOptions?.schema?.type];
+  $: filterOperator = defaultOperator
+
+  const handleValueChange = ( e ) => {
+    filterValue = e.detail
+    if ( filterValue != undefined && filterValue != "" && filterValue.length != [] ) {
+      columnState.filter( buildFilter( filterOperator, filterValue ) )
+    } else {
+      columnState.clear()
+    }
   }
 
-  $: dispatch("applyFilter", { value: filteredValue , operator: filteringOperator } )
-
-  function handleKeyboard (e) {
-    if (e.key == "Escape") 
-      dispatch("clearFilter")
+  const buildFilter = ( operator , value ) => {
+    return {
+            field: columnOptions.name,
+            operator: operator,
+            value: columnOptions.schema.type == "number" ? Number(value) : value,
+            valueType: "Value",
+          }
   }
 
-  const showFilters = () => {
-    width = headerAnchor.clientWidth - 50; 
+  const showFilters = ( e ) => {
+    filterValue = undefined
     columnState.filter();
   }
+
+  const handleClickOutside = ( e ) => {
+    if ( $columnState == "Entering" && $cellState != "EditingWithEditor" )
+      columnState.cancel();
+  }
+
+  const handleKeyboard = ( e ) => {
+    if (e.key == "Enter") {
+     columnState.filter ( filterOperator, filterValue )
+    }
+    if (e.key == "Escape") {
+      columnState.cancel();
+    }
+  }
+
 </script>
 
-<div 
-  class="spectrum-Table-headCell" 
-  class:enterting={ $columnState == "Entering" } 
-  class:filtered={ $columnState == "Filtered" } 
-  bind:this={headerAnchor}
-  on:keydown={handleKeyboard}
-  use:clickOutside={ columnState.cancel } >
+{#if columnOptions.showHeader}
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+  <div 
+    bind:this={headerAnchor}
+    class="spectrum-Table-headCell" 
+    class:enterting={ $columnState == "Entering" } 
+    class:filtered={ $columnState == "Filtered" }
+    on:keydown={handleKeyboard}
+    use:clickOutsideAction
+    on:clickoutside={ () => { 
+      if (($columnState == "Entering" || $columnState == "Filtered") && !showFilteringOptions) 
+        setTimeout(handleClickOutside, 10) 
+    }}
+  >
 
-  {#if $columnState === "Idle" || $columnState === "Ascending" || $columnState === "Descending" }
+    {#if $columnState == "Idle" || $columnState == "Ascending" || $columnState == "Descending" }
 
-		{#if filtering}
-			<div class="actionIcon">
-				<Icon on:click={showFilters} size="XS" hoverable name="Filter" color={ "var(--spectrum-global-color-gray-700)" } />
-			</div>
-		{/if}
+      {#if columnOptions.canFilter }
+        <div class="actionIcon">
+          <Icon on:click={showFilters} size="XS" hoverable name="Filter" color={ "var(--spectrum-global-color-gray-600)" } />
+        </div>
+      {/if}
 
-		<!-- svelte-ignore a11y-click-events-have-key-events -->
-		<div class="headerLabel" >
-			<div class="innerText" class:sortable={sorting} on:click={() => { if (sorting) dispatch("sort") } }>
-         <slot />
+
+      <div class="headerLabel" style:justify-content={columnOptions?.headerAlign} >
+        <div class="innerText" class:sortable={columnOptions.canSort} on:click={columnState.sort}>
+          {columnOptions.displayName}
+        </div>
       </div>
-		</div>
 
-    {#if $columnState !== "Idle" }
-      <div class="actionIcon sort">
-        <Icon size="XS" name= { $columnState === "Descending" ? "SortOrderDown" : "SortOrderUp"}/>
+      {#if $columnState !== "Idle" }
+        <div class="actionIcon sort">
+          <Icon size="XS" name= { $columnState === "Descending" ? "SortOrderDown" : "SortOrderUp"}/>
+        </div>
+      {/if}
+    
+    {:else if $columnState == "Entering" || $columnState == "Filtered" }
+      <div class="actionIcon" style:padding-right={"0.5rem"}>
+        <Icon size="XS" hoverable name="Settings" color={ $columnState == "Filtered" ? "var(--spectrum-global-color-blue-500)" : null }  on:click={ () => ( showFilteringOptions = true )} />
       </div>
-    {/if}
-  
-  {:else}
 
-    <SuperTableHeaderFilterOptions 
-      bind:filteringOperator 
-      {filteringOperators} 
-      active={$columnState == "Filtered"}
-    />
+      <SuperCell
+        bind:cellState
+        value={filterValue}
+        fieldSchema={columnOptions.schema}
+        initialState="Editing"
+        lockState
+        unstyled
+        on:change={handleValueChange}
+      />
 
-    {#if fieldSchema.type == "string" }
-      <CellString 
-        on:change={ (e) => { filteredValue = e.detail.value; } }
-        inEdit
-        value = { filteredValue }
-        editable
-        {width}
-        padded = {false}
-        placeholder={"Search..."}
-        {fieldSchema}
-      />
-    {:else if fieldSchema.type == "formula" }
-      <CellString 
-        on:change={ (e) => { filteredValue = e.detail.value; } }
-        inEdit
-        value = { filteredValue }
-        editable
-        padded = {false}
-        {fieldSchema}
-      />
-    {:else if fieldSchema.type  === "array" }
-      <CellOptions
-        on:change={ (e) => { filteredValue = e.detail.value } }
-        inEdit
-        value={ filteredValue }
-        multi
-        editable={true}
-        {fieldSchema}
-      />
-    {:else if fieldSchema.type  === "options" }
-      <CellOptions
-        on:change={(e) => { filteredValue = e.detail.value.length > 0 ? e.detail.value[0] : null }}
-        inEdit
-        value={ filteredValue }
-        editable={true}
-        {fieldSchema}
-      />
-    {:else if ( fieldSchema.type == "number" || fieldSchema.type == "bigint" )}
-      <CellNumber
-        on:change={(e) => { filteredValue = Number(e.detail.value) }}
-        inEdit
-        value={ filteredValue }
-        {fieldSchema}
-      />
-    {:else if fieldSchema.type  === "datetime" }
-      <CellDatetime
-        inEdit
-        value = { new Date() }
-        on:change={(e) => { filteredValue = e.detail.value }}
-      />
-    {:else if fieldSchema.type  === "boolean" }
-      <CellBoolean
-        on:change={(e) => { filteredValue = e.detail.value }}
-        inEdit
-        value={ filteredValue }
-        {fieldSchema}
-      />
+      <div class="actionIcon">
+        <Icon size="XS" hoverable name="Close" color={ "var(--spectrum-global-color-red-500)" }  on:click={ columnState.cancel } />
+      </div>
+    {:else if $columnState == "Loading" }
+      <p> ... </p>
     {/if}
 
-    <div class="actionIcon close">
-      <Icon on:click={ columnState.cancel } size="XS" hoverable name="Close"/>
-    </div>
-  {/if}
 
-
-</div>
+    <Popover anchor={headerAnchor} align="left" open={showFilteringOptions} on:close={ () => { showFilteringOptions = false; }}>
+      <ul class="spectrum-Menu" role="menu">
+        {#each filteringOperators as option }
+          <li class="spectrum-Menu-item" 
+            class:selected={ option.value == filterOperator }
+            role="menuitem" tabindex="0" 
+            on:click|stopPropagation={() => { 
+              filterOperator = option.value; 
+              showFilteringOptions = false; 
+              columnState.filter( buildFilter( filterOperator, filterValue ) )
+            } }
+          >
+              <span class="spectrum-Menu-itemLabel">{option.label}</span>
+          </li>
+        {/each}
+      </ul>
+    </Popover>
+  </div>
+{/if}
 
 <style>
   .spectrum-Table-headCell {
     display: flex;
     align-items: stretch;
+    justify-content: stretch;
     height: 2.5rem;
     gap: 0.5rem;
     padding: unset;
     padding-right: var(--super-table-cell-padding);
     padding-left: var(--super-table-cell-padding);
+    border: 1px solid transparent;
     border-bottom: 1px solid var(--spectrum-alias-border-color-mid);
+    background-color: var(--super-table-header-bg-color);
   }
   .enterting {
-    border-bottom: 1px solid var(--spectrum-global-color-gray-400);
+    gap: 0.5rem;
     background-color: var(--spectrum-textfield-m-background-color, var(--spectrum-global-color-gray-50));
   }
   .filtered {
-    border-bottom: 1px solid var(--primaryColor);
-    background-color: var(--spectrum-textfield-m-background-color, var(--spectrum-global-color-gray-50));
+    gap: 0rem;
+    color: var(--spectrum-global-color-gray-800);
+    border: 1px solid var(--spectrum-global-color-gray-500);
+    font-weight: 700;
+    background-color: var(--spectrum-textfield-m-background-color, var(--spectrum-global-color-gray-100));
   }
 
   .headerLabel {
     flex: 1 1 auto;
+    display: flex;
+    align-items: center;
     min-width: 0;
-    display: flex;
-    align-items: center;
-    color: var(
-      --spectrum-table-header-text-color,
-      var(--spectrum-alias-label-text-color)
-    );
   }
-
   .innerText {
-    flex: auto;
-    display: flex;
-    justify-content: var(--super-column-alignment);
-    align-items: center;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+    color: var(--super-table-header-color);
   }
 
   .sortable {
@@ -214,7 +197,8 @@
     justify-content: center;
   }
 
-  .close {
-    background-color: var(--spectrum-textfield-m-background-color, var(--spectrum-global-color-gray-50));
+  .selected {
+    color: var(--primaryColor);
+    background-color: var(--spectrum-global-color-gray-75);
   }
 </style>

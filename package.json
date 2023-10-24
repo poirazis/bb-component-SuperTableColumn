@@ -1,6 +1,6 @@
 {
   "name": "bb-component-SuperTableColumn",
-  "version": "1.0.24-beta",
+  "version": "2.0.0-alpha",
   "description": "Customizable columns for the SuperTable Component",
   "author": "Michael Poirazi",
   "license": "MIT",
@@ -17,9 +17,9 @@
     "svelte-legos": "^0.2.1"
   },
   "devDependencies": {
-    "@budibase/bbui": "2.9.36",
-    "@budibase/backend-core": "^2.9.19",
-    "@budibase/shared-core": "^2.9.19",
+    "@budibase/backend-core": "^2.10.2",
+    "@budibase/bbui": "^2.11.30",
+    "@budibase/shared-core": "2.11.30",
     "@rollup/plugin-commonjs": "^25.0.0",
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.0.0",

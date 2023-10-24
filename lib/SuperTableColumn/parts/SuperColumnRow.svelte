@@ -1,25 +1,29 @@
 <script>
 	import { getContext , createEventDispatcher } from "svelte";
+	import { SuperTableCell } from "../../../bb-component-SuperTableCell/lib/SuperTableCell/index.js";
+	import CellSkeleton from "../../../bb-component-SuperTableCell/lib/SuperTableCell/cells/CellSkeleton.svelte";
 	import { elementSizeStore } from "svelte-legos";
-	const { Provider } = getContext("sdk")
 
-	import Popover from "../../../node_modules/@budibase/bbui/src/Popover/Popover.svelte";
-	import { SuperTableCell, SuperTableCellOptions } from "../../../bb-component-SuperTableCell/lib/SuperTableCell/index.js";
-	import Icon from "../../../node_modules/@budibase/bbui/src/Icon/Icon.svelte"
+	const { Provider } = getContext("sdk")
+	const tableOptionStore = getContext("tableOptionStore");
+	const tableStateStore = getContext("tableStateStore");
 
 	const dispatch = createEventDispatcher();
 
-	const tableOptionStore = getContext("tableOptionStore");
-
-	export let rowKey
-	export let value
+	export let row
+	export let index
+	export let columnOptions
 	export let isSelected
 	export let isHovered
-	export let dynamicHeight
-	export let popup
-	export let editable
-	export let fieldSchema
-	export let valueTemplate
+	export let isLoading
+
+	$: valueTemplate = columnOptions?.template
+	$: fieldSchema = columnOptions?.schema ?? {}
+	$: height = $tableStateStore?.rowHeights[index]
+	$: minHeight = $tableOptionStore?.rowHeight
+	$: rowKey = row?.rowKey
+	$: value = row?.rowValue
+	$: editable = columnOptions?.canEdit
 
 	// the proposed height
 	export let height
@@ -29,9 +33,9 @@
 	let contents, size, cellHeight, rowElement, open 
 
 	// Ractive request for additional height if needed 
-	$: if ( size && dynamicHeight ) 
+	$: if ( size &&  columnOptions.hasChildren ) 
 	{ 
-		cellHeight = Math.ceil (parseFloat($size.height))
+		cellHeight = Math.ceil (parseFloat(contents?.scrollHeight))
 
 		if ( cellHeight > height ) 
 		{
@@ -41,8 +45,7 @@
 		}
 	}
 
-	$: if ( dynamicHeight && contents ) size = elementSizeStore(contents) 
-
+	$: if ( columnOptions.hasChildren && contents ) size = elementSizeStore(contents) 
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -56,55 +59,41 @@
 	on:mouseleave={ () => dispatch("unHovered") }
 	on:click={ () => dispatch("rowClicked", {rowKey : rowKey}) }
 	>
-		{#if !dynamicHeight }
-			<Provider data={ value } >
-				<SuperTableCell 
-					{rowKey} 
-					{valueTemplate}
-					{value} 
-					{editable} 
-					{fieldSchema} 
-					submitOn = { $tableOptionStore?.submitOn }
-					{isHovered} 
-					/> 
-			</Provider>
-		{:else if popup}
-			<div class="wrapper">
-				<SuperTableCell {rowKey} {value} {editable} {fieldSchema} /> 
-				<Icon on:click={() => open = !open } size="XS" hoverable name="InfoOutline" />
-				<Popover {open} anchor={rowElement} >
-					<Provider data={ {rowKey: rowKey, Value: value} }>
-							<slot /> 
-					</Provider>
-				</Popover>
-			</div>
+	{#if isLoading }
+		<CellSkeleton />
+	{:else}
+		{#if !columnOptions.hasChildren }
+			<SuperTableCell 
+				{rowKey} 
+				{valueTemplate}
+				{value} 
+				{editable} 
+				{fieldSchema} 
+				submitOn = { $tableOptionStore?.submitOn }
+				{isHovered} 
+				{columnOptions}
+				/> 
 		{:else}
 			<div bind:this={contents} class="contentsWrapper"> 
-				<Provider data={ {rowKey: rowKey, Value: value} }>
-						<slot /> 
+				<Provider data={ { rowKey: rowKey, Value: value } }>
+					<slot /> 
 				</Provider>
 			</div>	
 		{/if}
+	{/if}
 </div>
 
 <style>
 	.spectrum-Table-row {
 		display: flex;
 		align-items: stretch;
-		justify-content: stretch;
-	}
-	.wrapper {
-		height: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding-right: 12px;
+		justify-content: stretch;	
 	}
 	.contentsWrapper {
-		height: fit-content;
-	}
-	.spectrum-Table-row {
-		background: var(--super-column-bgcolor);
+		flex: 1 1 auto;
+		display: flex;
+		align-items: stretch;
+		justify-content: stretch;	
 	}
 	.is-hovered {
 		background-color: var(--spectrum-table-m-regular-row-background-color-hover, var(--spectrum-alias-highlight-hover));
