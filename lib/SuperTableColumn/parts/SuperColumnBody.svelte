@@ -9,7 +9,7 @@
 
   export let rows = []
   export let columnState
-  export let enrichedColumnOptions
+  export let columnOptions
 
   let columnBodyAnchor
   let mouseOver
@@ -32,6 +32,7 @@
 <div
   bind:this={columnBodyAnchor}
   class="spectrum-Table-body"
+  style:background-color={columnOptions.background}
   class:filtered={$columnState == "Filtered"}
   on:scroll={handleScroll}
   on:mouseenter={ () => (mouseOver = true) }
@@ -41,11 +42,11 @@
       <SuperColumnRow
         {row} 
         {index} 
-        {enrichedColumnOptions}
+        {columnOptions}
         isLoading={ $columnState == "Loading" }
         isHovered={ $tableHoverStore == index}
         isSelected={ $tableSelectionStore[row.rowKey] }
-        on:resize={ (event) => tableStateStore.resizeRow(enrichedColumnOptions.id, index, event.detail.height)}
+        on:resize={ (event) => tableStateStore.resizeRow(columnOptions.id, index, event.detail.height)}
         on:hovered={() => ($tableHoverStore = index)}
         on:rowClicked={(e) => ($tableStateStore.rowClicked = row.rowKey)}
       >
@@ -68,7 +69,6 @@
     margin: 0px;
     border: none;
     scrollbar-width: none;
-    border-bottom: none;
   }
   .spectrum-Table-body.filtered {
     background-color: var(--spectrum-global-color-gray-75);

@@ -42,6 +42,7 @@
   $: getOrderAmongstSiblings( $screenStore )
   $: columnOptions = {
     name: field,
+    schema: dataProvider?.schema[field] ?? {},
     align: rowHorizontalAlign,
     displayName: header ? header : field, 
     hasChildren: $component.children > 0,
@@ -50,6 +51,7 @@
     background: rowBackground,
     fontWeight: fontWeight,
     header: header ?? "",
+    headerAlign: headerAlign,
     template: valueTemplate,
     canEdit: canEdit,
     canFilter: canFilter,
@@ -58,10 +60,12 @@
     minWidth: minWidth,
     maxWidth: maxWidth,
     fixedWidth: fixedWidth,
+    showHeader: true,
     order: order,
     isFirst: isFirst,
     isLast: isLast,
-    superColumn: true
+    superColumn: true,
+    padding: $tableOptions?.cellPadding
   }
 
   // When the Super Columns is used as a Component, the sizing variables need to be applied to the wrapping div and not the 

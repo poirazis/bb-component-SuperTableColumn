@@ -6,7 +6,7 @@
   import SuperCell from "../../../bb-component-SuperTableCell/lib/SuperTableCell/SuperCell.svelte";
 
   export let columnState;
-  export let enrichedColumnOptions
+  export let columnOptions
 
 	const defaultOperatorMap = {
 		 "string" : "fuzzy",
@@ -24,8 +24,8 @@
   let cellState
   let filterValue
 
-	let filteringOperators = dataFilters.getValidOperatorsForType(enrichedColumnOptions.schema.type);
-	let defaultOperator = defaultOperatorMap[enrichedColumnOptions.schema.type];
+	let filteringOperators = dataFilters.getValidOperatorsForType(columnOptions?.schema?.type);
+	let defaultOperator = defaultOperatorMap[columnOptions?.schema?.type];
   $: filterOperator = defaultOperator
 
   const handleValueChange = ( e ) => {
@@ -39,9 +39,9 @@
 
   const buildFilter = ( operator , value ) => {
     return {
-            field: enrichedColumnOptions.name,
+            field: columnOptions.name,
             operator: operator,
-            value: enrichedColumnOptions.schema.type == "number" ? Number(value) : value,
+            value: columnOptions.schema.type == "number" ? Number(value) : value,
             valueType: "Value",
           }
   }
@@ -64,9 +64,10 @@
       columnState.cancel();
     }
   }
+
 </script>
 
-{#if enrichedColumnOptions.showHeader}
+{#if columnOptions.showHeader}
 <!-- svelte-ignore a11y-click-events-have-key-events -->
   <div 
     bind:this={headerAnchor}
@@ -83,16 +84,16 @@
 
     {#if $columnState == "Idle" || $columnState == "Ascending" || $columnState == "Descending" }
 
-      {#if enrichedColumnOptions.canFilter }
+      {#if columnOptions.canFilter }
         <div class="actionIcon">
           <Icon on:click={showFilters} size="XS" hoverable name="Filter" color={ "var(--spectrum-global-color-gray-600)" } />
         </div>
       {/if}
 
 
-      <div class="headerLabel" >
-        <div class="innerText" class:sortable={enrichedColumnOptions.canSort} on:click={columnState.sort}>
-          {enrichedColumnOptions.displayName}
+      <div class="headerLabel" style:justify-content={columnOptions?.headerAlign} >
+        <div class="innerText" class:sortable={columnOptions.canSort} on:click={columnState.sort}>
+          {columnOptions.displayName}
         </div>
       </div>
 
@@ -110,7 +111,7 @@
       <SuperCell
         bind:cellState
         value={filterValue}
-        fieldSchema={enrichedColumnOptions.schema}
+        fieldSchema={columnOptions.schema}
         initialState="Editing"
         lockState
         unstyled
@@ -173,10 +174,8 @@
 
   .headerLabel {
     flex: 1 1 auto;
-    min-width: 0;
     display: flex;
     align-items: center;
-    justify-content: stretch;
     min-width: 0;
   }
   .innerText {

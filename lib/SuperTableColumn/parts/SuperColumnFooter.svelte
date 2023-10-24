@@ -1,11 +1,11 @@
 <script>
   export let columnState
-  export let enrichedColumnOptions
+  export let columnOptions
 </script>
 
-{#if enrichedColumnOptions.showFooter}
+{#if columnOptions.showFooter}
   <div class="spectrum-Table-headcell">
-      {enrichedColumnOptions.displayName}
+      {columnOptions.displayName}
   </div>
 {/if}
 

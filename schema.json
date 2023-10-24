@@ -3,7 +3,7 @@
   "metadata": {},
   "schema": {
     "name": "bb-component-SuperTableColumn",
-    "friendlyName": "Super Column",
+    "friendlyName": "Super Table Column",
     "description": "Customizable columns for the Super Table Component",
     "info": "You can add components to customize how cell values are displayed.",
     "icon": "TableColumnAddRight",
@@ -231,22 +231,19 @@
             "defaultValue": "flex-start"
           },
           {
-            "type": "text",
+            "type": "color",
             "key": "rowFontColor",
-            "label": "Font Color",
-            "nested" : "true"
+            "label": "Font Color"
           },
           {
-            "type": "text",
+            "type": "color",
             "key": "rowBackground",
-            "label": "Bg Color",
-            "nested" : "true"
+            "label": "Bg Color"
           },
           {
             "type": "text",
             "key": "fontWeight",
-            "label": "Font Weight",
-            "nested" : "true"
+            "label": "Font Weight"
           }
         ]
       },

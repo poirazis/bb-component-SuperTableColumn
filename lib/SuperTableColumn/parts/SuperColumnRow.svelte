@@ -12,18 +12,18 @@
 
 	export let row
 	export let index
-	export let enrichedColumnOptions
+	export let columnOptions
 	export let isSelected
 	export let isHovered
 	export let isLoading
 
-	$: valueTemplate = enrichedColumnOptions?.template
-	$: fieldSchema = enrichedColumnOptions?.schema ?? {}
+	$: valueTemplate = columnOptions?.template
+	$: fieldSchema = columnOptions?.schema ?? {}
 	$: height = $tableStateStore?.rowHeights[index]
 	$: minHeight = $tableOptionStore?.rowHeight
 	$: rowKey = row?.rowKey
 	$: value = row?.rowValue
-	$: editable = enrichedColumnOptions?.canEdit
+	$: editable = columnOptions?.canEdit
 
 	// the proposed height
 	export let height
@@ -33,9 +33,9 @@
 	let contents, size, cellHeight, rowElement, open 
 
 	// Ractive request for additional height if needed 
-	$: if ( size &&  enrichedColumnOptions.hasChildren ) 
+	$: if ( size &&  columnOptions.hasChildren ) 
 	{ 
-		cellHeight = Math.ceil (parseFloat($size.height))
+		cellHeight = Math.ceil (parseFloat(contents?.scrollHeight))
 
 		if ( cellHeight > height ) 
 		{
@@ -45,7 +45,7 @@
 		}
 	}
 
-	$: if ( enrichedColumnOptions.hasChildren && contents ) size = elementSizeStore(contents) 
+	$: if ( columnOptions.hasChildren && contents ) size = elementSizeStore(contents) 
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -62,7 +62,7 @@
 	{#if isLoading }
 		<CellSkeleton />
 	{:else}
-		{#if !enrichedColumnOptions.hasChildren }
+		{#if !columnOptions.hasChildren }
 			<SuperTableCell 
 				{rowKey} 
 				{valueTemplate}
@@ -71,7 +71,7 @@
 				{fieldSchema} 
 				submitOn = { $tableOptionStore?.submitOn }
 				{isHovered} 
-				{enrichedColumnOptions}
+				{columnOptions}
 				/> 
 		{:else}
 			<div bind:this={contents} class="contentsWrapper"> 
@@ -90,10 +90,10 @@
 		justify-content: stretch;	
 	}
 	.contentsWrapper {
-		flex: auto;
-		height: fit-content;
+		flex: 1 1 auto;
 		display: flex;
-		justify-items: var(--super-column-alignment);
+		align-items: stretch;
+		justify-content: stretch;	
 	}
 	.is-hovered {
 		background-color: var(--spectrum-table-m-regular-row-background-color-hover, var(--spectrum-alias-highlight-hover));

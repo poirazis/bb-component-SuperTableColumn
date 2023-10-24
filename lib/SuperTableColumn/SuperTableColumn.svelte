@@ -27,8 +27,8 @@
       cancel() { return "Idle"}
     },
     Idle: { 
-      sort () { $tableDataStore.sortColumn = enrichedColumnOptions.name; return "Ascending"; } , 
-      filter () { return enrichedColumnOptions.canFilter ? "Entering" : "Idle" },
+      sort () { $tableDataStore.sortColumn = columnOptions.name; return "Ascending"; } , 
+      filter () { return columnOptions.canFilter ? "Entering" : "Idle" },
     },
     Loading :{ 
       loaded() { return "Idle" } 
@@ -63,7 +63,6 @@
 
   // Internal Variables
   let id = uuidv4();
-  let enrichedColumnOptions 
   let resizing = false
   let considerResizing = false
   let startPoint 
@@ -77,7 +76,7 @@
   // Reactive declaration.
   // nameStore is used in our derived store that holds the column data
   let nameStore = writable(columnOptions.name);
-  $: nameStore.set(enrichedColumnOptions.name);
+  $: nameStore.set(columnOptions.name);
   let columnStore =
     derived([tableDataStore, nameStore], ([$tableDataStore, $nameStore]) => {
       return $tableDataStore?.data.map((row) => ({
@@ -86,51 +85,21 @@
       }));
     }) || null;
 
-  $: enrichedColumnOptions = enrichOptions(columnOptions)
-
   $: if (
-    $tableDataStore.sortColumn !== enrichedColumnOptions.name &&
+    $tableDataStore.sortColumn !== columnOptions.name &&
     $columnState != "Idle"
   ) {
     columnState.unsort();
   }
 
-  $: if (!enrichedColumnOptions.hasChildren) { tableStateStore?.removeRowHeights(id); }
-  $: initializeColumn(enrichedColumnOptions.name);
-  $: tableDataStore?.updateColumn({ id: id, field: enrichedColumnOptions.name });
+  $: if (!columnOptions.hasChildren) { tableStateStore?.removeRowHeights(id); }
+  $: initializeColumn(columnOptions.name);
+  $: tableDataStore?.updateColumn({ id: id, field: columnOptions.name });
 
   // Pass Context to possible Super Table Cell Component Children
-  $: $columnOptionsStore = enrichedColumnOptions
+  $: $columnOptionsStore = columnOptions
   setContext ("superColumnOptions", columnOptionsStore );
   
-  const enrichOptions = ( columnOptionsIn ) => {
-    // if the Super Column was instantiated as a BB Component
-    if ( columnOptionsIn.superColumn ) {
-      return { 
-        ...columnOptionsIn, 
-        "id": id,
-        "schema" : $tableDataStore.schema[columnOptionsIn.name] ?? {},
-        "showFooter": tableOptions.showFooter,
-        "showHeader": tableOptions.showHeader,
-      }
-    // if the Super Column was instantiated by the Super Table
-    } else {
-      return { 
-        ...columnOptionsIn, 
-        "id": id,
-        "schema" : $tableDataStore.schema[columnOptionsIn.name] ?? {},
-        "sizing": columnOptionsIn.width ? "fixed" : tableOptions.columnSizing,
-        "fixedWidth": tableOptions.columnFixedWidth,
-        "maxWidth": tableOptions.columnMaxWidth,
-        "minWidth": tableOptions.columnMinWidth,
-        "showFooter": tableOptions.showFooter,
-        "showHeader": tableOptions.showHeader,
-        "canEdit": tableOptions.canEdit,
-        "canFilter": tableOptions.canFilter
-      }
-    }
-  }
-
   const startResizing = ( e ) => {
     e.preventDefault();
     e.stopPropagation();
@@ -189,10 +158,10 @@
   class="superTableColumn"
   class:resizing
   class:considerResizing={considerResizing && !resizing}
-  style:flex={ enrichedColumnOptions.sizing == "fixed" ? "0 0 auto" : "1 0 auto" }
-  style:width={ enrichedColumnOptions.sizing == "fixed" ? enrichedColumnOptions.fixedWidth : "auto"}
-  style:min-width={ enrichedColumnOptions.sizing == "flexible" ? enrichedColumnOptions.minWidth : null}
-  style:max-width={ enrichedColumnOptions.sizing == "flexible" ? enrichedColumnOptions.maxWidth : null}
+  style:flex={ columnOptions.sizing == "fixed" ? "0 0 auto" : "1 0 auto" }
+  style:width={ columnOptions.sizing == "fixed" ? columnOptions.fixedWidth : "auto"}
+  style:min-width={ columnOptions.sizing == "flexible" ? columnOptions.minWidth : null}
+  style:max-width={ columnOptions.sizing == "flexible" ? columnOptions.maxWidth : null}
   on:mouseleave={() => ($tableHoverStore = null)}
 >
   <div 
@@ -202,13 +171,13 @@
     on:mouseenter={ () => ( considerResizing = true ) } on:mouseleave={ () => ( considerResizing = false ) } 
   /> 
 
-  <SuperColumnHeader {columnState} {enrichedColumnOptions} />
+  <SuperColumnHeader {columnState} {columnOptions} />
 
-  <SuperColumnBody {columnState} {enrichedColumnOptions} rows={$columnStore}>
+  <SuperColumnBody {columnState} {columnOptions} rows={$columnStore}>
     <slot />
   </SuperColumnBody>
 
-  <SuperColumnFooter {columnState} {enrichedColumnOptions} />
+  <SuperColumnFooter {columnState} {columnOptions} />
 </div>
 
 <style>
