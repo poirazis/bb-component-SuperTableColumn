@@ -13,10 +13,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v3
-      - name: Checkout submodules
-        run: git submodule update --init --recursive
-      - name: Install Submodule Dependencies
-        run: /home/runner/work/bb-component-SuperTableColumn/bb-component-SuperTableColumn/bb-component-SuperTableCell/yarn install
+        with:
+          submodules: recursive
       - uses: actions/setup-node@v1
         with:
           node-version: 18
