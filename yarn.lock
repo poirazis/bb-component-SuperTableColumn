@@ -56,14 +56,14 @@
     tar-fs "2.1.1"
     uuid "8.3.2"
 
-"@budibase/bbui@^2.9.36":
-  version "2.10.2"
-  resolved "https://registry.yarnpkg.com/@budibase/bbui/-/bbui-2.10.2.tgz#21615990fb5a1e6a6340fee5969048129eba012f"
-  integrity sha512-PYu0WfbUedrcelMSMdh2Z6kLbh4wSEwoYKubdGv8dVgwKqK7rNG4te7OWTpTv16vhh58H5HfnN2VpHncsmnstg==
+"@budibase/bbui@^2.11.30":
+  version "2.12.11"
+  resolved "https://registry.yarnpkg.com/@budibase/bbui/-/bbui-2.12.11.tgz#edd95ad73fc65e578456c72dd86be13df3bd12e1"
+  integrity sha512-7hi20P+5WF7AdnUZwLPDDBWuKG4Z0+aSLtOieBQeASkaOFn+O2azACQm+zfy1HyxFBNcHvYGNB1yVRz+GUAV+w==
   dependencies:
     "@adobe/spectrum-css-workflow-icons" "1.2.1"
-    "@budibase/shared-core" "2.10.2"
-    "@budibase/string-templates" "2.10.2"
+    "@budibase/shared-core" "2.12.11"
+    "@budibase/string-templates" "2.12.11"
     "@spectrum-css/accordion" "3.0.24"
     "@spectrum-css/actionbutton" "1.0.1"
     "@spectrum-css/actiongroup" "1.0.1"
@@ -106,7 +106,7 @@
     "@spectrum-css/typography" "3.0.1"
     "@spectrum-css/underlay" "2.0.9"
     "@spectrum-css/vars" "3.0.1"
-    dayjs "^1.10.4"
+    dayjs "^1.10.8"
     easymde "^2.16.1"
     svelte-dnd-action "^0.9.8"
     svelte-flatpickr "3.2.3"
@@ -166,24 +166,30 @@
   dependencies:
     "@budibase/types" "2.10.2"
 
-"@budibase/shared-core@^2.11.41":
-  version "2.11.41"
-  resolved "https://registry.yarnpkg.com/@budibase/shared-core/-/shared-core-2.11.41.tgz#61c9a4964a5fb0fd6c5ffc9752751f1c275bf5b5"
-  integrity sha512-8doDkJi9DZcE7aH02Qg8yKs5gM/C688JFOwcE4cete9KyqJ+pK7LIje+JZ4JzZEE05SzlwEJGHTm9LY9fIfCMw==
+"@budibase/shared-core@2.11.30":
+  version "2.11.30"
+  resolved "https://registry.yarnpkg.com/@budibase/shared-core/-/shared-core-2.11.30.tgz#bb1c6569b684d20f0638f5814dc9184d0e9003a1"
+  integrity sha512-nlkC56V6njFdrcRbjEX5bhop6Vvq6b3UppjxBvhdmri89UadxYnXESmj5BXBE/A8zp+p2J1A3+JiwqkBgjIDIQ==
   dependencies:
-    "@budibase/types" "2.11.41"
+    "@budibase/types" "2.11.30"
 
-"@budibase/string-templates@2.10.2":
-  version "2.10.2"
-  resolved "https://registry.yarnpkg.com/@budibase/string-templates/-/string-templates-2.10.2.tgz#59df9da7c8559e8b25cee8cb6f7e6ebf75e664b3"
-  integrity sha512-+vX9c3/i6W2IRWLHHXzHz51oY/xlpFZjcqTpaEyzhfvrtpZ0Lu5llVdJtf5UFvR3gvhZQCbTRsEE02D69lvcSg==
+"@budibase/shared-core@2.12.11":
+  version "2.12.11"
+  resolved "https://registry.yarnpkg.com/@budibase/shared-core/-/shared-core-2.12.11.tgz#f8ce4af01e4db0ebc48f2c111ab692cff5e71531"
+  integrity sha512-mPzj6aJ4ynDizdt67z1YQ5pVKroV3g0Yve99BbXrg7VOCg1ptsxfBEEIT5OJGCdihhe/bOJs13fPx5XqvZhA/Q==
+  dependencies:
+    "@budibase/types" "2.12.11"
+
+"@budibase/string-templates@2.12.11":
+  version "2.12.11"
+  resolved "https://registry.yarnpkg.com/@budibase/string-templates/-/string-templates-2.12.11.tgz#474519ba53ffd6b35d729f264f08112c19f13564"
+  integrity sha512-N2veTVX2o8BLFEEWdVP5L9jkLAyx2+wBztmX24RdOhW1tXWb4V+8kxGvyfENRKXmX+doTSiQWEJVzauyEDzAtw==
   dependencies:
     "@budibase/handlebars-helpers" "^0.11.9"
-    dayjs "^1.10.4"
+    dayjs "^1.10.8"
     handlebars "^4.7.6"
-    handlebars-utils "^1.0.6"
-    lodash "^4.17.20"
-    vm2 "^3.9.15"
+    lodash "4.17.21"
+    vm2 "^3.9.19"
 
 "@budibase/types@2.10.2":
   version "2.10.2"
@@ -192,10 +198,17 @@
   dependencies:
     scim-patch "^0.7.0"
 
-"@budibase/types@2.11.41":
-  version "2.11.41"
-  resolved "https://registry.yarnpkg.com/@budibase/types/-/types-2.11.41.tgz#e9dd7a3a5e9601ae830e0974444015841318d962"
-  integrity sha512-isVggr3VmLK/eYh6JHioCxTywU07/nJ1DuUOAcpwobtlKRiyD8F8M8FBiSyxm67FzRxW6o/ErPcUGaU3GdIoTQ==
+"@budibase/types@2.11.30":
+  version "2.11.30"
+  resolved "https://registry.yarnpkg.com/@budibase/types/-/types-2.11.30.tgz#768a7c18a96f079876b22d0da647b3a0f6eb020e"
+  integrity sha512-KmqpzBlNDi7Z7Wl/R6AyR02VtI02eVq+gG85DBvNanZD6DNln2AWnbBXzTymeCekP5dTVEPJnCR6Q6Tr5xoKxA==
+  dependencies:
+    scim-patch "^0.7.0"
+
+"@budibase/types@2.12.11":
+  version "2.12.11"
+  resolved "https://registry.yarnpkg.com/@budibase/types/-/types-2.12.11.tgz#db8e3f5b02c664ec54f0ca79c569679184d55c45"
+  integrity sha512-gpSQjUyped1s3JuwN3JIvRiC04X+b5AY6q67FRqw17bcM+k6iTPn31qmMX2YBAupNg+8kaWikzhZYlZdl+hteA==
   dependencies:
     scim-patch "^0.7.0"
 
@@ -1429,10 +1442,10 @@ dashdash@^1.12.0:
   dependencies:
     assert-plus "^1.0.0"
 
-dayjs@^1.10.4:
-  version "1.11.9"
-  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.9.tgz#9ca491933fadd0a60a2c19f6c237c03517d71d1a"
-  integrity sha512-QvzAURSbQ0pKdIye2txOzNaHmxtUBXerpY0FJsFXUMKbIZeFm5ht1LS/jFsrncjnmtv8HsG0W2g6c0zUjZWmpA==
+dayjs@^1.10.8:
+  version "1.11.10"
+  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.10.tgz#68acea85317a6e164457d6d6947564029a6a16a0"
+  integrity sha512-vjAczensTgRcqDERK0SR2XMwsF/tSvnvlv6VcF2GIhg6Sx4yOIt/irsr1RDJsKiIyBzJDpCoXiWWq28MqH2cnQ==
 
 debug@4, debug@^4.3.1, debug@^4.3.4:
   version "4.3.4"
@@ -2973,7 +2986,7 @@ lodash.uniq@^4.5.0:
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
   integrity sha512-xfBaXQd9ryd9dlSDvnvI0lvxfLJlYAZzXomUYzLKtUeOQvOP5piqAWuGtrhWeqaXK9hhoM/iyJc5AV+XfsX3HQ==
 
-lodash@4.17.21, lodash@^4.17.20, lodash@^4.17.21:
+lodash@4.17.21, lodash@^4.17.21:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
@@ -5331,7 +5344,7 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-vm2@^3.9.15:
+vm2@^3.9.19:
   version "3.9.19"
   resolved "https://registry.yarnpkg.com/vm2/-/vm2-3.9.19.tgz#be1e1d7a106122c6c492b4d51c2e8b93d3ed6a4a"
   integrity sha512-J637XF0DHDMV57R6JyVsTak7nIL8gy5KH4r1HiwWLf/4GBbb5MKL5y7LpmF4A8E2nR6XmzpmMFQ7V7ppPTmUQg==
