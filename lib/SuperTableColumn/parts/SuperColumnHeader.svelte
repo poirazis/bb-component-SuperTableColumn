@@ -3,7 +3,7 @@
   import Popover  from "../../../node_modules/@budibase/bbui/src/Popover/Popover.svelte"
 	import { dataFilters } from '@budibase/shared-core/';
   import { clickOutsideAction } from "svelte-legos";
-  import SuperCell from "../../../bb-component-SuperTableCell/lib/SuperTableCell/SuperCell.svelte";
+  import { SuperCell } from "../../../bb-component-SuperTableCell/lib/SuperTableCell/index.js";
 
   export let columnState;
   export let columnOptions
