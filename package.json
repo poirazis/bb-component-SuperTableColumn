@@ -5,6 +5,8 @@
   "author": "Michael Poirazi",
   "license": "MIT",
   "svelte": "index.js",
+  "private": "true",
+  "workspaces": ["bb-component-SuperTableCell"],
   "module": "dist/plugin.min.js",
   "scripts": {
     "build": "rollup -c",
