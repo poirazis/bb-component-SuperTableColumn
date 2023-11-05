@@ -16,7 +16,7 @@ jobs:
       - name: Checkout submodules
         run: git submodule update --init --recursive
       - name: Change directory
-        run: cd bb-component-SuperTableCell
+        run: cd /home/runner/work/bb-component-SuperTableColumn/bb-component-SuperTableColumn/bb-component-SuperTableCell
       - name: Install Dependencies
         run: yarn install
       - uses: actions/setup-node@v1
