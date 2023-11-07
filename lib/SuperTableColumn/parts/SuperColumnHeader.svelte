@@ -86,7 +86,7 @@
 
       {#if columnOptions.canFilter }
         <div class="actionIcon">
-          <Icon on:click={showFilters} size="XS" hoverable name="Filter" color={ "var(--spectrum-global-color-gray-600)" } />
+          <Icon on:click={showFilters} size="XS" hoverable name="Search" color={ "var(--spectrum-global-color-gray-600)" } />
         </div>
       {/if}
 
