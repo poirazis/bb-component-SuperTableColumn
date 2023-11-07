@@ -24,6 +24,7 @@
   export const columnState = fsm("Idle", {
     "*": {
       tableState( state ) { if ( state == "Loading") { return "Loading" } else return "Idle" },
+      rowClicked ( id ) { tableState.rowClicked( { "rowID" : id } ) },
       cancel() { return "Idle"}
     },
     Idle: { 
