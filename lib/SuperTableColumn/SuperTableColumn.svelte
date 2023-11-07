@@ -107,7 +107,8 @@
     resizing = true;
     startPoint = e.clientX;
     startWidth = column.clientWidth
-    width = startWidth
+    columnOptions.sizing = "fixed" 
+    columnOptions.fixedWidth = startWidth
   }
 
   const stopResizing = ( e ) => {
@@ -115,18 +116,19 @@
     e.stopPropagation();
     resizing = false;
     startPoint = undefined
-    saveBuilderSizing( width )
+    // saveBuilderSizing( width )
   }
 
   const resize = ( e ) => {
     width = startWidth + e.clientX - startPoint
+    columnOptions.fixedWidth = width
   }
 
   const resetSize = ( e ) => {
     e.preventDefault();
     e.stopPropagation();
     width = undefined
-    saveBuilderSizing (null);
+    columnOptions.sizing = "flexible" 
   }
 
   const saveBuilderSizing = ( width ) => {
