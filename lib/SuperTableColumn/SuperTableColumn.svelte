@@ -1,4 +1,21 @@
 <script>
+
+  /**
+   * The complete set of options that can be passed to a Super Column.
+   * @typedef {Object} columnOptions
+   * @property {Object} schema - The schema of the Cell ( as per Budibase Field Schema ). if Not set, the Cell will render as String
+   * @property {string} mode - Can be Field / TableCell / or Unstyled
+   * @property {string} state - The State of the Cell. Can be View / Edit / Disabled 
+   * @property {string} placeholder - The Cell Placeholder Text
+   * @property {string} align - Horizontal Alignment
+   * @property {string} color - Use Font Color
+   * @property {string} weight - Use Font Weight
+   * @property {string} bgColor - The Background Color
+   * @property {string} padding - The padding to be applied to the Cell
+   * @property {boolean} hovered - To enter hovered state
+   */
+
+
   import { getContext, onDestroy, onMount, createEventDispatcher, setContext } from "svelte";
   import { v4 as uuidv4 } from "uuid";
   import { writable, derived } from "svelte/store";
@@ -28,20 +45,20 @@
       cancel() { return "Idle"}
     },
     Idle: { 
-      sort () { $tableDataStore.sortColumn = columnOptions.name; return "Ascending"; } , 
+      sort () { return "Ascending"; } , 
       filter () { return columnOptions.canFilter ? "Entering" : "Idle" },
     },
     Loading :{ 
       loaded() { return "Idle" } 
     },
     Ascending: { 
-      _enter () { $tableDataStore.sortDirection = "Ascending"; },
+      _enter () { tableState.sortBy( columnOptions.name, "Ascending" ); },
       sort () { return "Descending" }, 
       unsort: "Idle", 
       filter: "Entering" 
     },
     Descending: { 
-      _enter() { $tableDataStore.sortDirection = "Descending"; },
+      _enter() { tableState.sortBy( columnOptions.name, "Descending" ); },
       sort() { return "Ascending" },  
       unsort: "Idle", 
       filter: "Entering" 
@@ -72,7 +89,7 @@
   let column
   let columnOptionsStore = new writable({})
 
-  $: columnState.tableState($tableState)
+  // $: columnState.tableState($tableState)
 
   // Reactive declaration.
   // nameStore is used in our derived store that holds the column data
@@ -161,7 +178,7 @@
   class="superTableColumn"
   class:resizing
   class:considerResizing={considerResizing && !resizing}
-  style:flex={ columnOptions.sizing == "fixed" ? "0 0 auto" : "1 0 auto" }
+  style:flex={ columnOptions.sizing == "fixed" ? "0 0 auto" : "1 1 auto" }
   style:width={ columnOptions.sizing == "fixed" ? columnOptions.fixedWidth : "auto"}
   style:min-width={ columnOptions.sizing == "flexible" ? columnOptions.minWidth : null}
   style:max-width={ columnOptions.sizing == "flexible" ? columnOptions.maxWidth : null}

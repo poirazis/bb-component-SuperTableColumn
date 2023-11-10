@@ -1,32 +1,18 @@
 <script>
 	import Icon from "../../../node_modules/@budibase/bbui/src/Icon/Icon.svelte"
   import Popover  from "../../../node_modules/@budibase/bbui/src/Popover/Popover.svelte"
-	import { dataFilters } from '@budibase/shared-core/';
+	
   import { clickOutsideAction } from "svelte-legos";
 	import { SuperCell } from "../../../bb-component-SuperTableCell/lib/SuperTableCell/index.js"
 
   export let columnState;
   export let columnOptions
 
-	const defaultOperatorMap = {
-		 "string" : "fuzzy",
-		 "formula" : "fuzzy",
-		 "array" : "contains",
-		 "options" : "equal",
-		 "datetime" : "rangeLow",
-     "boolean" : "equal",
-     "number" : "equal",
-     "bigint" : "equal",
-	}
-
   let headerAnchor 
   let showFilteringOptions = false  
   let cellState
   let filterValue
-
-	let filteringOperators = dataFilters.getValidOperatorsForType(columnOptions?.schema?.type);
-	let defaultOperator = defaultOperatorMap[columnOptions?.schema?.type];
-  $: filterOperator = defaultOperator
+  let filterOperator = columnOptions.defaultFilteringOperator
 
   const handleValueChange = ( e ) => {
     filterValue = e.detail
@@ -64,7 +50,6 @@
       columnState.cancel();
     }
   }
-
 </script>
 
 {#if columnOptions.showHeader}
@@ -84,7 +69,7 @@
 
     {#if $columnState == "Idle" || $columnState == "Ascending" || $columnState == "Descending" }
 
-      {#if columnOptions.canFilter }
+      {#if columnOptions.canFilter && columnOptions.defaultFilteringOperator }
         <div class="actionIcon">
           <Icon on:click={showFilters} size="XS" hoverable name="Search" color={ "var(--spectrum-global-color-gray-600)" } />
         </div>
@@ -128,7 +113,7 @@
 
     <Popover anchor={headerAnchor} align="left" open={showFilteringOptions} on:close={ () => { showFilteringOptions = false; }}>
       <ul class="spectrum-Menu" role="menu">
-        {#each filteringOperators as option }
+        {#each columnOptions.filteringOperators as option }
           <li class="spectrum-Menu-item" 
             class:selected={ option.value == filterOperator }
             role="menuitem" tabindex="0" 
