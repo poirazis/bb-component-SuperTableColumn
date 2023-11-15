@@ -48,12 +48,13 @@
   let lockWidth = false
 
   // Allow the Super Table to bind to the Super Column State Machine to control it
-  export const columnState = fsm("Idle", {
+  export const columnState = fsm( columnOptions.isSorted ? columnOptions.isSorted : "Idle", {
     "*": {
       tableState( state ) { if ( state == "Loading") { return "Loading" } else return "Idle" },
       rowClicked ( id ) { tableState.rowClicked( { "rowID" : id } ) },
       cancel() { return "Idle"},
-      lockWidth () { lockWidth = true }
+      lockWidth () { lockWidth = true },
+      goTo ( state ) { return state }
     },
     Idle: { 
       sort () { return columnOptions.canSort ? "Ascending" : "Idle" }, 
@@ -90,8 +91,6 @@
     }
   });
 
-
-
   // Reactive declaration.
   // nameStore is used in our derived store that holds the column data
   let nameStore = writable(columnOptions.name);
@@ -103,13 +102,6 @@
         rowValue: row[$nameStore],
       }));
     }) || null;
-
-  $: if (
-    tableOptions.sortedColumn != columnOptions.name &&
-    $columnState != "Idle"
-  ) {
-    columnState.unsort();
-  }
 
   $: if (!columnOptions.hasChildren) { tableStateStore?.removeRowHeights(id); }
   $: initializeColumn(columnOptions.name);
@@ -168,7 +160,7 @@
   onDestroy( () => tableDataStore?.unregisterColumn({ id: id, field: columnOptions.name }) );
   onMount( () => startWidth = column ? column.clientWidth : null )
 
-  
+  $: console.log(columnOptions)
 </script>
 
 <svelte:window

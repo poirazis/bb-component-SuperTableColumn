@@ -75,9 +75,9 @@
         </div>
       </div>
 
-      {#if $columnState !== "Idle" }
+      {#if columnOptions.isSorted }
         <div class="actionIcon sort">
-          <Icon size="XS" name= { $columnState === "Descending" ? "SortOrderDown" : "SortOrderUp"}/>
+          <Icon size="XS" name= { columnOptions.isSorted == "Descending" ? "SortOrderDown" : "SortOrderUp"}/>
         </div>
       {/if}
     
