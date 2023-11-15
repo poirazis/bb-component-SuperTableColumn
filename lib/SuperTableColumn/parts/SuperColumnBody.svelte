@@ -44,7 +44,7 @@
         {index} 
         {columnOptions}
         isLoading={ $columnState == "Loading" }
-        isHovered={ $tableHoverStore == index}
+        isHovered={ $tableHoverStore == index }
         isSelected={ $tableSelectionStore[row.rowKey] }
         on:resize={ (event) => tableStateStore.resizeRow(columnOptions.id, index, event.detail.height)}
         on:hovered={() => ($tableHoverStore = index)}

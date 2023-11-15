@@ -1,8 +1,6 @@
 <script>
 	import Icon from "../../../node_modules/@budibase/bbui/src/Icon/Icon.svelte"
   import Popover  from "../../../node_modules/@budibase/bbui/src/Popover/Popover.svelte"
-	
-  import { clickOutsideAction } from "svelte-legos";
 	import { SuperCell } from "../../../bb-component-SuperTableCell/lib/SuperTableCell/index.js"
 
   export let columnState;
@@ -13,6 +11,14 @@
   let cellState
   let filterValue
   let filterOperator = columnOptions.defaultFilteringOperator
+
+  $: cellOptions = {
+    align: columnOptions.align,
+    color: columnOptions.color,
+    background: columnOptions.background ?? "transparent",
+    fontWeight: columnOptions.fontWeight,
+    padding: columnOptions.padding,
+  }
 
   const handleValueChange = ( e ) => {
     filterValue = e.detail
@@ -25,21 +31,11 @@
 
   const buildFilter = ( operator , value ) => {
     return {
-            field: columnOptions.name,
-            operator: operator,
-            value: columnOptions.schema.type == "number" ? Number(value) : value,
-            valueType: "Value",
-          }
-  }
-
-  const showFilters = ( e ) => {
-    filterValue = undefined
-    columnState.filter();
-  }
-
-  const handleClickOutside = ( e ) => {
-    if ( $columnState == "Entering" && $cellState != "EditingWithEditor" )
-      columnState.cancel();
+      field: columnOptions.name,
+      operator: operator,
+      value: columnOptions.schema.type == "number" ? Number(value) : value,
+      valueType: "Value",
+    }
   }
 
   const handleKeyboard = ( e ) => {
@@ -53,25 +49,22 @@
 </script>
 
 {#if columnOptions.showHeader}
-<!-- svelte-ignore a11y-click-events-have-key-events -->
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
   <div 
     bind:this={headerAnchor}
     class="spectrum-Table-headCell" 
     class:enterting={ $columnState == "Entering" } 
     class:filtered={ $columnState == "Filtered" }
+    tabindex="0"
     on:keydown={handleKeyboard}
-    use:clickOutsideAction
-    on:clickoutside={ () => { 
-      if (($columnState == "Entering" || $columnState == "Filtered") && !showFilteringOptions) 
-        setTimeout(handleClickOutside, 10) 
-    }}
   >
 
     {#if $columnState == "Idle" || $columnState == "Ascending" || $columnState == "Descending" }
 
       {#if columnOptions.canFilter && columnOptions.defaultFilteringOperator }
         <div class="actionIcon">
-          <Icon on:click={showFilters} size="XS" hoverable name="Search" color={ "var(--spectrum-global-color-gray-600)" } />
+          <Icon on:click={columnState.filter} size="S" hoverable name="Search" color={ "var(--spectrum-global-color-gray-500)" } />
         </div>
       {/if}
 
@@ -89,29 +82,36 @@
       {/if}
     
     {:else if $columnState == "Entering" || $columnState == "Filtered" }
-      <div class="actionIcon" style:padding-right={"0.5rem"}>
-        <Icon size="XS" hoverable name="Settings" color={ $columnState == "Filtered" ? "var(--spectrum-global-color-blue-500)" : null }  on:click={ () => ( showFilteringOptions = true )} />
+      <div class="actionIcon" on:click={ (e) => { e.preventDefault(); e.stopPropagation(); showFilteringOptions = !showFilteringOptions }} >
+        <Icon size="XS" hoverable name="Settings" color={ $columnState == "Filtered" ? "var(--spectrum-global-color-blue-500)" : null }  />
       </div>
 
       <SuperCell
         bind:cellState
         value={filterValue}
         fieldSchema={columnOptions.schema}
+        placeholder={"Search"}
+        editable
+        {cellOptions}
         initialState="Editing"
         lockState
         unstyled
         on:change={handleValueChange}
+        on:blur={ () => 
+          setTimeout( 
+          () => { if (!showFilteringOptions && !filterValue ) columnState.cancel() }, 100 )
+          }
       />
 
       <div class="actionIcon">
-        <Icon size="XS" hoverable name="Close" color={ "var(--spectrum-global-color-red-500)" }  on:click={ columnState.cancel } />
+        <Icon size="XS" hoverable name="Close" color={ "var(--spectrum-global-color-red-500)" }  on:click={ () => { filterValue = undefined; columnState.cancel() } } />
       </div>
     {:else if $columnState == "Loading" }
       <p> ... </p>
     {/if}
 
 
-    <Popover anchor={headerAnchor} align="left" open={showFilteringOptions} on:close={ () => { showFilteringOptions = false; }}>
+    <Popover anchor={headerAnchor} align="left" dismissible open={showFilteringOptions} on:close={ () => { showFilteringOptions = false; } }>
       <ul class="spectrum-Menu" role="menu">
         {#each columnOptions.filteringOperators as option }
           <li class="spectrum-Menu-item" 

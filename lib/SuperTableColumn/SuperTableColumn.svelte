@@ -15,7 +15,6 @@
    * @property {boolean} hovered - To enter hovered state
    */
 
-
   import { getContext, onDestroy, onMount, createEventDispatcher, setContext } from "svelte";
   import { v4 as uuidv4 } from "uuid";
   import { writable, derived } from "svelte/store";
@@ -37,15 +36,27 @@
   export let tableState
   export let tableOptions;
 
+  // Internal Variables
+  let id = uuidv4();
+  let resizing = false
+  let considerResizing = false
+  let startPoint 
+  let startWidth
+  let width
+  let column
+  let columnOptionsStore = new writable({})
+  let lockWidth = false
+
   // Allow the Super Table to bind to the Super Column State Machine to control it
   export const columnState = fsm("Idle", {
     "*": {
       tableState( state ) { if ( state == "Loading") { return "Loading" } else return "Idle" },
       rowClicked ( id ) { tableState.rowClicked( { "rowID" : id } ) },
-      cancel() { return "Idle"}
+      cancel() { return "Idle"},
+      lockWidth () { lockWidth = true }
     },
     Idle: { 
-      sort () { return "Ascending"; } , 
+      sort () { return columnOptions.canSort ? "Ascending" : "Idle" }, 
       filter () { return columnOptions.canFilter ? "Entering" : "Idle" },
     },
     Loading :{ 
@@ -64,9 +75,9 @@
       filter: "Entering" 
     },
     Entering: { 
-        filter( filterObj ) { 
-          tableState.setFilter( { ...filterObj, id: id } )  
-          return "Filtered" },
+      filter( filterObj ) { 
+        tableState.setFilter( { ...filterObj, id: id } )  
+        return "Filtered" },
       cancel() { return "Idle" }
     },
     Resizing: { stop: () => { return "Idle" } },
@@ -79,17 +90,7 @@
     }
   });
 
-  // Internal Variables
-  let id = uuidv4();
-  let resizing = false
-  let considerResizing = false
-  let startPoint 
-  let startWidth
-  let width
-  let column
-  let columnOptionsStore = new writable({})
 
-  // $: columnState.tableState($tableState)
 
   // Reactive declaration.
   // nameStore is used in our derived store that holds the column data
@@ -104,7 +105,7 @@
     }) || null;
 
   $: if (
-    $tableDataStore.sortColumn !== columnOptions.name &&
+    tableOptions.sortedColumn != columnOptions.name &&
     $columnState != "Idle"
   ) {
     columnState.unsort();
@@ -166,6 +167,8 @@
 
   onDestroy( () => tableDataStore?.unregisterColumn({ id: id, field: columnOptions.name }) );
   onMount( () => startWidth = column ? column.clientWidth : null )
+
+  
 </script>
 
 <svelte:window
