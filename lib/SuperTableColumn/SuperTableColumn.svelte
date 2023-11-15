@@ -48,7 +48,7 @@
   let lockWidth = false
 
   // Allow the Super Table to bind to the Super Column State Machine to control it
-  export const columnState = fsm( columnOptions.isSorted ? columnOptions.isSorted : "Idle", {
+  export const columnState = fsm( "Idle", {
     "*": {
       tableState( state ) { if ( state == "Loading") { return "Loading" } else return "Idle" },
       rowClicked ( id ) { tableState.rowClicked( { "rowID" : id } ) },
@@ -106,6 +106,9 @@
   $: if (!columnOptions.hasChildren) { tableStateStore?.removeRowHeights(id); }
   $: initializeColumn(columnOptions.name);
   $: tableDataStore?.updateColumn({ id: id, field: columnOptions.name });
+  $: if ($tableStateStore.sortedColumn == columnOptions.name ) {
+    columnOptions["isSorted"] = $tableStateStore.sortedDirection
+  }
 
   // Pass Context to possible Super Table Cell Component Children
   $: $columnOptionsStore = columnOptions
@@ -159,8 +162,6 @@
 
   onDestroy( () => tableDataStore?.unregisterColumn({ id: id, field: columnOptions.name }) );
   onMount( () => startWidth = column ? column.clientWidth : null )
-
-  $: console.log(columnOptions)
 </script>
 
 <svelte:window
