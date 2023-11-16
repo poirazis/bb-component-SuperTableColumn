@@ -56,6 +56,7 @@
     canEdit: canEdit,
     canFilter: canFilter,
     canSort: canSort,
+    isSorted: $tableOptions?.sortedColum == field ? $tableOptions.sortedDirection : null,
     sizing: sizing,
     minWidth: minWidth,
     maxWidth: maxWidth,

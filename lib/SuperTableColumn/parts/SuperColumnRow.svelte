@@ -1,7 +1,6 @@
 <script>
 	import { getContext , createEventDispatcher } from "svelte";
 	import { SuperTableCell } from "../../../bb-component-SuperTableCell/lib/SuperTableCell/index.js";
-	import CellSkeleton from "../../../bb-component-SuperTableCell/lib/SuperTableCell/cells/CellSkeleton.svelte";
 	import { elementSizeStore } from "svelte-legos";
 
 	const { Provider } = getContext("sdk")
@@ -16,27 +15,21 @@
 	export let isSelected
 	export let isHovered
 	export let isLoading
-
-	$: valueTemplate = columnOptions?.template
-	$: fieldSchema = columnOptions?.schema ?? {}
-	$: height = $tableStateStore?.rowHeights[index]
-	$: minHeight = $tableOptionStore?.rowHeight
-	$: rowKey = row?.rowKey
-	$: value = row?.rowValue
-	$: editable = columnOptions?.canEdit
-
 	// the proposed height
 	export let height
-
 	export let minHeight
 
-	let contents, size, cellHeight, rowElement, open 
+	let contents, size, cellHeight, rowElement 
+
+	$: height = $tableStateStore?.rowHeights[index]
+	$: minHeight = $tableOptionStore?.rowHeight
+
+	$: if ( columnOptions.hasChildren && contents ) size = elementSizeStore(contents) 
 
 	// Ractive request for additional height if needed 
 	$: if ( size &&  columnOptions.hasChildren ) 
 	{ 
 		cellHeight = Math.ceil (parseFloat(contents?.scrollHeight))
-
 		if ( cellHeight > height ) 
 		{
 			dispatch( "resize" , { height : cellHeight })
@@ -44,8 +37,6 @@
 			dispatch( "resize" , { height : minHeight })
 		}
 	}
-
-	$: if ( columnOptions.hasChildren && contents ) size = elementSizeStore(contents) 
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -57,29 +48,25 @@
 	style:height={ height + "px" }
 	on:mouseenter={ () => dispatch("hovered") } 
 	on:mouseleave={ () => dispatch("unHovered") }
-	on:click={ () => dispatch("rowClicked", {rowKey : rowKey}) }
+	on:click={ () => dispatch("rowClicked", { rowKey : row?.rowKey }) }
 	>
-	{#if isLoading }
-		<CellSkeleton />
+	{#if !columnOptions.hasChildren }
+		<SuperTableCell 
+			rowKey={ row?.rowKey }
+			valueTemplate={ columnOptions?.template }
+			value= { row?.rowValue }
+			editable={ columnOptions?.canEdit }
+			fieldSchema={ columnOptions?.schema ?? {} }
+			submitOn = { $tableOptionStore?.submitOn }
+			{isHovered} 
+			{columnOptions}
+		/> 
 	{:else}
-		{#if !columnOptions.hasChildren }
-			<SuperTableCell 
-				{rowKey} 
-				{valueTemplate}
-				{value} 
-				{editable} 
-				{fieldSchema} 
-				submitOn = { $tableOptionStore?.submitOn }
-				{isHovered} 
-				{columnOptions}
-				/> 
-		{:else}
-			<div bind:this={contents} class="contentsWrapper"> 
-				<Provider data={ { rowKey: rowKey, Value: value } }>
-					<slot /> 
-				</Provider>
-			</div>	
-		{/if}
+		<div bind:this={contents} class="contentsWrapper"> 
+			<Provider data={ { rowKey: row?.rowKey, Value: row?.rowValue } }>
+				<slot /> 
+			</Provider>
+		</div>	
 	{/if}
 </div>
 
@@ -92,7 +79,7 @@
 	.contentsWrapper {
 		flex: 1 1 auto;
 		display: flex;
-		align-items: stretch;
+		align-items: center;
 		justify-content: stretch;	
 	}
 	.is-hovered {
