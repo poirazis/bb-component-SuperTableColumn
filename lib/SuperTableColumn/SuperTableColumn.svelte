@@ -1,5 +1,4 @@
 <script>
-
   /**
    * The complete set of options that can be passed to a Super Column.
    * @typedef {Object} columnOptions
@@ -15,7 +14,7 @@
    * @property {boolean} hovered - To enter hovered state
    */
 
-  import { getContext, onDestroy, onMount, createEventDispatcher, setContext } from "svelte";
+  import { getContext, onDestroy, onMount, setContext } from "svelte";
   import { v4 as uuidv4 } from "uuid";
   import { writable, derived } from "svelte/store";
   import fsm from "svelte-fsm";
@@ -28,8 +27,6 @@
   const tableStateStore = getContext("tableStateStore");
   const tableFilterStore = getContext("tableFilterStore");
   const tableHoverStore = getContext("tableHoverStore");
-
-  const dispatch = createEventDispatcher();
   
   // Props
   export let columnOptions;
@@ -51,10 +48,37 @@
   export const columnState = fsm( "Idle", {
     "*": {
       tableState( state ) { if ( state == "Loading") { return "Loading" } else return "Idle" },
+      initializeColumn ( field ) {     
+        if (!field) return;
+        tableDataStore?.unregisterColumn({ id: id, field: field });
+        tableDataStore?.registerColumn({ id: id, field: field });
+      },
       rowClicked ( id ) { tableState.rowClicked( { "rowID" : id } ) },
       cancel() { return "Idle"},
       lockWidth () { lockWidth = true },
-      goTo ( state ) { return state }
+      goTo ( state ) { return state },
+      startResizing ( e ) { 
+        e.preventDefault();
+        e.stopPropagation();
+        resizing = true;
+        startPoint = e.clientX;
+        startWidth = column.clientWidth
+        width = startWidth
+      },
+      resize ( e ) {
+        width = startWidth + e.clientX - startPoint
+      },
+      stopResizing ( e ) {
+        e.preventDefault();
+        e.stopPropagation();
+        resizing = false;
+        startPoint = undefined
+      },
+      resetSize ( e ) {
+        e.preventDefault();
+        e.stopPropagation();
+        width = undefined;
+      } 
     },
     Idle: { 
       sort () { return columnOptions.canSort ? "Ascending" : "Idle" }, 
@@ -103,8 +127,10 @@
       }));
     }) || null;
 
+  $: columnState.initializeColumn (columnOptions.name);
+
   $: if (!columnOptions.hasChildren) { tableStateStore?.removeRowHeights(id); }
-  $: initializeColumn(columnOptions.name);
+  
   $: tableDataStore?.updateColumn({ id: id, field: columnOptions.name });
   $: if ($tableStateStore.sortedColumn == columnOptions.name ) {
     columnOptions["isSorted"] = $tableStateStore.sortedDirection
@@ -113,60 +139,14 @@
   // Pass Context to possible Super Table Cell Component Children
   $: $columnOptionsStore = columnOptions
   setContext ("superColumnOptions", columnOptionsStore );
-  
-  const startResizing = ( e ) => {
-    e.preventDefault();
-    e.stopPropagation();
-    resizing = true;
-    startPoint = e.clientX;
-    startWidth = column.clientWidth
-    columnOptions.sizing = "fixed" 
-    columnOptions.fixedWidth = startWidth
-  }
-
-  const stopResizing = ( e ) => {
-    e.preventDefault();
-    e.stopPropagation();
-    resizing = false;
-    startPoint = undefined
-    // saveBuilderSizing( width )
-  }
-
-  const resize = ( e ) => {
-    width = startWidth + e.clientX - startPoint
-    columnOptions.fixedWidth = width
-  }
-
-  const resetSize = ( e ) => {
-    e.preventDefault();
-    e.stopPropagation();
-    width = undefined
-    columnOptions.sizing = "flexible" 
-  }
-
-  const saveBuilderSizing = ( width ) => {
-    let column = tableOptions.columns.findIndex( (col) => ( col.name == columnOptions.name) ) 
-    if ( column > -1 ) {
-      let newColumns = [ ...tableOptions.columns ]
-      newColumns[column].width = width
-      dispatch("saveSettings", newColumns )
-    }
-  }
-
-  function initializeColumn(field) {
-    if (!field) return;
-
-    tableDataStore?.unregisterColumn({ id: id, field: field });
-    tableDataStore?.registerColumn({ id: id, field: field });
-  }
 
   onDestroy( () => tableDataStore?.unregisterColumn({ id: id, field: columnOptions.name }) );
   onMount( () => startWidth = column ? column.clientWidth : null )
 </script>
 
 <svelte:window
-  on:mouseup={ (e) => { if ( resizing ) stopResizing(e) } } 
-  on:mousemove={ (e) => { if ( resizing ) resize(e) } }
+  on:mouseup={ ( e ) => { if ( resizing ) columnState.stopResizing( e ) } } 
+  on:mousemove={ ( e ) => { if ( resizing ) columnState.resize( e ) } }
   />
 
 <div
@@ -174,16 +154,16 @@
   class="superTableColumn"
   class:resizing
   class:considerResizing={considerResizing && !resizing}
-  style:flex={ columnOptions.sizing == "fixed" ? "0 0 auto" : "1 1 auto" }
-  style:width={ columnOptions.sizing == "fixed" ? columnOptions.fixedWidth : "auto"}
+  style:flex={ width ? "0 0 auto" : columnOptions.sizing == "fixed" ? "0 0 auto" : "1 1 auto" }
+  style:width={ width ? width : columnOptions.sizing == "fixed" ? columnOptions.fixedWidth : "auto"}
   style:min-width={ columnOptions.sizing == "flexible" ? columnOptions.minWidth : null}
   style:max-width={ columnOptions.sizing == "flexible" ? columnOptions.maxWidth : null}
   on:mouseleave={() => ($tableHoverStore = null)}
 >
   <div 
     class="grabber" 
-    on:mousedown={ startResizing }
-    on:dblclick={ resetSize }
+    on:mousedown={ columnState.startResizing }
+    on:dblclick={ columnState.resetSize }
     on:mouseenter={ () => ( considerResizing = true ) } on:mouseleave={ () => ( considerResizing = false ) } 
   /> 
 
