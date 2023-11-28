@@ -49,6 +49,8 @@
 	on:mouseenter={ () => dispatch("hovered") } 
 	on:mouseleave={ () => dispatch("unHovered") }
 	on:click={ () => dispatch("rowClicked", { rowKey : row?.rowKey }) }
+	on:dblclick={ () => dispatch("rowDblClicked", { rowKey : row?.rowKey }) } 
+	on:contextmenu|preventDefault={ () => dispatch("contextmenu", { rowKey : row?.rowKey }) }
 	>
 	{#if !columnOptions.hasChildren }
 		<SuperTableCell 

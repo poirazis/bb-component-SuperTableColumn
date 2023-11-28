@@ -54,6 +54,7 @@
         tableDataStore?.registerColumn({ id: id, field: field });
       },
       rowClicked ( id ) { tableState.rowClicked( { "rowID" : id } ) },
+      rowDblClicked ( id ) { tableState.rowDblClicked( { "rowID" : id } ) },
       cancel() { return "Idle"},
       lockWidth () { lockWidth = true },
       goTo ( state ) { return state },

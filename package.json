@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@crownframework/svelte-error-boundary": "^1.0.3",
+    "lucide-svelte": "^0.293.0",
     "svelte": "^3.59.0",
     "svelte-fsm": "^1.2.0",
     "svelte-legos": "^0.2.1"

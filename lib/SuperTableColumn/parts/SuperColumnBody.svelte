@@ -1,6 +1,7 @@
 <script>
   import { getContext } from "svelte";
   import SuperColumnRow from "./SuperColumnRow.svelte";
+  import Popover from "../../../node_modules/@budibase/bbui/src/Popover/Popover.svelte"
 
   const tableStateStore = getContext("tableStateStore");
   const tableSelectionStore = getContext("tableSelectionStore");
@@ -21,8 +22,7 @@
   }
 
   const synchScrollPosition = ( position ) => { 
-    if (columnBodyAnchor) 
-      if ( position != columnBodyAnchor.scrollTop)
+    if (columnBodyAnchor && position != columnBodyAnchor.scrollTop ) 
       columnBodyAnchor.scrollTop = position 
   }
 
@@ -48,7 +48,8 @@
         isSelected={ $tableSelectionStore[row.rowKey] }
         on:resize={ (event) => tableStateStore.resizeRow(columnOptions.id, index, event.detail.height)}
         on:hovered={() => ($tableHoverStore = index)}
-        on:rowClicked={(e) => columnState.rowClicked( e.detail.rowKey ) }
+        on:rowClicked={ (e) => columnState.rowClicked( e.detail.rowKey ) }
+        on:rowDblClicked={ (e) => columnState.rowDblClicked( e.detail.rowKey ) }
       >
         <slot />
       </SuperColumnRow>
