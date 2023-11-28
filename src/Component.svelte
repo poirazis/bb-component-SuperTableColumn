@@ -98,7 +98,6 @@
     isFirst = order == 0  
   }
 
-  $: console.log($tableOptions)
 </script>
 
 <div use:styleable={$component.styles}>
