@@ -10,6 +10,8 @@
 
   // We keep a hidden property of type "dataprovider" so we can use the "field" property type
   export let dataProvider 
+  export let datasource
+  export let columnType
   export let field
 
   export let valueTemplate
@@ -43,6 +45,7 @@
   $: columnOptions = {
     name: field,
     schema: dataProvider?.schema[field] ?? {},
+    type: columnType,
     align: rowHorizontalAlign,
     displayName: header ? header : field, 
     hasChildren: $component.children > 0,
@@ -94,6 +97,8 @@
     isLast = order == parentTableObj?._children?.length - 1
     isFirst = order == 0  
   }
+
+  $: console.log($tableOptions)
 </script>
 
 <div use:styleable={$component.styles}>

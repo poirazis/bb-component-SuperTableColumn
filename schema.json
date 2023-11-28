@@ -22,16 +22,17 @@
       {
         "type": "field",
         "key": "field",
-        "label": "Field",
+        "label": "Column",
         "required": true
       },
       {
         "type": "select",
         "key": "columnType",
-        "label" : "Field Type",
+        "label" : "Column Type",
         "options" : [
           {"label" : "Auto", "value": "auto" },
-          {"label" : "Relationship", "value": "link" }
+          {"label" : "Relationship", "value": "link" },
+          {"label" : "Options", "value": "array" }
         ],
         "defaultValue" : "auto"
       },

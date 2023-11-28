@@ -155,7 +155,7 @@
   class="superTableColumn"
   class:resizing
   class:considerResizing={considerResizing && !resizing}
-  style:flex={ width ? "0 0 auto" : columnOptions.sizing == "fixed" ? "0 0 auto" : "1 1 auto" }
+  style:flex={ width ? "0" : columnOptions.sizing == "fixed" ? "0" : "1" }
   style:width={ width ? width : columnOptions.sizing == "fixed" ? columnOptions.fixedWidth : "auto"}
   style:min-width={ columnOptions.sizing == "flexible" ? columnOptions.minWidth : null}
   style:max-width={ columnOptions.sizing == "flexible" ? columnOptions.maxWidth : null}

@@ -58,7 +58,7 @@
 			valueTemplate={ columnOptions?.template }
 			value= { row?.rowValue }
 			editable={ columnOptions?.canEdit }
-			fieldSchema={ columnOptions?.schema ?? {} }
+			fieldSchema={ columnOptions.type && columnOptions.type != "auto" ? {...columnOptions?.schema, type: columnOptions.type } : columnOptions?.schema }
 			submitOn = { $tableOptionStore?.submitOn }
 			{isHovered} 
 			{columnOptions}
