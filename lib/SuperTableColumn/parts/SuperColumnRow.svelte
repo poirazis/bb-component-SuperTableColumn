@@ -49,6 +49,8 @@
 	on:mouseenter={ () => dispatch("hovered") } 
 	on:mouseleave={ () => dispatch("unHovered") }
 	on:click={ () => dispatch("rowClicked", { rowKey : row?.rowKey }) }
+	on:dblclick={ () => dispatch("rowDblClicked", { rowKey : row?.rowKey }) } 
+	on:contextmenu|preventDefault={ () => dispatch("contextmenu", { rowKey : row?.rowKey }) }
 	>
 	{#if !columnOptions.hasChildren }
 		<SuperTableCell 
@@ -56,7 +58,7 @@
 			valueTemplate={ columnOptions?.template }
 			value= { row?.rowValue }
 			editable={ columnOptions?.canEdit }
-			fieldSchema={ columnOptions?.schema ?? {} }
+			fieldSchema={ columnOptions.type && columnOptions.type != "auto" ? {...columnOptions?.schema, type: columnOptions.type } : columnOptions?.schema }
 			submitOn = { $tableOptionStore?.submitOn }
 			{isHovered} 
 			{columnOptions}
