@@ -1,7 +1,6 @@
 <script>
-  import Icon from "../../../node_modules/@budibase/bbui/src/Icon/Icon.svelte";
   import Popover from "../../../node_modules/@budibase/bbui/src/Popover/Popover.svelte";
-  import { SuperCell } from "../../../bb-component-SuperTableCell/lib/SuperTableCell/index.js";
+  import { SuperCell } from "../../../../bb-component-SuperTableCell/lib/SuperTableCell/index.js";
 
   export let columnState;
   export let columnOptions;
@@ -98,12 +97,7 @@
 
       {#if columnOptions.isSorted}
         <div class="actionIcon sort">
-          <Icon
-            size="XS"
-            name={columnOptions.isSorted == "Descending"
-              ? "SortOrderDown"
-              : "SortOrderUp"}
-          />
+          srt
         </div>
       {/if}
     {:else if $columnState == "Entering" || $columnState == "Filtered"}
