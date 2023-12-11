@@ -1,6 +1,6 @@
 <script>
   import { getContext } from "svelte";
-  import { SuperTableColumn } from "../bb_super_components_shared/src/lib"
+  import { SuperTableColumn } from "../../bb_super_components_shared/src/lib"
   import { findComponentById } from "../lib/builderHelpers" 
 
   const { styleable, builderStore, screenStore } = getContext("sdk");
