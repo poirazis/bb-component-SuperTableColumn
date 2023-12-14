@@ -28,7 +28,7 @@ jobs:
         run: |
           cd bb_super_components_shared
           yarn
-          cd ../bb-component-SuperTable
+          cd ../bb-component-SuperTableColumn
           release_version=$(cat package.json | jq -r '.version')
           echo "RELEASE_VERSION=$release_version" >> $GITHUB_ENV
           yarn
