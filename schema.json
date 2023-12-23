@@ -13,17 +13,10 @@
     "showEmptyState": false, 
     "settings": [
       {
-        "type": "dataProvider",
-        "key" : "dataProvider",
-        "label": "Data Rrovider",
-        "required": true,
-        "dependsOn": "_hidden"
-      },
-      {
-        "type": "field",
-        "key": "field",
-        "label": "Column",
-        "required": true
+        "type" : "text",
+        "key" : "superProps",
+        "defaultValue": "{}",
+        "hidden" : true
       },
       {
         "type": "select",
@@ -45,6 +38,7 @@
         "type": "text",
         "key": "valueTemplate",
         "label": "Value",
+        "placeholder" : "{{ Value }}",
         "nested" : "true"
       },
       {
@@ -55,12 +49,22 @@
       {
         "section" : true,
         "name": "Relationship Options",
-        "dependsOn": { "setting": "columnType", "value" : "link" },
+        "dependsOn": { "setting": "columnType", "value" : "auto", "invert" : true },
         "settings": [
           { 
-            "type" : "dataSource",
-            "key": "datasource",
+            "type" : "table",
+            "key": "tableId",
             "label" : "Data Source"
+          },
+          { 
+            "type" : "field",
+            "key": "foreignKey",
+            "label" : "Value Field"
+          },
+          { 
+            "type" : "field",
+            "key": "labelColumn",
+            "label" : "Label Field"
           }
         ]
       },
@@ -148,15 +152,9 @@
         "defaultValue": "live"
       },
       {
-        "type": "boolean",
-        "key": "customize",
-        "label": "Customize",
-        "defaultValue": false
-      },
-      {
+        "tag" : "style",
         "section": true,
-        "name": "Customize Header Settings",
-        "dependsOn": "customize",
+        "name": "Header Settings",
         "settings": [
           {
             "type": "select",
@@ -199,9 +197,9 @@
         ]
       },
       {
+        "tag": "style",
         "section": true,
         "name": "Row Settings",
-        "dependsOn": "customize",
         "settings": [
           {
             "type": "select",
@@ -249,9 +247,9 @@
         ]
       },
       {
+        "tag": "style",
         "section": true,
         "name": "Footer Settings",
-        "dependsOn": "customize",
         "settings": [
           {
             "type": "select",
