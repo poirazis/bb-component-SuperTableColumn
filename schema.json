@@ -14,8 +14,8 @@
     "settings": [
       {
         "type" : "text",
-        "key" : "superProps",
-        "defaultValue": "{}",
+        "key" : "field",
+        "label" : "Field",
         "hidden" : true
       },
       {
@@ -24,7 +24,7 @@
         "label" : "Column Type",
         "options" : [
           {"label" : "Auto", "value": "auto" },
-          {"label" : "Relationship", "value": "link" },
+          {"label" : "Option", "value": "options" },
           {"label" : "Options", "value": "array" }
         ],
         "defaultValue" : "auto"
@@ -48,23 +48,85 @@
       },
       {
         "section" : true,
-        "name": "Relationship Options",
+        "name": "Options Settings",
         "dependsOn": { "setting": "columnType", "value" : "auto", "invert" : true },
         "settings": [
+          {
+            "type": "select",
+            "label": "Options source",
+            "key": "optionsSource",
+            "defaultValue": "data",
+            "placeholder": "Pick an options source",
+            "options": [
+              {
+                "label": "Data",
+                "value": "data"
+              },
+              {
+                "label": "Custom",
+                "value": "custom"
+              }
+            ]
+          },
+          {
+            "type": "options",
+            "key": "customOptions",
+            "label": "Custom Options",
+            "dependsOn": {
+              "setting": "optionsSource",
+              "value": "custom"
+            }
+          },
           { 
-            "type" : "table",
-            "key": "tableId",
-            "label" : "Data Source"
+            "type" : "dataSource",
+            "key": "datasource",
+            "label" : "Data Source",
+            "dependsOn": {
+              "setting": "optionsSource",
+              "value": "data"
+            },
+            "resetsOn" : "columnType"
           },
           { 
             "type" : "field",
-            "key": "foreignKey",
-            "label" : "Value Field"
+            "key": "valueColumn",
+            "label" : "Value Column",
+            "dependsOn": {
+              "setting": "optionsSource",
+              "value": "data"
+            },
+            "resetsOn" : "datasource"
           },
           { 
             "type" : "field",
             "key": "labelColumn",
-            "label" : "Label Field"
+            "label" : "Label Column",
+            "dependsOn": {
+              "setting": "optionsSource",
+              "value": "data"
+            },
+            "resetsOn" : "datasource"
+          },
+          { 
+            "type" : "field",
+            "key": "colorColumn",
+            "label" : "Color Column",
+            "dependsOn": {
+              "setting": "optionsSource",
+              "value": "data"
+            },
+            "resetsOn" : "datasource"
+          },
+          { 
+            "type" : "field",
+            "key": "iconColumn",
+            "label" : "Icon Column",
+            "info" : "Must contain a remix icon class name",
+            "dependsOn": {
+              "setting": "optionsSource",
+              "value": "data"
+            },
+            "resetsOn" : "datasource"
           }
         ]
       },
@@ -288,6 +350,41 @@
             "type": "color",
             "key": "footerBackground",
             "label": "Bg Color"
+          }
+        ]
+      },
+      {
+        "tag" : "style",
+        "type" : "boolean",
+        "key" : "useOptionColors",
+        "label" : "Option Colors",
+        "defaultValue" : false
+      },
+      {
+        "tag" : "style",
+        "type" : "boolean",
+        "key" : "useOptionIcons",
+        "label" : "Option Icons",
+        "defaultValue" : false
+      },
+      {
+        "tag" : "style",
+        "type": "select",
+        "label": "Options Mode",
+        "key": "optionsViewMode",
+        "defaultValue": "text",
+        "showInBar": true,
+        "barStyle": "buttons",
+        "options": [
+          {
+            "label": "Pills",
+            "value": "pills",
+            "barIcon": "Button"
+          },
+          {
+            "label": "text",
+            "value": "text",
+            "barIcon": "Text"
           }
         ]
       }

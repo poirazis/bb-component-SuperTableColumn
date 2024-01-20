@@ -1,19 +1,28 @@
 <script>
   import { getContext } from "svelte";
   import { SuperTableColumn } from "../../bb_super_components_shared/src/lib"
-  import FieldSelect from "./FieldSelect.svelte"
   import { findComponentById } from "../lib/builderHelpers" 
+  import FieldSelect from "./FieldSelect.svelte"
 
   const { styleable, builderStore, screenStore, componentStore } = getContext("sdk");
   const component = getContext("component");
-  const tableOptions = getContext("tableOptionStore")
-  const tableState = getContext("tableState")
 
+  const tableOptions = getContext("tableOptionStore")
+  const stbState = getContext("tableState")
+  const stbData = getContext("stbData")
+
+  export let field
   export let columnType
-  export let superProps = "{}"
-  export let tableId
-  export let foreignKey
+  export let datasource
+  export let valueColumn
   export let labelColumn
+  export let iconColumn
+  export let colorColumn
+  export let optionsSource
+  export let customOptions
+  export let useOptionColors
+  export let useOptionIcons
+  export let optionsViewMode
 
   export let valueTemplate
 
@@ -38,34 +47,14 @@
   export let footer, footerAlign, footerFontColor, footerBackground;
 
   let id = $component.id;
-  let order, isLast, isFirst
-  let props = {}
-
-  $: try { props = JSON.parse(superProps) } catch { props = {} }
-  $: props.field = tableOptions && Object.keys($tableOptions?.data.schema).includes(props.field) ? props.field : ""
-  $: field = props.field
-
-  // Keep the datasource prop in sync with the parent table 
-  $: if ( $builderStore.inBuilder 
-          && $componentStore.selectedComponentPath?.includes($component.id)
-          && superProps != JSON.stringify(props)
-      ) {
-        builderStore.actions.updateProp("superProps", JSON.stringify(props))
-      }
-  
+  let order, isLast, isFirst, localField
 
   // We nned to know the position of the Super Columns amonsgt other siblings
   // to adjust various properties
   $: getOrderAmongstSiblings( $screenStore )
   $: columnOptions = {
     name: field,
-    schema: columnType == "link" ? { 
-      relationshipType: "one-to-many",
-      type : "link", 
-      tableId : tableId.tableId, 
-      labelColumn: labelColumn,
-      foreignKey }
-       : $tableOptions?.data.schema[field] ?? { "type" : "string" },
+    schema: columnType == "auto" ? $stbData?.schema[field] : { type: columnType },
     type: columnType,
     align: rowHorizontalAlign,
     displayName: header ? header : field, 
@@ -77,7 +66,7 @@
     header: header ?? "",
     headerAlign: headerAlign,
     template: valueTemplate,
-    canEdit: canEdit,
+    canEdit: canEdit == "inherit" ? $tableOptions?.canEdit : canEdit,
     canFilter: canFilter,
     canSort: canSort,
     isSorted: $tableOptions?.sortedColum == field ? $tableOptions?.sortedDirection : null,
@@ -90,7 +79,19 @@
     isFirst: isFirst,
     isLast: isLast,
     superColumn: true,
-    padding: $tableOptions?.appearance.cellPadding
+    padding: $tableOptions?.appearance.cellPadding,
+    optionsSource: columnType != "auto" ? optionsSource : "schema",
+    customOptions,
+    useOptionColors,
+    useOptionIcons,
+    optionsViewMode,
+    data : {
+      datasource,
+      labelColumn,
+      valueColumn,
+      iconColumn,
+      colorColumn,
+    }
   }
 
   // When the Super Columns is used as a Component, the sizing variables need to be applied to the wrapping div and not the 
@@ -110,6 +111,15 @@
     }
   }
 
+  $:  if (
+      $builderStore.inBuilder &&
+      $componentStore.selectedComponentPath?.includes($component.id) &&
+      localField && 
+      localField != field
+    ) {
+        builderStore.actions.updateProp("field", localField)
+    }
+
   function getOrderAmongstSiblings ( ) {
     if (!tableOptions ) return;
 
@@ -121,25 +131,23 @@
   }
 
   const isValid = () => {
-    let validFields = Object.keys($tableOptions.data.schema) ?? []
+    let validFields = Object.keys($stbData?.schema ?? {} )
     return field && validFields.includes(field)
   }
+
 </script>
 
-<div use:styleable={$component.styles}>
-  {#if !tableOptions }
-    <p> Super Column can olny be placed inside a Super Table </p>
-  {:else if !props.field}
-    Please Select Column : 
-    <FieldSelect 
-      schema={$tableOptions.data.schema}
-      bind:value={props.field}
-     />
-  {:else}   
+<div use:styleable={$component.styles}> 
+  {#if !tableOptions}
+    <p> Super Columns can only be placed inside a Super Table </p>
+  {:else if !isValid(field)}
+    <FieldSelect bind:value={localField} schema={$stbData?.schema ?? {} } />
+  {:else}
     <SuperTableColumn 
       {columnOptions} 
-      {tableState}> 
+      {stbState}> 
         <slot /> 
     </SuperTableColumn>
   {/if}
+
 </div>
