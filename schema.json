@@ -13,17 +13,10 @@
     "showEmptyState": false, 
     "settings": [
       {
-        "type": "dataProvider",
-        "key" : "dataProvider",
-        "label": "Data Rrovider",
-        "required": true,
-        "dependsOn": "_hidden"
-      },
-      {
-        "type": "field",
-        "key": "field",
-        "label": "Column",
-        "required": true
+        "type" : "text",
+        "key" : "field",
+        "label" : "Field",
+        "hidden" : true
       },
       {
         "type": "select",
@@ -31,7 +24,7 @@
         "label" : "Column Type",
         "options" : [
           {"label" : "Auto", "value": "auto" },
-          {"label" : "Relationship", "value": "link" },
+          {"label" : "Option", "value": "options" },
           {"label" : "Options", "value": "array" }
         ],
         "defaultValue" : "auto"
@@ -45,6 +38,7 @@
         "type": "text",
         "key": "valueTemplate",
         "label": "Value",
+        "placeholder" : "{{ Value }}",
         "nested" : "true"
       },
       {
@@ -54,13 +48,85 @@
       },
       {
         "section" : true,
-        "name": "Relationship Options",
-        "dependsOn": { "setting": "columnType", "value" : "link" },
+        "name": "Options Settings",
+        "dependsOn": { "setting": "columnType", "value" : "auto", "invert" : true },
         "settings": [
+          {
+            "type": "select",
+            "label": "Options source",
+            "key": "optionsSource",
+            "defaultValue": "data",
+            "placeholder": "Pick an options source",
+            "options": [
+              {
+                "label": "Data",
+                "value": "data"
+              },
+              {
+                "label": "Custom",
+                "value": "custom"
+              }
+            ]
+          },
+          {
+            "type": "options",
+            "key": "customOptions",
+            "label": "Custom Options",
+            "dependsOn": {
+              "setting": "optionsSource",
+              "value": "custom"
+            }
+          },
           { 
             "type" : "dataSource",
             "key": "datasource",
-            "label" : "Data Source"
+            "label" : "Data Source",
+            "dependsOn": {
+              "setting": "optionsSource",
+              "value": "data"
+            },
+            "resetsOn" : "columnType"
+          },
+          { 
+            "type" : "field",
+            "key": "valueColumn",
+            "label" : "Value Column",
+            "dependsOn": {
+              "setting": "optionsSource",
+              "value": "data"
+            },
+            "resetsOn" : "datasource"
+          },
+          { 
+            "type" : "field",
+            "key": "labelColumn",
+            "label" : "Label Column",
+            "dependsOn": {
+              "setting": "optionsSource",
+              "value": "data"
+            },
+            "resetsOn" : "datasource"
+          },
+          { 
+            "type" : "field",
+            "key": "colorColumn",
+            "label" : "Color Column",
+            "dependsOn": {
+              "setting": "optionsSource",
+              "value": "data"
+            },
+            "resetsOn" : "datasource"
+          },
+          { 
+            "type" : "field",
+            "key": "iconColumn",
+            "label" : "Icon Column",
+            "info" : "Must contain a remix icon class name",
+            "dependsOn": {
+              "setting": "optionsSource",
+              "value": "data"
+            },
+            "resetsOn" : "datasource"
           }
         ]
       },
@@ -148,15 +214,9 @@
         "defaultValue": "live"
       },
       {
-        "type": "boolean",
-        "key": "customize",
-        "label": "Customize",
-        "defaultValue": false
-      },
-      {
+        "tag" : "style",
         "section": true,
-        "name": "Customize Header Settings",
-        "dependsOn": "customize",
+        "name": "Header Settings",
         "settings": [
           {
             "type": "select",
@@ -199,9 +259,9 @@
         ]
       },
       {
+        "tag": "style",
         "section": true,
         "name": "Row Settings",
-        "dependsOn": "customize",
         "settings": [
           {
             "type": "select",
@@ -249,9 +309,9 @@
         ]
       },
       {
+        "tag": "style",
         "section": true,
         "name": "Footer Settings",
-        "dependsOn": "customize",
         "settings": [
           {
             "type": "select",
@@ -290,6 +350,41 @@
             "type": "color",
             "key": "footerBackground",
             "label": "Bg Color"
+          }
+        ]
+      },
+      {
+        "tag" : "style",
+        "type" : "boolean",
+        "key" : "useOptionColors",
+        "label" : "Option Colors",
+        "defaultValue" : false
+      },
+      {
+        "tag" : "style",
+        "type" : "boolean",
+        "key" : "useOptionIcons",
+        "label" : "Option Icons",
+        "defaultValue" : false
+      },
+      {
+        "tag" : "style",
+        "type": "select",
+        "label": "Options Mode",
+        "key": "optionsViewMode",
+        "defaultValue": "text",
+        "showInBar": true,
+        "barStyle": "buttons",
+        "options": [
+          {
+            "label": "Pills",
+            "value": "pills",
+            "barIcon": "Button"
+          },
+          {
+            "label": "text",
+            "value": "text",
+            "barIcon": "Text"
           }
         ]
       }

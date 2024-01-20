@@ -2,17 +2,27 @@
   import { getContext } from "svelte";
   import { SuperTableColumn } from "../../bb_super_components_shared/src/lib"
   import { findComponentById } from "../lib/builderHelpers" 
+  import FieldSelect from "./FieldSelect.svelte"
 
-  const { styleable, builderStore, screenStore } = getContext("sdk");
+  const { styleable, builderStore, screenStore, componentStore } = getContext("sdk");
   const component = getContext("component");
-  const tableOptions = getContext("tableOptionStore")
-  const tableState = getContext("tableState")
 
-  // We keep a hidden property of type "dataprovider" so we can use the "field" property type
-  export let dataProvider 
-  export let datasource
-  export let columnType
+  const tableOptions = getContext("tableOptionStore")
+  const stbState = getContext("tableState")
+  const stbData = getContext("stbData")
+
   export let field
+  export let columnType
+  export let datasource
+  export let valueColumn
+  export let labelColumn
+  export let iconColumn
+  export let colorColumn
+  export let optionsSource
+  export let customOptions
+  export let useOptionColors
+  export let useOptionIcons
+  export let optionsViewMode
 
   export let valueTemplate
 
@@ -37,14 +47,14 @@
   export let footer, footerAlign, footerFontColor, footerBackground;
 
   let id = $component.id;
-  let order, isLast, isFirst
-   
+  let order, isLast, isFirst, localField
+
   // We nned to know the position of the Super Columns amonsgt other siblings
   // to adjust various properties
   $: getOrderAmongstSiblings( $screenStore )
   $: columnOptions = {
     name: field,
-    schema: dataProvider?.schema[field] ?? {},
+    schema: columnType == "auto" ? $stbData?.schema[field] : { type: columnType },
     type: columnType,
     align: rowHorizontalAlign,
     displayName: header ? header : field, 
@@ -56,10 +66,10 @@
     header: header ?? "",
     headerAlign: headerAlign,
     template: valueTemplate,
-    canEdit: canEdit,
+    canEdit: canEdit == "inherit" ? $tableOptions?.canEdit : canEdit,
     canFilter: canFilter,
     canSort: canSort,
-    isSorted: $tableOptions?.sortedColum == field ? $tableOptions.sortedDirection : null,
+    isSorted: $tableOptions?.sortedColum == field ? $tableOptions?.sortedDirection : null,
     sizing: sizing,
     minWidth: minWidth,
     maxWidth: maxWidth,
@@ -69,7 +79,19 @@
     isFirst: isFirst,
     isLast: isLast,
     superColumn: true,
-    padding: $tableOptions?.cellPadding
+    padding: $tableOptions?.appearance.cellPadding,
+    optionsSource: columnType != "auto" ? optionsSource : "schema",
+    customOptions,
+    useOptionColors,
+    useOptionIcons,
+    optionsViewMode,
+    data : {
+      datasource,
+      labelColumn,
+      valueColumn,
+      iconColumn,
+      colorColumn,
+    }
   }
 
   // When the Super Columns is used as a Component, the sizing variables need to be applied to the wrapping div and not the 
@@ -78,15 +100,25 @@
     ...$component.styles,
     normal: {
       ...$component.styles.normal,
+      "display" : $builderStore.inBuilder ? "block" : "contents",
       "flex": $tableOptions?.columnSizing == "flexible" && sizing == "flexible" ? flexFactor + " 1 auto" : "0 0 auto",
       "width" : sizing == "fixed" || $tableOptions?.columnSizing == "fixed" 
         ? fixedWidth ? fixedWidth : $tableOptions?.columnFixedWidth 
         ? $tableOptions?.columnFixedWidth : "auto"
         : "auto",
       "min-width" : sizing == "flexible" && minWidth ? minWidth : "auto",
-      "max-width" : sizing == "flexible" && $tableOptions?.columnSizing == "flexible" ? maxWidth ? maxWidth : $tableOptions.columnMaxWidth : "auto",
+      "max-width" : sizing == "flexible" && $tableOptions?.columnSizing == "flexible" ? maxWidth ? maxWidth : $tableOptions?.columnMaxWidth : "auto",
     }
   }
+
+  $:  if (
+      $builderStore.inBuilder &&
+      $componentStore.selectedComponentPath?.includes($component.id) &&
+      localField && 
+      localField != field
+    ) {
+        builderStore.actions.updateProp("field", localField)
+    }
 
   function getOrderAmongstSiblings ( ) {
     if (!tableOptions ) return;
@@ -98,17 +130,24 @@
     isFirst = order == 0  
   }
 
+  const isValid = () => {
+    let validFields = Object.keys($stbData?.schema ?? {} )
+    return field && validFields.includes(field)
+  }
+
 </script>
 
-<div use:styleable={$component.styles}>
-  {#if !tableOptions }
-    <p> Super Column can olny be placed inside a Super Table </p>
-  {:else}   
+<div use:styleable={$component.styles}> 
+  {#if !tableOptions}
+    <p> Super Columns can only be placed inside a Super Table </p>
+  {:else if !isValid(field)}
+    <FieldSelect bind:value={localField} schema={$stbData?.schema ?? {} } />
+  {:else}
     <SuperTableColumn 
       {columnOptions} 
-      tableOptions={$tableOptions} 
-      {tableState}> 
+      {stbState}> 
         <slot /> 
     </SuperTableColumn>
   {/if}
+
 </div>
