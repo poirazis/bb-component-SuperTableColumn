@@ -141,7 +141,9 @@
   {#if !tableOptions}
     <p> Super Columns can only be placed inside a Super Table </p>
   {:else if !isValid(field)}
-    <FieldSelect bind:value={localField} schema={$stbData?.schema ?? {} } />
+    <div style:margin={"0.5rem 1rem"} >
+      <FieldSelect bind:value={localField} schema={$stbData?.schema ?? {} } />
+    </div>
   {:else}
     <SuperTableColumn 
       {columnOptions} 
@@ -149,5 +151,4 @@
         <slot /> 
     </SuperTableColumn>
   {/if}
-
 </div>
