@@ -1,5 +1,5 @@
 <script>
-  import CellOption from "../../bb_super_components_shared/src/lib/SuperCell/cells/CellOptions.svelte";
+  import CellOption from "../../bb_super_components_shared/src/lib/SuperCells/CellOptions.svelte";
 
   export let schema
   export let value
@@ -9,16 +9,16 @@
     customOptions: Object.keys(schema),
     controlType : "select",
     optionsViewMode: "text",
-    autocomplete: true,
+    autocomplete: false,
+    addNew: false,
     placeholder: "Select Field",
-    role: "formInput", 
-    clearValueIcon:true
+    role: "formInput"
   }
 </script>
 
 <p> Column: </p>
 
 <CellOption
-  on:change={ (e) => value = e.detail[0]}
+  on:change={ (e) => value = e.detail }
   {cellOptions}
   />

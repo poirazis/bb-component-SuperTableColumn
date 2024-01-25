@@ -7,7 +7,7 @@
   const { styleable, builderStore, screenStore, componentStore } = getContext("sdk");
   const component = getContext("component");
 
-  const tableOptions = getContext("tableOptionStore")
+  const tableOptions = getContext("stbSettings")
   const stbState = getContext("tableState")
   const stbData = getContext("stbData")
 

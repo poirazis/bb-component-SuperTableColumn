@@ -8,7 +8,7 @@
     "info": "You can add components to customize how cell values are displayed.",
     "icon": "TableColumnAddRight",
     "hasChildren": true,
-    "illegalChildren": ["plugins/bb-component-SuperTableColumn"],
+    "illegalChildren": ["plugin/bb-component-SuperTableColumn"],
     "showSettingsBar": true,
     "showEmptyState": false, 
     "settings": [
@@ -23,9 +23,13 @@
         "key": "columnType",
         "label" : "Column Type",
         "options" : [
-          {"label" : "Auto", "value": "auto" },
+          {"label" : "Schema", "value": "auto" },
           {"label" : "Option", "value": "options" },
-          {"label" : "Options", "value": "array" }
+          {"label" : "Options", "value": "array" },
+          {"label" : "SQL Relationship", "value": "linkSQL" },
+          {"label" : "SurrealDB Link", "value": "linkSurrealRecordLink" },
+          {"label" : "SurrealDB Relationship", "value": "linkSurrealGraphEdge" }
+
         ],
         "defaultValue" : "auto"
       },
@@ -49,7 +53,7 @@
       {
         "section" : true,
         "name": "Options Settings",
-        "dependsOn": { "setting": "columnType", "value" : "auto", "invert" : true },
+        "dependsOn": { "setting": "columnType", "value" : "options" },
         "settings": [
           {
             "type": "select",
@@ -81,6 +85,89 @@
             "type" : "dataSource",
             "key": "datasource",
             "label" : "Data Source",
+            "dependsOn": {
+              "setting": "optionsSource",
+              "value": "data"
+            },
+            "resetsOn" : "columnType"
+          },
+          { 
+            "type" : "field",
+            "key": "valueColumn",
+            "label" : "Value Column",
+            "dependsOn": {
+              "setting": "optionsSource",
+              "value": "data"
+            },
+            "resetsOn" : "datasource"
+          },
+          { 
+            "type" : "field",
+            "key": "labelColumn",
+            "label" : "Label Column",
+            "dependsOn": {
+              "setting": "optionsSource",
+              "value": "data"
+            },
+            "resetsOn" : "datasource"
+          },
+          { 
+            "type" : "field",
+            "key": "colorColumn",
+            "label" : "Color Column",
+            "dependsOn": {
+              "setting": "optionsSource",
+              "value": "data"
+            },
+            "resetsOn" : "datasource"
+          },
+          { 
+            "type" : "field",
+            "key": "iconColumn",
+            "label" : "Icon Column",
+            "info" : "Must contain a remix icon class name",
+            "dependsOn": {
+              "setting": "optionsSource",
+              "value": "data"
+            },
+            "resetsOn" : "datasource"
+          }
+        ]
+      },
+      {
+        "section" : true,
+        "name": "Relationship Settings",
+        "dependsOn": { "setting": "columnType", "value" : "linkSQL" },
+        "settings": [
+          {
+            "type": "select",
+            "label": "Type",
+            "key": "linkSQLType",
+            "defaultValue": "data",
+            "placeholder": "Pick an options source",
+            "options": [
+              {
+                "label": "One-to-One",
+                "value": "one-to-one"
+              },
+              {
+                "label": "One-to-Many",
+                "value": "one-to-many"
+              },
+              {
+                "label": "Nany-to-One",
+                "value": "one-to-many"
+              },
+              {
+                "label": "Many-to-Many",
+                "value": "many-to-many"
+              }
+            ]
+          },
+          { 
+            "type" : "table",
+            "key": "datasource",
+            "label" : "Table",
             "dependsOn": {
               "setting": "optionsSource",
               "value": "data"
@@ -395,12 +482,12 @@
         "values": [
           {
             "label": "id",
-            "key": "rowKey",
+            "key": "rowID",
             "type": "object"
           },
           {
             "label": "Value",
-            "key": "Value",
+            "key": "value",
             "type": "object"
           }
         ]
