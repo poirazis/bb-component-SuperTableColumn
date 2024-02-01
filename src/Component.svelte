@@ -1,12 +1,11 @@
 <script>
   import { getContext } from "svelte";
-  import { SuperTableColumn } from "../../bb_super_components_shared/src/lib"
   import { findComponentById } from "../lib/builderHelpers" 
   import FieldSelect from "./FieldSelect.svelte"
+  import SuperTableColumn from "../../bb_super_components_shared/src/lib/SuperTableColumn/SuperTableColumn.svelte";
 
   const { styleable, builderStore, screenStore, componentStore } = getContext("sdk");
   const component = getContext("component");
-
   const tableOptions = getContext("stbSettings")
   const stbState = getContext("tableState")
   const stbData = getContext("stbData")
@@ -74,7 +73,8 @@
     minWidth: minWidth,
     maxWidth: maxWidth,
     fixedWidth: fixedWidth,
-    showHeader: true,
+    showHeader: $tableOptions?.showHeader,
+    showFooter: $tableOptions?.showFooter,
     order: order,
     isFirst: isFirst,
     isLast: isLast,

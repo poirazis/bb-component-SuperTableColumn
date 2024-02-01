@@ -1,6 +1,5 @@
 <script>
-  import CellOption from "../../bb_super_components_shared/src/lib/SuperCells/CellOptions.svelte";
-
+import CellOptions from "../../bb_super_components_shared/src/lib/SuperTableCells/CellOptions.svelte";
   export let schema
   export let value
 
@@ -18,7 +17,7 @@
 
 <p> Column: </p>
 
-<CellOption
+<CellOptions
   on:change={ (e) => value = e.detail }
   {cellOptions}
   />

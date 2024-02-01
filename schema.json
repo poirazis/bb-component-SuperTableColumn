@@ -5,7 +5,6 @@
     "name": "bb-component-SuperTableColumn",
     "friendlyName": "Super Table Column",
     "description": "Customizable columns for the Super Table Component",
-    "info": "You can add components to customize how cell values are displayed.",
     "icon": "TableColumnAddRight",
     "hasChildren": true,
     "illegalChildren": ["plugin/bb-component-SuperTableColumn"],
@@ -22,33 +21,63 @@
         "type": "select",
         "key": "columnType",
         "label" : "Column Type",
+        "barStyle" : "buttons",
+        "showInBar" : true,
         "options" : [
-          {"label" : "Schema", "value": "auto" },
-          {"label" : "Option", "value": "options" },
-          {"label" : "Options", "value": "array" },
-          {"label" : "SQL Relationship", "value": "linkSQL" },
-          {"label" : "SurrealDB Link", "value": "linkSurrealRecordLink" },
-          {"label" : "SurrealDB Relationship", "value": "linkSurrealGraphEdge" }
-
+          {"label" : "Schema", "value": "auto", "barIcon" : "Data", "barTitle" : "Schema" },
+          {"label" : "Options", "value": "options", "barIcon": "MultipleCheck", "barTitle" : "Option Picker" },
+          {"label" : "Relationship", "value": "linkSQL", "barIcon" : "Link" , "barTitle" : "Relationship Picker" },
+          {"label" : "Container", "value": "container", "barIcon" : "RectSelect", "barTitle" : "Container" }
         ],
         "defaultValue" : "auto"
       },
       {
         "type": "text",
         "key": "header",
-        "label": "Header"
+        "label": "Header",
+        "placeholder" : "Field Name"
       },
       {
         "type": "text",
         "key": "valueTemplate",
         "label": "Value",
-        "placeholder" : "{{ Value }}",
+        "placeholder" : "{{ Row }}",
         "nested" : "true"
       },
       {
         "type": "text",
         "key": "footer",
-        "label": "Footer"
+        "label": "Footer",
+        "placeholder" : "{{ Values }}",
+        "nested" : "true"
+      },
+      {
+        "type": "select",
+        "label": "Alignment",
+        "key": "headerAlign",
+        "showInBar": true,
+        "barStyle": "buttons",
+        "options": [
+          {
+            "label": "Left",
+            "value": "flex-start",
+            "barIcon": "TextAlignLeft",
+            "barTitle": "Header Align Left"
+          },
+          {
+            "label": "Center",
+            "value": "center",
+            "barIcon": "TextAlignCenter",
+            "barTitle": "Header Align Center"
+          },
+          {
+            "label": "Right",
+            "value": "flex-end",
+            "barIcon": "TextAlignRight",
+            "barTitle": "Header Align Right"
+          }
+        ],
+        "defaultValue": "flex-start"
       },
       {
         "section" : true,
@@ -139,31 +168,6 @@
         "name": "Relationship Settings",
         "dependsOn": { "setting": "columnType", "value" : "linkSQL" },
         "settings": [
-          {
-            "type": "select",
-            "label": "Type",
-            "key": "linkSQLType",
-            "defaultValue": "data",
-            "placeholder": "Pick an options source",
-            "options": [
-              {
-                "label": "One-to-One",
-                "value": "one-to-one"
-              },
-              {
-                "label": "One-to-Many",
-                "value": "one-to-many"
-              },
-              {
-                "label": "Nany-to-One",
-                "value": "one-to-many"
-              },
-              {
-                "label": "Many-to-Many",
-                "value": "many-to-many"
-              }
-            ]
-          },
           { 
             "type" : "table",
             "key": "datasource",
@@ -219,47 +223,6 @@
       },
       {
         "type": "select",
-        "key": "sizing",
-        "label": "Column Sizing",
-        "options": [
-          {"label": "Fixed", "value": "fixed"},
-          {"label": "Flexible", "value": "flexible"}
-        ],
-        "defaultValue" : "flexible"
-      },
-      {
-        "type" : "number",
-        "key" : "flexFactor",
-        "label" : "Flex Factor",
-        "min" : 1,
-        "defaultValue" : 1,
-        "dependsOn" : { "setting" : "sizing", "value" : "flexible"}
-      },
-      {
-        "type" : "text",
-        "key" : "minWidth",
-        "label" : "Min Width",
-        "dependsOn" : { "setting" : "sizing", "value" : "flexible"}
-      },
-      {
-        "type" : "text",
-        "key" : "maxWidth",
-        "label" : "Max Width",
-        "dependsOn" : { "setting" : "sizing", "value" : "flexible"}
-      },
-      {
-        "type" : "text",
-        "key" : "fixedWidth",
-        "label" : "Width",
-        "dependsOn" : { "setting" : "sizing", "value" : "fixed"}
-      },
-      {
-        "type": "icon",
-        "key": "icon",
-        "label": "Icon"
-      },
-      {
-        "type": "select",
         "key": "canEdit",
         "label": "Edit",
         "showInBar": true,
@@ -290,188 +253,113 @@
         "defaultValue": true
       },
       {
-        "type": "select",
-        "label": "Search Mode",
-        "key": "searchMode",
-        "dependsOn": "searchable",
-        "options" : [
-          { "label": "Live Debounced", "value": "live" },
-          { "label": "On Enter / Tab", "value": "onEnter"}
-        ],
-        "defaultValue": "live"
-      },
-      {
         "tag" : "style",
         "section": true,
-        "name": "Header Settings",
+        "name": "Sizing",
+        "collapsible" : true,
         "settings": [
           {
             "type": "select",
-            "label": "Header Alignment",
-            "key": "headerAlign",
+            "key": "sizing",
+            "label": "Column Sizing",
+            "options": [
+              {"label": "Fixed", "value": "fixed"},
+              {"label": "Flexible", "value": "flexible"}
+            ],
+            "defaultValue" : "flexible"
+          },
+          {
+            "type" : "number",
+            "key" : "flexFactor",
+            "label" : "Flex Factor",
+            "min" : 1,
+            "defaultValue" : 1,
+            "dependsOn" : { "setting" : "sizing", "value" : "flexible"}
+          },
+          {
+            "type" : "text",
+            "key" : "minWidth",
+            "label" : "Min Width",
+            "placeholder" : "6rem",
+            "dependsOn" : { "setting" : "sizing", "value" : "flexible"}
+          },
+          {
+            "type" : "text",
+            "key" : "maxWidth",
+            "label" : "Max Width",
+            "placeholder" : "16rem",
+            "dependsOn" : { "setting" : "sizing", "value" : "flexible"}
+          },
+          {
+            "type" : "text",
+            "key" : "fixedWidth",
+            "label" : "Width",
+            "placeholder" : "8rem",
+            "dependsOn" : { "setting" : "sizing", "value" : "fixed"}
+          },
+          {
+            "tag" : "style",
+            "type" : "boolean",
+            "key" : "useOptionColors",
+            "label" : "Option Colors",
+            "defaultValue" : false
+          },
+          {
+            "tag" : "style",
+            "type" : "boolean",
+            "key" : "useOptionIcons",
+            "label" : "Option Icons",
+            "defaultValue" : false
+          },
+          {
+            "tag" : "style",
+            "type": "select",
+            "label": "Options Mode",
+            "key": "optionsViewMode",
+            "defaultValue": "text",
             "showInBar": true,
             "barStyle": "buttons",
             "options": [
               {
-                "label": "Left",
-                "value": "flex-start",
-                "barIcon": "TextAlignLeft",
-                "barTitle": "Header Align Left"
+                "label": "Pills",
+                "value": "pills",
+                "barIcon": "Button"
               },
               {
-                "label": "Center",
-                "value": "center",
-                "barIcon": "TextAlignCenter",
-                "barTitle": "Header Align Center"
-              },
-              {
-                "label": "Right",
-                "value": "flex-end",
-                "barIcon": "TextAlignRight",
-                "barTitle": "Header Align Right"
+                "label": "text",
+                "value": "text",
+                "barIcon": "Text"
               }
-            ],
-            "defaultValue": "flex-start"
-          },
-          {
-            "type": "color",
-            "key": "headerFontColor",
-            "label": "Font Color"
-          },
-          {
-            "type": "color",
-            "key": "headerBackground",
-            "label": "BG Color"
+            ]
           }
         ]
       },
       {
-        "tag": "style",
-        "section": true,
-        "name": "Row Settings",
-        "settings": [
+        "tag" : "style",
+        "section" : true,
+        "name" : " Dynamic Cell Colors",
+        "collapsible": true,
+        "settings" : [
           {
-            "type": "select",
-            "label": "Hor. Align",
-            "key": "rowHorizontalAlign",
-            "showInBar": true,
-            "barStyle": "buttons",
-            "options": [
-              {
-                "label": "Left",
-                "value": "flex-start",
-                "barIcon": "AlignLeft",
-                "barTitle": "Cell Align left"
-              },
-              {
-                "label": "Center",
-                "value": "center",
-                "barIcon": "AlignCenter",
-                "barTitle": "Cell Align center"
-              },
-              {
-                "label": "Right",
-                "value": "flex-end",
-                "barIcon": "AlignRight",
-                "barTitle": "Cell Align right"
-              }
-            ],
-            "defaultValue": "flex-start"
-          },
-          {
-            "type": "color",
-            "key": "rowFontColor",
-            "label": "Font Color"
-          },
-          {
-            "type": "color",
-            "key": "rowBackground",
-            "label": "Bg Color"
+            "type": "text",
+            "key": "rowColorTemplate",
+            "label": "Text",
+            "nested" : true,
+            "placeholder" : "{{ Row }}"
           },
           {
             "type": "text",
-            "key": "fontWeight",
-            "label": "Font Weight"
-          }
-        ]
-      },
-      {
-        "tag": "style",
-        "section": true,
-        "name": "Footer Settings",
-        "settings": [
-          {
-            "type": "select",
-            "label": "Footer Alignment",
-            "key": "footerAlign",
-            "showInBar": true,
-            "barStyle": "buttons",
-            "options": [
-              {
-                "label": "Left",
-                "value": "flex-start",
-                "barIcon": "TextAlignLeft",
-                "barTitle": "Footer Align Left"
-              },
-              {
-                "label": "Center",
-                "value": "center",
-                "barIcon": "TextAlignCenter",
-                "barTitle": "Footer Align Center"
-              },
-              {
-                "label": "Right",
-                "value": "flex-end",
-                "barIcon": "TextAlignRight",
-                "barTitle": "Footer Align Right"
-              }
-            ],
-            "defaultValue": "flex-start"
+            "key": "rowBackground",
+            "label": "Background",
+            "nested" : true,
+            "placeholder" : "{{ Row }}"
           },
           {
-            "type": "color",
-            "key": "footerFontColor",
-            "label": "Font Color"
-          },
-          {
-            "type": "color",
-            "key": "footerBackground",
-            "label": "Bg Color"
-          }
-        ]
-      },
-      {
-        "tag" : "style",
-        "type" : "boolean",
-        "key" : "useOptionColors",
-        "label" : "Option Colors",
-        "defaultValue" : false
-      },
-      {
-        "tag" : "style",
-        "type" : "boolean",
-        "key" : "useOptionIcons",
-        "label" : "Option Icons",
-        "defaultValue" : false
-      },
-      {
-        "tag" : "style",
-        "type": "select",
-        "label": "Options Mode",
-        "key": "optionsViewMode",
-        "defaultValue": "text",
-        "showInBar": true,
-        "barStyle": "buttons",
-        "options": [
-          {
-            "label": "Pills",
-            "value": "pills",
-            "barIcon": "Button"
-          },
-          {
-            "label": "text",
-            "value": "text",
-            "barIcon": "Text"
+            "type": "text",
+            "key": "rowFontTemplate",
+            "label": "Font Weight",
+            "nested" : true,
+            "placeholder" : "{{ Row }}"
           }
         ]
       }
