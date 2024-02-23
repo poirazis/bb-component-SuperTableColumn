@@ -134,7 +134,6 @@
     let validFields = Object.keys($stbData?.schema ?? {} )
     return field && validFields.includes(field)
   }
-
 </script>
 
 <div use:styleable={$component.styles}> 
