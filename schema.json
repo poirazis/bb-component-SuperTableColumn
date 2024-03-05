@@ -42,7 +42,7 @@
         "type": "text",
         "key": "valueTemplate",
         "label": "Value",
-        "placeholder" : "{{ Row }}",
+        "placeholder" : "{{ value }}",
         "nested" : "true"
       },
       {
@@ -368,16 +368,22 @@
     "context": [
       {
         "type": "static",
+        "scope" : "local",
         "values": [
           {
             "label": "id",
-            "key": "rowID",
+            "key": "id",
             "type": "object"
           },
           {
-            "label": "Value",
+            "label": "value",
             "key": "value",
             "type": "object"
+          },
+          {
+            "label" : "row",
+            "key" : "row",
+            "type" : "object"
           }
         ]
       }
