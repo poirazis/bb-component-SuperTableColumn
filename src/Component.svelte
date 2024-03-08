@@ -3,6 +3,7 @@
   import { findComponentById } from "../lib/builderHelpers" 
   import FieldSelect from "./FieldSelect.svelte"
   import SuperTableColumn from "../../bb_super_components_shared/src/lib/SuperTableColumn/SuperTableColumn.svelte";
+  import { defaultOperatorMap } from "../../bb_super_components_shared/src/lib/SuperTable/constants";
 
   const { styleable, builderStore, screenStore, componentStore } = getContext("sdk");
   const component = getContext("component");
@@ -15,8 +16,8 @@
   export let datasource
   export let valueColumn
   export let labelColumn
-  export let iconColumn
-  export let colorColumn
+  export let fullTable
+  export let columnList
   export let optionsSource
   export let customOptions
   export let useOptionColors
@@ -57,29 +58,32 @@
     type: columnType,
     align: rowHorizontalAlign,
     displayName: header ? header : field, 
-    hasChildren: $component.children > 0,
     asComponent: $builderStore.inBuilder,
     color: rowFontColor,
     background: rowBackground,
     fontWeight: fontWeight,
     header: header ?? "",
     headerAlign: headerAlign,
+    headerHeight: $tableOptions?.headerHeight,
     template: valueTemplate,
-    canEdit: canEdit == "inherit" ? $tableOptions?.canEdit : canEdit,
-    canFilter: canFilter,
-    canSort: canSort,
+    canEdit: canEdit == "inherit" ? $tableOptions?.features.canEdit : canEdit,
+    highlighters : $tableOptions.appearance.highlighters,
+    canFilter: canFilter == "inherit" ? $tableOptions.features.canFilter : canFilter,
+    canResize: canResize == "inherit" ? $tableOptions.features.canResize : canResize,
+    defaultFilteringOperator: field ? defaultOperatorMap[$stbData?.schema[field].type] : undefined,
+    canSort: canSort == "inherit" ? $tableOptions.features.canSort : canSort,
     isSorted: $tableOptions?.sortedColum == field ? $tableOptions?.sortedDirection : null,
-    sizing: sizing,
-    minWidth: minWidth,
-    maxWidth: maxWidth,
-    fixedWidth: fixedWidth,
+    sizing: sizing || $tableOptions?.sizing,
+    minWidth: minWidth || $tableOptions?.columnMinWidth,
+    maxWidth: maxWidth || $tableOptions?.columnMaxWidth,
+    fixedWidth: fixedWidth | $tableOptions?.columnFixedWidth,
     showHeader: $tableOptions?.showHeader,
     showFooter: $tableOptions?.showFooter,
     order: order,
     isFirst: isFirst,
     isLast: isLast,
     superColumn: true,
-    padding: $tableOptions?.appearance.cellPadding,
+    cellPadding: $tableOptions?.appearance.cellPadding,
     optionsSource: columnType != "auto" ? optionsSource : "schema",
     customOptions,
     useOptionColors,
@@ -87,10 +91,11 @@
     optionsViewMode,
     data : {
       datasource,
+      limit: 10,
       labelColumn,
       valueColumn,
-      iconColumn,
-      colorColumn,
+      fullTable,
+      columnList
     }
   }
 
@@ -101,13 +106,10 @@
     normal: {
       ...$component.styles.normal,
       "display" : $builderStore.inBuilder ? "block" : "contents",
-      "flex": $tableOptions?.columnSizing == "flexible" && sizing == "flexible" ? flexFactor + " 1 auto" : "0 0 auto",
-      "width" : sizing == "fixed" || $tableOptions?.columnSizing == "fixed" 
-        ? fixedWidth ? fixedWidth : $tableOptions?.columnFixedWidth 
-        ? $tableOptions?.columnFixedWidth : "auto"
-        : "auto",
-      "min-width" : sizing == "flexible" && minWidth ? minWidth : "auto",
-      "max-width" : sizing == "flexible" && $tableOptions?.columnSizing == "flexible" ? maxWidth ? maxWidth : $tableOptions?.columnMaxWidth : "auto",
+      "flex": $tableOptions?.columnSizing == "flexible" && sizing == "flexible" ? flexFactor + " 1 auto" : "0 1 auto",
+      "width" : columnOptions.sizing == "fixed" ? columnOptions.fixedWidth : "auto",
+      "min-width" : columnOptions.minWidth,
+      "max-width" : columnOptions.maxWidth,
     }
   }
 
@@ -134,6 +136,7 @@
     let validFields = Object.keys($stbData?.schema ?? {} )
     return field && validFields.includes(field)
   }
+
 </script>
 
 <div use:styleable={$component.styles}> 

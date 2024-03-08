@@ -42,7 +42,7 @@
         "type": "text",
         "key": "valueTemplate",
         "label": "Value",
-        "placeholder" : "{{ Row }}",
+        "placeholder" : "{{ value }}",
         "nested" : "true"
       },
       {
@@ -119,7 +119,7 @@
               "setting": "optionsSource",
               "value": "data"
             },
-            "resetsOn" : "columnType"
+            "resetOn" : "columnType"
           },
           { 
             "type" : "field",
@@ -141,26 +141,18 @@
             },
             "resetsOn" : "datasource"
           },
-          { 
-            "type" : "field",
-            "key": "colorColumn",
-            "label" : "Color Column",
-            "dependsOn": {
-              "setting": "optionsSource",
-              "value": "data"
-            },
-            "resetsOn" : "datasource"
+          {
+            "type" : "boolean",
+            "key" : "fullTable",
+            "label" : "Super Table",
+            "resetOn" : "columnType"
           },
-          { 
-            "type" : "field",
-            "key": "iconColumn",
-            "label" : "Icon Column",
-            "info" : "Must contain a remix icon class name",
-            "dependsOn": {
-              "setting": "optionsSource",
-              "value": "data"
-            },
-            "resetsOn" : "datasource"
+          {
+            "type" : "columns",
+            "key"  : "columnList",
+            "label" : "Column",
+            "resetsOn" : "columnType",
+            "dependsOn" : "fullTable"
           }
         ]
       },
@@ -236,23 +228,61 @@
         "defaultValue": "inherit"
       },
       {
-        "type": "boolean",
+        "type": "select",
         "key": "canFilter",
-        "label": "Filter",
-        "defaultValue": true
+        "label": "Filtering",
+        "showInBar": true,
+        "barStyle": "buttons",
+        "barTitle": "Filtering",
+        "options": [
+          { "label" : "Inherit", "value": "inherit", "barIcon" : "Table" },
+          { "label": "Simple", "value": "simple", "barIcon": "Filter" },
+          { "label": "Advanced", "value": "advanced", "barIcon": "FilterEdit" },
+          { "label": "Off", "value": false, "barIcon": "Cancel" }
+        ],
+        "defaultValue": "inherit"
       },
       {
-        "type": "boolean",
+        "type": "select",
         "key": "canSort",
         "label": "Sort",
-        "defaultValue": true
+        "showInBar": true,
+        "barStyle": "buttons",
+        "options": [
+          { "label" : "Inherit", "value": "inherit", "barIcon" : "Table" },
+          { "label" : "On", "value": true, "barIcon" : "Checkmark"  },
+          { "label" : "Off", "value": false, "barIcon" : "Cancel" }
+        ],
+        "defaultValue": "inherit"
       },
       {
-        "type": "boolean",
+        "type": "select",
         "key": "canResize",
         "label": "Resize",
-        "defaultValue": true
+        "showInBar": true,
+        "barStyle": "buttons",
+        "options": [
+          { "label" : "Inherit", "value": "inherit", "barIcon" : "Table" },
+          { "label" : "On", "value": true, "barIcon" : "Checkmark"  },
+          { "label" : "Off", "value": false, "barIcon" : "Cancel" }
+        ],
+        "defaultValue": "inherit"
       },
+      {
+        "type": "select",
+        "key": "sticky",
+        "label": "Stick",
+        "showInBar": true,
+        "barStyle": "buttons",
+        "options": [
+          { "label" : "Off", "value": false, "barIcon" : "Cancel" },
+          { "label" : "Left", "value": "left", "barIcon" : "RailLeft"  },
+          { "label" : "Right", "value": "right", "barIcon" : "RailRight" }
+        ],
+        "defaultValue": false
+      },
+
+
       {
         "tag" : "style",
         "section": true,
@@ -368,16 +398,22 @@
     "context": [
       {
         "type": "static",
+        "scope" : "local",
         "values": [
           {
             "label": "id",
-            "key": "rowID",
+            "key": "id",
             "type": "object"
           },
           {
-            "label": "Value",
+            "label": "value",
             "key": "value",
             "type": "object"
+          },
+          {
+            "label" : "row",
+            "key" : "row",
+            "type" : "object"
           }
         ]
       }
