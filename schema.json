@@ -27,7 +27,7 @@
           {"label" : "Schema", "value": "auto", "barIcon" : "Data", "barTitle" : "Schema" },
           {"label" : "Options", "value": "options", "barIcon": "MultipleCheck", "barTitle" : "Option Picker" },
           {"label" : "Relationship", "value": "linkSQL", "barIcon" : "Link" , "barTitle" : "Relationship Picker" },
-          {"label" : "Custom", "value": "subType", "barIcon" : "Settings" , "barTitle" : "Custom Sub Type" },
+          {"label" : "Custom", "value": "subType", "barIcon" : "Brackets" , "barTitle" : "JSON" },
           {"label" : "Container", "value": "container", "barIcon" : "RectSelect", "barTitle" : "Container" }
         ],
         "defaultValue" : "auto"
