@@ -41,7 +41,7 @@
   export let icon;
   export let iconColor;
 
-  export let header, headerAlign, headerFontColor, headerBackground;
+  export let header, align, headerFontColor, headerBackground;
 
   export let rowHorizontalAlign, rowFontColor, rowBackground, fontWeight;
 
@@ -60,14 +60,14 @@
       schema:
         columnType == "auto" ? $stbData?.schema[field] : { type: columnType },
       type: columnType,
-      align: rowHorizontalAlign,
+      align: align,
       displayName: header ? header : field,
       asComponent: $builderStore.inBuilder,
       color: rowFontColor,
       background: rowBackground,
       fontWeight: fontWeight,
       header: header ?? "",
-      headerAlign: headerAlign,
+      headerAlign: align,
       headerHeight: $tableOptions?.headerHeight,
       template: valueTemplate,
       canEdit: canEdit == "inherit" ? $tableOptions?.features.canEdit : canEdit,
