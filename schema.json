@@ -9,53 +9,78 @@
     "hasChildren": true,
     "illegalChildren": ["plugin/bb-component-SuperTableColumn"],
     "showSettingsBar": true,
-    "showEmptyState": false, 
+    "showEmptyState": false,
     "settings": [
       {
-        "type" : "text",
-        "key" : "field",
-        "label" : "Field",
-        "hidden" : true
+        "type": "text",
+        "key": "field",
+        "label": "Field",
+        "hidden": true
       },
       {
         "type": "select",
         "key": "columnType",
-        "label" : "Column Type",
-        "barStyle" : "buttons",
-        "showInBar" : true,
-        "options" : [
-          {"label" : "Schema", "value": "auto", "barIcon" : "Data", "barTitle" : "Schema" },
-          {"label" : "Options", "value": "options", "barIcon": "MultipleCheck", "barTitle" : "Option Picker" },
-          {"label" : "Relationship", "value": "linkSQL", "barIcon" : "Link" , "barTitle" : "Relationship Picker" },
-          {"label" : "Custom", "value": "subType", "barIcon" : "Brackets" , "barTitle" : "JSON" },
-          {"label" : "Container", "value": "container", "barIcon" : "RectSelect", "barTitle" : "Container" }
+        "label": "Column Type",
+        "barStyle": "buttons",
+        "showInBar": true,
+        "options": [
+          {
+            "label": "Schema",
+            "value": "auto",
+            "barIcon": "Data",
+            "barTitle": "Schema"
+          },
+          {
+            "label": "Options",
+            "value": "options",
+            "barIcon": "MultipleCheck",
+            "barTitle": "Option Picker"
+          },
+          {
+            "label": "Relationship",
+            "value": "linkSQL",
+            "barIcon": "Link",
+            "barTitle": "Relationship Picker"
+          },
+          {
+            "label": "Custom",
+            "value": "subType",
+            "barIcon": "Brackets",
+            "barTitle": "JSON"
+          },
+          {
+            "label": "Container",
+            "value": "container",
+            "barIcon": "RectSelect",
+            "barTitle": "Container"
+          }
         ],
-        "defaultValue" : "auto"
+        "defaultValue": "auto"
       },
       {
         "type": "text",
         "key": "header",
         "label": "Header",
-        "placeholder" : "Field Name"
+        "placeholder": "Field Name"
       },
       {
         "type": "text",
         "key": "valueTemplate",
         "label": "Value",
-        "placeholder" : "{{ value }}",
-        "nested" : "true"
+        "placeholder": "{{ value }}",
+        "nested": "true"
       },
       {
         "type": "text",
         "key": "footer",
         "label": "Footer",
-        "placeholder" : "{{ Values }}",
-        "nested" : "true"
+        "placeholder": "{{ Values }}",
+        "nested": "true"
       },
       {
         "type": "select",
         "label": "Alignment",
-        "key": "headerAlign",
+        "key": "align",
         "showInBar": true,
         "barStyle": "buttons",
         "options": [
@@ -81,9 +106,9 @@
         "defaultValue": "flex-start"
       },
       {
-        "section" : true,
+        "section": true,
         "name": "Options Settings",
-        "dependsOn": { "setting": "columnType", "value" : "options" },
+        "dependsOn": { "setting": "columnType", "value": "options" },
         "settings": [
           {
             "type": "select",
@@ -111,106 +136,106 @@
               "value": "custom"
             }
           },
-          { 
-            "type" : "dataSource",
+          {
+            "type": "dataSource",
             "key": "datasource",
-            "label" : "Data Source",
+            "label": "Data Source",
             "dependsOn": {
               "setting": "optionsSource",
               "value": "data"
             },
-            "resetOn" : "columnType"
+            "resetOn": "columnType"
           },
-          { 
-            "type" : "field",
+          {
+            "type": "field",
             "key": "valueColumn",
-            "label" : "Value Column",
+            "label": "Value Column",
             "dependsOn": {
               "setting": "optionsSource",
               "value": "data"
             },
-            "resetsOn" : "datasource"
+            "resetsOn": "datasource"
           },
-          { 
-            "type" : "field",
+          {
+            "type": "field",
             "key": "labelColumn",
-            "label" : "Label Column",
+            "label": "Label Column",
             "dependsOn": {
               "setting": "optionsSource",
               "value": "data"
             },
-            "resetsOn" : "datasource"
+            "resetsOn": "datasource"
           },
           {
-            "type" : "boolean",
-            "key" : "fullTable",
-            "label" : "Super Table",
-            "resetOn" : "columnType"
+            "type": "boolean",
+            "key": "fullTable",
+            "label": "Super Table",
+            "resetOn": "columnType"
           },
           {
-            "type" : "columns",
-            "key"  : "columnList",
-            "label" : "Column",
-            "resetsOn" : "columnType",
-            "dependsOn" : "fullTable"
+            "type": "columns",
+            "key": "columnList",
+            "label": "Column",
+            "resetsOn": "columnType",
+            "dependsOn": "fullTable"
           }
         ]
       },
       {
-        "section" : true,
+        "section": true,
         "name": "Relationship Settings",
-        "dependsOn": { "setting": "columnType", "value" : "linkSQL" },
+        "dependsOn": { "setting": "columnType", "value": "linkSQL" },
         "settings": [
-          { 
-            "type" : "table",
+          {
+            "type": "table",
             "key": "datasource",
-            "label" : "Table",
+            "label": "Table",
             "dependsOn": {
               "setting": "optionsSource",
               "value": "data"
             },
-            "resetsOn" : "columnType"
+            "resetsOn": "columnType"
           },
-          { 
-            "type" : "field",
+          {
+            "type": "field",
             "key": "valueColumn",
-            "label" : "Value Column",
+            "label": "Value Column",
             "dependsOn": {
               "setting": "optionsSource",
               "value": "data"
             },
-            "resetsOn" : "datasource"
+            "resetsOn": "datasource"
           },
-          { 
-            "type" : "field",
+          {
+            "type": "field",
             "key": "labelColumn",
-            "label" : "Label Column",
+            "label": "Label Column",
             "dependsOn": {
               "setting": "optionsSource",
               "value": "data"
             },
-            "resetsOn" : "datasource"
+            "resetsOn": "datasource"
           },
-          { 
-            "type" : "field",
+          {
+            "type": "field",
             "key": "colorColumn",
-            "label" : "Color Column",
+            "label": "Color Column",
             "dependsOn": {
               "setting": "optionsSource",
               "value": "data"
             },
-            "resetsOn" : "datasource"
+            "resetsOn": "datasource"
           },
-          { 
-            "type" : "field",
+          {
+            "type": "field",
             "key": "iconColumn",
-            "label" : "Icon Column",
-            "info" : "Must contain a remix icon class name",
+            "label": "Icon Column",
+            "info": "Must contain a remix icon class name",
             "dependsOn": {
               "setting": "optionsSource",
               "value": "data"
             },
-            "resetsOn" : "datasource"
+            "resetsOn": "datasource"
           }
         ]
       },
@@ -221,9 +246,9 @@
         "showInBar": true,
         "barStyle": "buttons",
         "options": [
-          { "label" : "Inherit", "value": "inherit", "barIcon" : "Table" },
-          { "label" : "On", "value": true, "barIcon" : "Checkmark"  },
-          { "label" : "Off", "value": false, "barIcon" : "Cancel" }
+          { "label": "Inherit", "value": "inherit", "barIcon": "Table" },
+          { "label": "On", "value": true, "barIcon": "Checkmark" },
+          { "label": "Off", "value": false, "barIcon": "Cancel" }
         ],
         "defaultValue": "inherit"
       },
@@ -235,7 +260,7 @@
         "barStyle": "buttons",
         "barTitle": "Filtering",
         "options": [
-          { "label" : "Inherit", "value": "inherit", "barIcon" : "Table" },
+          { "label": "Inherit", "value": "inherit", "barIcon": "Table" },
           { "label": "Simple", "value": "simple", "barIcon": "Filter" },
           { "label": "Advanced", "value": "advanced", "barIcon": "FilterEdit" },
           { "label": "Off", "value": false, "barIcon": "Cancel" }
@@ -249,9 +274,9 @@
         "showInBar": true,
         "barStyle": "buttons",
         "options": [
-          { "label" : "Inherit", "value": "inherit", "barIcon" : "Table" },
-          { "label" : "On", "value": true, "barIcon" : "Checkmark"  },
-          { "label" : "Off", "value": false, "barIcon" : "Cancel" }
+          { "label": "Inherit", "value": "inherit", "barIcon": "Table" },
+          { "label": "On", "value": true, "barIcon": "Checkmark" },
+          { "label": "Off", "value": false, "barIcon": "Cancel" }
         ],
         "defaultValue": "inherit"
       },
@@ -262,9 +287,9 @@
         "showInBar": true,
         "barStyle": "buttons",
         "options": [
-          { "label" : "Inherit", "value": "inherit", "barIcon" : "Table" },
-          { "label" : "On", "value": true, "barIcon" : "Checkmark"  },
-          { "label" : "Off", "value": false, "barIcon" : "Cancel" }
+          { "label": "Inherit", "value": "inherit", "barIcon": "Table" },
+          { "label": "On", "value": true, "barIcon": "Checkmark" },
+          { "label": "Off", "value": false, "barIcon": "Cancel" }
         ],
         "defaultValue": "inherit"
       },
@@ -275,75 +300,74 @@
         "showInBar": true,
         "barStyle": "buttons",
         "options": [
-          { "label" : "Off", "value": false, "barIcon" : "Cancel" },
-          { "label" : "Left", "value": "left", "barIcon" : "RailLeft"  },
-          { "label" : "Right", "value": "right", "barIcon" : "RailRight" }
+          { "label": "Off", "value": false, "barIcon": "Cancel" },
+          { "label": "Left", "value": "left", "barIcon": "RailLeft" },
+          { "label": "Right", "value": "right", "barIcon": "RailRight" }
         ],
         "defaultValue": false
       },
 
-
       {
-        "tag" : "style",
+        "tag": "style",
         "section": true,
         "name": "Sizing",
-        "collapsible" : true,
+        "collapsible": true,
         "settings": [
           {
             "type": "select",
             "key": "sizing",
             "label": "Column Sizing",
             "options": [
-              {"label": "Fixed", "value": "fixed"},
-              {"label": "Flexible", "value": "flexible"}
+              { "label": "Fixed", "value": "fixed" },
+              { "label": "Flexible", "value": "flexible" }
             ],
-            "defaultValue" : "flexible"
+            "defaultValue": "flexible"
           },
           {
-            "type" : "number",
-            "key" : "flexFactor",
-            "label" : "Flex Factor",
-            "min" : 1,
-            "defaultValue" : 1,
-            "dependsOn" : { "setting" : "sizing", "value" : "flexible"}
+            "type": "number",
+            "key": "flexFactor",
+            "label": "Flex Factor",
+            "min": 1,
+            "defaultValue": 1,
+            "dependsOn": { "setting": "sizing", "value": "flexible" }
           },
           {
-            "type" : "text",
-            "key" : "minWidth",
-            "label" : "Min Width",
-            "placeholder" : "6rem",
-            "dependsOn" : { "setting" : "sizing", "value" : "flexible"}
+            "type": "text",
+            "key": "minWidth",
+            "label": "Min Width",
+            "placeholder": "6rem",
+            "dependsOn": { "setting": "sizing", "value": "flexible" }
           },
           {
-            "type" : "text",
-            "key" : "maxWidth",
-            "label" : "Max Width",
-            "placeholder" : "16rem",
-            "dependsOn" : { "setting" : "sizing", "value" : "flexible"}
+            "type": "text",
+            "key": "maxWidth",
+            "label": "Max Width",
+            "placeholder": "16rem",
+            "dependsOn": { "setting": "sizing", "value": "flexible" }
           },
           {
-            "type" : "text",
-            "key" : "fixedWidth",
-            "label" : "Width",
-            "placeholder" : "8rem",
-            "dependsOn" : { "setting" : "sizing", "value" : "fixed"}
+            "type": "text",
+            "key": "fixedWidth",
+            "label": "Width",
+            "placeholder": "8rem",
+            "dependsOn": { "setting": "sizing", "value": "fixed" }
           },
           {
-            "tag" : "style",
-            "type" : "boolean",
-            "key" : "useOptionColors",
-            "label" : "Option Colors",
-            "defaultValue" : false
+            "tag": "style",
+            "type": "boolean",
+            "key": "useOptionColors",
+            "label": "Option Colors",
+            "defaultValue": false
           },
           {
-            "tag" : "style",
-            "type" : "boolean",
-            "key" : "useOptionIcons",
-            "label" : "Option Icons",
-            "defaultValue" : false
+            "tag": "style",
+            "type": "boolean",
+            "key": "useOptionIcons",
+            "label": "Option Icons",
+            "defaultValue": false
           },
           {
-            "tag" : "style",
+            "tag": "style",
             "type": "select",
             "label": "Options Mode",
             "key": "optionsViewMode",
@@ -366,31 +390,31 @@
         ]
       },
       {
-        "tag" : "style",
-        "section" : true,
-        "name" : " Dynamic Cell Colors",
+        "tag": "style",
+        "section": true,
+        "name": " Dynamic Cell Colors",
         "collapsible": true,
-        "settings" : [
+        "settings": [
           {
             "type": "text",
             "key": "rowColorTemplate",
             "label": "Text",
-            "nested" : true,
-            "placeholder" : "{{ Row }}"
+            "nested": true,
+            "placeholder": "{{ Row }}"
           },
           {
             "type": "text",
             "key": "rowBackground",
             "label": "Background",
-            "nested" : true,
-            "placeholder" : "{{ Row }}"
+            "nested": true,
+            "placeholder": "{{ Row }}"
           },
           {
             "type": "text",
             "key": "rowFontTemplate",
             "label": "Font Weight",
-            "nested" : true,
-            "placeholder" : "{{ Row }}"
+            "nested": true,
+            "placeholder": "{{ Row }}"
           }
         ]
       }
@@ -398,7 +422,7 @@
     "context": [
       {
         "type": "static",
-        "scope" : "local",
+        "scope": "local",
         "values": [
           {
             "label": "id",
@@ -411,9 +435,9 @@
             "type": "object"
           },
           {
-            "label" : "row",
-            "key" : "row",
-            "type" : "object"
+            "label": "row",
+            "key": "row",
+            "type": "object"
           }
         ]
       }
