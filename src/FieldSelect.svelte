@@ -1,23 +1,21 @@
 <script>
-import CellOptions from "../../bb_super_components_shared/src/lib/SuperTableCells/CellOptions.svelte";
-  export let schema
-  export let value
+  import CellOptions from "../../bb_super_components_shared/src/lib/SuperTableCells/CellOptions.svelte";
+  export let schema;
+  export let value;
 
   $: cellOptions = {
     optionsSource: "custom",
     customOptions: Object.keys(schema),
-    controlType : "select",
+    controlType: "select",
     optionsViewMode: "text",
     autocomplete: false,
+    padding: "0.5rem",
     addNew: false,
     placeholder: "Select Field",
-    role: "formInput"
-  }
+    role: "formInput",
+  };
 </script>
 
-<p> Column: </p>
+<p>Column:</p>
 
-<CellOptions
-  on:change={ (e) => value = e.detail }
-  {cellOptions}
-  />
+<CellOptions on:change={(e) => (value = e.detail)} {cellOptions} />
