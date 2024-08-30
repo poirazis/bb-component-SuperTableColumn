@@ -37,12 +37,6 @@
             "barTitle": "Option Picker"
           },
           {
-            "label": "Relationship",
-            "value": "linkSQL",
-            "barIcon": "Link",
-            "barTitle": "Relationship Picker"
-          },
-          {
             "label": "Custom",
             "value": "subType",
             "barIcon": "Brackets",
@@ -165,77 +159,6 @@
               "value": "data"
             },
             "resetsOn": "datasource"
-          },
-          {
-            "type": "boolean",
-            "key": "fullTable",
-            "label": "Super Table",
-            "resetOn": "columnType"
-          },
-          {
-            "type": "columns",
-            "key": "columnList",
-            "label": "Column",
-            "resetsOn": "columnType",
-            "dependsOn": "fullTable"
-          }
-        ]
-      },
-      {
-        "section": true,
-        "name": "Relationship Settings",
-        "dependsOn": { "setting": "columnType", "value": "linkSQL" },
-        "settings": [
-          {
-            "type": "table",
-            "key": "datasource",
-            "label": "Table",
-            "dependsOn": {
-              "setting": "optionsSource",
-              "value": "data"
-            },
-            "resetsOn": "columnType"
-          },
-          {
-            "type": "field",
-            "key": "valueColumn",
-            "label": "Value Column",
-            "dependsOn": {
-              "setting": "optionsSource",
-              "value": "data"
-            },
-            "resetsOn": "datasource"
-          },
-          {
-            "type": "field",
-            "key": "labelColumn",
-            "label": "Label Column",
-            "dependsOn": {
-              "setting": "optionsSource",
-              "value": "data"
-            },
-            "resetsOn": "datasource"
-          },
-          {
-            "type": "field",
-            "key": "colorColumn",
-            "label": "Color Column",
-            "dependsOn": {
-              "setting": "optionsSource",
-              "value": "data"
-            },
-            "resetsOn": "datasource"
-          },
-          {
-            "type": "field",
-            "key": "iconColumn",
-            "label": "Icon Column",
-            "info": "Must contain a remix icon class name",
-            "dependsOn": {
-              "setting": "optionsSource",
-              "value": "data"
-            },
-            "resetsOn": "datasource"
           }
         ]
       },
@@ -293,20 +216,6 @@
         ],
         "defaultValue": "inherit"
       },
-      {
-        "type": "select",
-        "key": "sticky",
-        "label": "Stick",
-        "showInBar": true,
-        "barStyle": "buttons",
-        "options": [
-          { "label": "Off", "value": false, "barIcon": "Cancel" },
-          { "label": "Left", "value": "left", "barIcon": "RailLeft" },
-          { "label": "Right", "value": "right", "barIcon": "RailRight" }
-        ],
-        "defaultValue": false
-      },
-
       {
         "tag": "style",
         "section": true,
@@ -438,6 +347,11 @@
             "label": "row",
             "key": "row",
             "type": "object"
+          },
+          {
+            "label": "index",
+            "key": "index",
+            "type": "number"
           }
         ]
       }

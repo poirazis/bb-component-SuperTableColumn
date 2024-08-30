@@ -8,11 +8,12 @@
     customOptions: Object.keys(schema),
     controlType: "select",
     optionsViewMode: "text",
-    autocomplete: false,
+    autocomplete: true,
     padding: "0.5rem",
     addNew: false,
     placeholder: "Select Field",
     role: "formInput",
+    debounce: 100,
   };
 </script>
 
