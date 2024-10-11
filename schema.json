@@ -15,7 +15,7 @@
         "type": "text",
         "key": "field",
         "label": "Field",
-        "hidden": true
+        "hidden": false
       },
       {
         "type": "select",
