@@ -8,6 +8,7 @@
   const { styleable, builderStore, screenStore, memo } = getContext("sdk");
   const component = getContext("component");
   const stbSettings = getContext("stbSettings");
+  const stbState = getContext("stbState");
 
   export let field;
   export let columnType;
@@ -116,7 +117,7 @@
     ...$component.styles,
     normal: {
       ...$component.styles.normal,
-      display: inBuilder ? "block" : "contents",
+      display: inBuilder ? "flex" : "contents",
       flex:
         $stbSettings?.columnSizing == "flexible" && sizing == "flexible"
           ? flexFactor + " 1 auto"
@@ -153,6 +154,11 @@
   const isValid = () => {
     let validFields = Object.keys(schema ?? {});
     return field && validFields.includes(field);
+  };
+
+  $: redraw($component.children);
+  const redraw = () => {
+    stbState?.refresh();
   };
 </script>
 
