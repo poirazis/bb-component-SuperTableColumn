@@ -5,11 +5,10 @@
   import SuperTableColumn from "../../bb_super_components_shared/src/lib/SuperTableColumn/SuperTableColumn.svelte";
   import { defaultOperatorMap } from "../../bb_super_components_shared/src/lib/SuperTable/constants";
 
-  const { styleable, builderStore, screenStore } = getContext("sdk");
+  const { styleable, builderStore, screenStore, memo } = getContext("sdk");
   const component = getContext("component");
-  const tableOptions = getContext("stbSettings");
+  const stbSettings = getContext("stbSettings");
   const stbState = getContext("stbState");
-  const stbData = getContext("stbData");
 
   export let field;
   export let columnType;
@@ -43,21 +42,26 @@
 
   let id = $component.id;
   let order, isLast, isFirst;
-  let columnOptions = {};
-  let localField = $tableOptions ? field : "reset_this_column";
+  let localField = $stbSettings ? field : "reset_this_column";
+  let columnOptions = memo({});
+  let optionOverrides = memo($$props);
 
+  $: optionOverrides.set($$props);
   $: inBuilder = $builderStore?.inBuilder;
+  $: schema = $stbSettings?.data?.schema;
 
   // We nned to know the position of the Super Columns amonsgt other siblings
   // to adjust various properties
   $: getOrderAmongstSiblings($screenStore);
+  $: enrichColumnnOptions($stbSettings, field, $optionOverrides);
 
-  $: columnOptions = $tableOptions
-    ? {
+  const enrichColumnnOptions = () => {
+    if (field && schema && schema[field]) {
+      let schema = $stbSettings?.data?.schema;
+      let type = schema[field].type;
+      columnOptions.set({
         name: field,
-        schema:
-          columnType == "auto" ? $stbData?.schema[field] : { type: columnType },
-        type: columnType,
+        schema: columnType == "auto" ? schema[field] : { type: columnType },
         align: align,
         displayName: header ? header : field,
         asComponent: $builderStore.inBuilder,
@@ -66,35 +70,32 @@
         fontWeight: fontWeight,
         header: header ?? "",
         headerAlign: align,
-        headerHeight: $tableOptions?.headerHeight,
+        headerHeight: $stbSettings?.headerHeight,
         template: valueTemplate,
         canEdit:
-          canEdit == "inherit" ? $tableOptions?.features.canEdit : canEdit,
-        highlighters: $tableOptions?.appearance?.highlighters,
+          canEdit == "inherit" ? $stbSettings?.features.canEdit : canEdit,
+        highlighters: $stbSettings?.appearance?.highlighters,
         canFilter:
-          canFilter == "inherit" ? $tableOptions.features.canFilter : canFilter,
+          canFilter == "inherit" ? $stbSettings.features.canFilter : canFilter,
         canResize:
-          canResize == "inherit" ? $tableOptions.features.canResize : canResize,
-        defaultFilteringOperator: field
-          ? defaultOperatorMap[$stbData?.schema[field]?.type]
-          : undefined,
-        canSort:
-          canSort == "inherit" ? $tableOptions.features.canSort : canSort,
+          canResize == "inherit" ? $stbSettings.features.canResize : canResize,
+        defaultFilteringOperator: field ? defaultOperatorMap[type] : undefined,
+        canSort: canSort == "inherit" ? $stbSettings.features.canSort : canSort,
         isSorted:
-          $tableOptions?.sortedColum == field
-            ? $tableOptions?.sortedDirection
+          $stbSettings?.sortedColum == field
+            ? $stbSettings?.sortedDirection
             : null,
-        sizing: sizing || $tableOptions?.sizing,
-        minWidth: minWidth || $tableOptions?.columnMinWidth,
-        maxWidth: maxWidth || $tableOptions?.columnMaxWidth,
-        fixedWidth: fixedWidth | $tableOptions?.columnFixedWidth,
-        showHeader: $tableOptions?.showHeader,
-        showFooter: $tableOptions?.showFooter,
+        sizing: sizing || $stbSettings?.sizing,
+        minWidth: minWidth || $stbSettings?.columnMinWidth,
+        maxWidth: maxWidth || $stbSettings?.columnMaxWidth,
+        fixedWidth: fixedWidth | $stbSettings?.columnFixedWidth,
+        showHeader: $stbSettings?.showHeader,
+        showFooter: $stbSettings?.showFooter,
         order: order,
         isFirst: isFirst,
         isLast: isLast,
         superColumn: true,
-        cellPadding: $tableOptions?.appearance.cellPadding,
+        cellPadding: $stbSettings?.appearance.cellPadding,
         optionsSource: columnType != "auto" ? optionsSource : "schema",
         customOptions,
         useOptionColors,
@@ -106,8 +107,9 @@
           labelColumn,
           valueColumn,
         },
-      }
-    : {};
+      });
+    }
+  };
 
   // When the Super Columns is used as a Component, the sizing variables need to be applied to the wrapping div and not the
   // SuperColumn itself.
@@ -115,9 +117,9 @@
     ...$component.styles,
     normal: {
       ...$component.styles.normal,
-      display: inBuilder ? "block" : "contents",
+      display: inBuilder ? "flex" : "contents",
       flex:
-        $tableOptions?.columnSizing == "flexible" && sizing == "flexible"
+        $stbSettings?.columnSizing == "flexible" && sizing == "flexible"
           ? flexFactor + " 1 auto"
           : "0 1 auto",
       width:
@@ -137,9 +139,9 @@
   }
 
   function getOrderAmongstSiblings() {
-    if (!tableOptions) return;
+    if (!stbSettings) return;
 
-    let parentTableID = $tableOptions.componentID;
+    let parentTableID = $stbSettings.componentID;
     let parentTableObj = findComponentById(
       $screenStore.activeScreen.props,
       parentTableID
@@ -150,13 +152,18 @@
   }
 
   const isValid = () => {
-    let validFields = Object.keys($stbData?.schema ?? {});
+    let validFields = Object.keys(schema ?? {});
     return field && validFields.includes(field);
+  };
+
+  $: redraw($component.children);
+  const redraw = () => {
+    stbState?.refresh();
   };
 </script>
 
 <div use:styleable={$component.styles}>
-  {#if !tableOptions && inBuilder}
+  {#if !stbSettings && inBuilder}
     <p class="error-message">
       <i
         class="ri-error-warning-line"
@@ -166,12 +173,11 @@
     </p>
   {:else if !isValid(field) && inBuilder}
     <div style:margin={"0.5rem 1rem"}>
-      <FieldSelect bind:value={localField} schema={$stbData?.schema ?? {}} />
+      <FieldSelect bind:value={localField} {schema} />
     </div>
   {:else if isValid(field)}
     <SuperTableColumn
-      columnOptions={{ ...columnOptions, hasChildren: $component.children }}
-      {stbState}
+      columnOptions={{ ...$columnOptions, hasChildren: $component.children }}
     >
       <slot />
     </SuperTableColumn>
