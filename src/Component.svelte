@@ -155,11 +155,6 @@
     let validFields = Object.keys(schema ?? {});
     return field && validFields.includes(field);
   };
-
-  $: redraw($component.children);
-  const redraw = () => {
-    stbState?.refresh();
-  };
 </script>
 
 <div use:styleable={$component.styles}>
@@ -172,7 +167,7 @@
       Super Columns can only be placed inside a Super Table
     </p>
   {:else if !isValid(field) && inBuilder}
-    <div style:margin={"0.5rem 1rem"}>
+    <div style:margin={"0.5rem 1rem"} style:min-width={"10rem"}>
       <FieldSelect bind:value={localField} {schema} />
     </div>
   {:else if isValid(field)}
