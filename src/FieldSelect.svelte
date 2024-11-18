@@ -17,6 +17,19 @@
   };
 </script>
 
-<p>Column:</p>
+<div class="wrapper">
+  <p>Column:</p>
 
-<CellOptions on:change={(e) => (value = e.detail)} {cellOptions} />
+  <div class="field">
+    <CellOptions on:change={(e) => (value = e.detail)} {cellOptions} />
+  </div>
+</div>
+
+<style>
+  .wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+  }
+</style>
