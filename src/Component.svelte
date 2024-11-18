@@ -8,7 +8,6 @@
   const { styleable, builderStore, screenStore, memo } = getContext("sdk");
   const component = getContext("component");
   const stbSettings = getContext("stbSettings");
-  const stbState = getContext("stbState");
 
   export let field;
   export let columnType;
@@ -34,11 +33,11 @@
   export let canFilter;
   export let canSort;
 
-  export let header, align, headerFontColor, headerBackground;
+  export let header, align;
 
-  export let rowHorizontalAlign, rowFontColor, rowBackground, fontWeight;
+  export let rowFontColor, rowBackground, fontWeight;
 
-  export let footer, footerAlign, footerFontColor, footerBackground;
+  export let footerTemplate, footerAlign, footerFontColor, footerBackground;
 
   let id = $component.id;
   let order, isLast, isFirst;
@@ -58,7 +57,8 @@
   const enrichColumnnOptions = () => {
     if (field && schema && schema[field]) {
       let schema = $stbSettings?.data?.schema;
-      let type = schema[field].type;
+      let type = schema[field]?.type;
+
       columnOptions.set({
         name: field,
         schema: columnType == "auto" ? schema[field] : { type: columnType },
@@ -91,6 +91,7 @@
         fixedWidth: fixedWidth | $stbSettings?.columnFixedWidth,
         showHeader: $stbSettings?.showHeader,
         showFooter: $stbSettings?.showFooter,
+        footerTemplate,
         order: order,
         isFirst: isFirst,
         isLast: isLast,
@@ -167,9 +168,7 @@
       Super Columns can only be placed inside a Super Table
     </p>
   {:else if !isValid(field) && inBuilder}
-    <div style:margin={"0.5rem 1rem"} style:min-width={"10rem"}>
-      <FieldSelect bind:value={localField} {schema} />
-    </div>
+    <FieldSelect bind:value={localField} {schema} />
   {:else if isValid(field)}
     <SuperTableColumn
       columnOptions={{ ...$columnOptions, hasChildren: $component.children }}
