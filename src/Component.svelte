@@ -41,7 +41,7 @@
 
   let id = $component.id;
   let order, isLast, isFirst;
-  let localField = $stbSettings ? field : "reset_this_column";
+  let localField = field;
   let columnOptions = memo({});
   let optionOverrides = memo($$props);
 
@@ -133,10 +133,14 @@
   $: if (
     inBuilder &&
     $component.selected &&
-    localField &&
+    stbSettings &&
     localField != field
   ) {
     builderStore.actions.updateProp("field", localField);
+  }
+
+  $: if (inBuilder && $component.selected && !stbSettings && field) {
+    builderStore.actions.updateProp("field", undefined);
   }
 
   function getOrderAmongstSiblings() {

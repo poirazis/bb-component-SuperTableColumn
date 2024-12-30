@@ -15,7 +15,7 @@
         "type": "text",
         "key": "field",
         "label": "Field",
-        "hidden": false
+        "hidden": true
       },
       {
         "type": "select",
@@ -68,7 +68,7 @@
         "type": "text",
         "key": "footerTemplate",
         "label": "Footer",
-        "placeholder": "{{ Values }}",
+        "placeholder": "{{ values }}",
         "nested": "true"
       },
       {
