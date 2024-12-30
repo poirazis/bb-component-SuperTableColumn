@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - main
+  workflow_dispatch:
 
 jobs:
   build:
@@ -17,7 +18,7 @@ jobs:
           path: ${{ github.workspace }}/bb-component-SuperTableColumn
       - uses: actions/checkout@v3
         name: Checkout Super Components Shared code repository
-        with: 
+        with:
           repository: poirazis/bb_super_components_shared
           path: ${{ github.workspace }}/bb_super_components_shared
           ref: develop
