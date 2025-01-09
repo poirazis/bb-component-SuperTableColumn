@@ -125,7 +125,7 @@
           : "0 1 auto",
       width:
         columnOptions.sizing == "fixed" ? columnOptions.fixedWidth : "auto",
-      "min-width": columnOptions.minWidth,
+      "min-width": inBuilder && !field ? "15rem" : columnOptions.minWidth,
       "max-width": columnOptions.maxWidth,
     },
   };
