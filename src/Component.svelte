@@ -59,6 +59,11 @@
       let schema = $stbSettings?.data?.schema;
       let type = schema[field]?.type;
 
+      const flexible =
+        sizing == "inherit"
+          ? $stbSettings.columnSizing == "flexible"
+          : $optionOverrides.sizing == "flexible";
+
       columnOptions.set({
         name: field,
         schema: columnType == "auto" ? schema[field] : { type: columnType },
@@ -85,10 +90,15 @@
           $stbSettings?.sortedColum == field
             ? $stbSettings?.sortedDirection
             : null,
-        sizing: sizing || $stbSettings?.sizing,
-        minWidth: minWidth || $stbSettings?.columnMinWidth,
-        maxWidth: maxWidth || $stbSettings?.columnMaxWidth,
-        fixedWidth: fixedWidth | $stbSettings?.columnFixedWidth,
+        sizing: flexible ? "flexible" : "fixed",
+        minWidth: flexible
+          ? $optionOverrides.minWidth || $stbSettings?.columnMinWidth
+          : $optionOverrides.fixedWidth,
+        maxWidth: flexible
+          ? $optionOverrides.maxWidth || $stbSettings?.columnMaxWidth
+          : $optionOverrides.fixedWidth,
+        fixedWidth:
+          $optionOverrides.fixedWidth || $stbSettings?.columnFixedWidth,
         showHeader: $stbSettings?.showHeader,
         showFooter: $stbSettings?.showFooter,
         footerTemplate,
@@ -114,19 +124,24 @@
 
   // When the Super Columns is used as a Component, the sizing variables need to be applied to the wrapping div and not the
   // SuperColumn itself.
+
   $: $component.styles = {
     ...$component.styles,
     normal: {
       ...$component.styles.normal,
       display: inBuilder ? "flex" : "contents",
       flex:
-        $stbSettings?.columnSizing == "flexible" && sizing == "flexible"
-          ? flexFactor + " 1 auto"
-          : "0 1 auto",
+        $columnOptions.sizing == "flexible" ? flexFactor + " 1 auto" : "none",
       width:
-        columnOptions.sizing == "fixed" ? columnOptions.fixedWidth : "auto",
-      "min-width": inBuilder && !field ? "15rem" : columnOptions.minWidth,
-      "max-width": columnOptions.maxWidth,
+        $columnOptions.sizing == "fixed" ? $columnOptions.fixedWidth : "auto",
+      "min-width":
+        $columnOptions.sizing == "flexible"
+          ? $columnOptions.minWidth
+          : $columnOptions.fixedWidth,
+      "max-width":
+        $columnOptions.sizing == "flexible"
+          ? $columnOptions.maxWidth
+          : $columnOptions.fixedWidth,
     },
   };
 
