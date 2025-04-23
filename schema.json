@@ -227,10 +227,11 @@
             "key": "sizing",
             "label": "Column Sizing",
             "options": [
+              { "label": "Inherit", "value": "inherit" },
               { "label": "Fixed", "value": "fixed" },
               { "label": "Flexible", "value": "flexible" }
             ],
-            "defaultValue": "flexible"
+            "defaultValue": "inherit"
           },
           {
             "type": "number",
@@ -258,7 +259,8 @@
             "type": "text",
             "key": "fixedWidth",
             "label": "Width",
-            "placeholder": "8rem",
+            "placeholder": "7rem",
+            "resetOn": "sizing",
             "dependsOn": { "setting": "sizing", "value": "fixed" }
           },
           {
