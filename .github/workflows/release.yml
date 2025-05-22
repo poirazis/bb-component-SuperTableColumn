@@ -15,21 +15,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          path: ${{ github.workspace }}/bb-component-SuperTableColumn
-      - uses: actions/checkout@v3
-        name: Checkout Super Components Shared code repository
-        with:
-          repository: poirazis/bb_super_components_shared
-          path: ${{ github.workspace }}/bb_super_components_shared
-          ref: develop
+          path: ${{ github.workspace }}
       - uses: actions/setup-node@v1
         with:
           node-version: 18
       - name: Make the production plugin bundle
         run: |
-          cd bb_super_components_shared
-          yarn
-          cd ../bb-component-SuperTableColumn
           release_version=$(cat package.json | jq -r '.version')
           echo "RELEASE_VERSION=$release_version" >> $GITHUB_ENV
           yarn
@@ -41,4 +32,4 @@ jobs:
           tag_name: v${{ env.RELEASE_VERSION }}
           generate_release_notes: true
           files: |
-            ${{ github.workspace }}/bb-component-SuperTableColumn/dist/*.tar.gz
+            ${{ github.workspace }}/dist/*.tar.gz
