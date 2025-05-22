@@ -2,12 +2,15 @@
   import { getContext } from "svelte";
   import { findComponentById } from "../lib/builderHelpers";
   import FieldSelect from "./FieldSelect.svelte";
-  import SuperTableColumn from "../../bb_super_components_shared/src/lib/SuperTableColumn/SuperTableColumn.svelte";
-  import { defaultOperatorMap } from "../../bb_super_components_shared/src/lib/SuperTable/constants";
+  import {
+    SuperTableColumn,
+    defaultOperatorMap,
+  } from "@poirazis/supercomponents-shared";
 
   const { styleable, builderStore, screenStore, memo } = getContext("sdk");
   const component = getContext("component");
   const stbSettings = getContext("stbSettings");
+  const stbSchema = getContext("stbSchema");
 
   export let field;
   export let columnType;
@@ -37,7 +40,7 @@
 
   export let rowFontColor, rowBackground, fontWeight;
 
-  export let footerTemplate, footerAlign, footerFontColor, footerBackground;
+  export let footerTemplate;
 
   let id = $component.id;
   let order, isLast, isFirst;
@@ -47,7 +50,6 @@
 
   $: optionOverrides.set($$props);
   $: inBuilder = $builderStore?.inBuilder;
-  $: schema = $stbSettings?.data?.schema;
 
   // We nned to know the position of the Super Columns amonsgt other siblings
   // to adjust various properties
@@ -55,8 +57,9 @@
   $: enrichColumnnOptions($stbSettings, field, $optionOverrides);
 
   const enrichColumnnOptions = () => {
+    let schema = $stbSchema;
+
     if (field && schema && schema[field]) {
-      let schema = $stbSettings?.data?.schema;
       let type = schema[field]?.type;
 
       const flexible =
@@ -172,13 +175,15 @@
   }
 
   const isValid = () => {
-    let validFields = Object.keys(schema ?? {});
+    let validFields = Object.keys($stbSchema ?? {});
     return field && validFields.includes(field);
   };
+
+  $: console.log("Hey");
 </script>
 
 <div use:styleable={$component.styles}>
-  {#if !stbSettings && inBuilder}
+  {#if !$stbSchema && inBuilder}
     <p class="error-message">
       <i
         class="ri-error-warning-line"
@@ -186,8 +191,8 @@
       />
       Super Columns can only be placed inside a Super Table
     </p>
-  {:else if !isValid(field) && inBuilder}
-    <FieldSelect bind:value={localField} {schema} />
+  {:else if $stbSchema && !isValid(field) && inBuilder}
+    <FieldSelect bind:value={localField} schema={$stbSchema} />
   {:else if isValid(field)}
     <SuperTableColumn
       columnOptions={{ ...$columnOptions, hasChildren: $component.children }}

@@ -1,6 +1,6 @@
 {
   "name": "bb-component-SuperTableColumn",
-  "version": "2.0.58-alpha",
+  "version": "2.0.60-beta",
   "description": "Customizable columns for the SuperTable Component",
   "author": "Michael Poirazi",
   "license": "MIT",
@@ -12,15 +12,13 @@
   },
   "dependencies": {
     "@crownframework/svelte-error-boundary": "^1.0.3",
-    "svelte": "^4.2.19",
-    "svelte-fsm": "^1.2.0",
-    "svelte-legos": "^0.2.5"
+    "@poirazis/supercomponents-shared": "^1.0.0",
+    "svelte-fsm": "^1.2.0"
   },
   "devDependencies": {
     "@budibase/backend-core": "^2.33.14",
-    "@budibase/bbui": "^2.33.14",
-    "@budibase/shared-core": "2.11.30",
     "@rollup/plugin-commonjs": "^25.0.8",
+    "@rollup/plugin-image": "^3.0.3",
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^15.3.1",
     "@rollup/plugin-terser": "^0.4.4",
@@ -32,6 +30,7 @@
     "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-svelte": "^7.2.2",
     "rollup-plugin-svg": "^2.0.0",
-    "tar": "^6.2.1"
+    "tar": "^6.2.1",
+    "svelte": "^4.2.20"
   }
 }
