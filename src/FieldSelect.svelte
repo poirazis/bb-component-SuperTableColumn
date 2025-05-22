@@ -1,5 +1,5 @@
 <script>
-  import CellOptions from "../../supercomponents_shared/src/lib/SuperTableCells/CellOptions.svelte";
+  import { CellOptions } from "@poirazis/supercomponents-shared";
   export let schema;
   export let value;
 
