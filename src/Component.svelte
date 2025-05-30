@@ -179,7 +179,6 @@
     return field && validFields.includes(field);
   };
 
-  $: console.log("Hey");
 </script>
 
 <div use:styleable={$component.styles}>
