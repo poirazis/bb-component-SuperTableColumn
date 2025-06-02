@@ -31,5 +31,6 @@
     display: flex;
     flex-direction: column;
     padding: 1rem;
+    min-width: 12rem;
   }
 </style>
