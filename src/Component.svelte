@@ -178,7 +178,6 @@
     let validFields = Object.keys($stbSchema ?? {});
     return field && validFields.includes(field);
   };
-
 </script>
 
 <div use:styleable={$component.styles}>
