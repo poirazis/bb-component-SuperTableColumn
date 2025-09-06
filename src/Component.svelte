@@ -78,7 +78,7 @@
         fontWeight: fontWeight,
         header: header ?? "",
         headerAlign: align,
-        headerHeight: $stbSettings?.headerHeight,
+        headerHeight: $stbSettings?.appearance?.headerHeight,
         template: valueTemplate,
         canEdit:
           canEdit == "inherit" ? $stbSettings?.features.canEdit : canEdit,
@@ -98,7 +98,7 @@
           ? $optionOverrides.minWidth || $stbSettings?.columnMinWidth
           : $optionOverrides.fixedWidth,
         maxWidth: flexible
-          ? $optionOverrides.maxWidth || $stbSettings?.columnMaxWidth
+          ? $optionOverrides.maxWidth || $stbSettings?.columnMaxWidth || "none"
           : $optionOverrides.fixedWidth,
         fixedWidth:
           $optionOverrides.fixedWidth || $stbSettings?.columnFixedWidth,
@@ -143,7 +143,7 @@
           : $columnOptions.fixedWidth,
       "max-width":
         $columnOptions.sizing == "flexible"
-          ? $columnOptions.maxWidth
+          ? $columnOptions.maxWidth || "none"
           : $columnOptions.fixedWidth,
     },
   };
