@@ -11,6 +11,7 @@
   const component = getContext("component");
   const stbSettings = getContext("stbSettings");
   const stbSchema = getContext("stbSchema");
+  const stbData = getContext("stbData");
 
   export let field;
   export let columnType;
@@ -193,6 +194,7 @@
     <FieldSelect bind:value={localField} schema={$stbSchema} />
   {:else if isValid(field)}
     <SuperTableColumn
+      {stbData}
       columnOptions={{ ...$columnOptions, hasChildren: $component.children }}
     >
       <slot />
