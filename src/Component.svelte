@@ -55,7 +55,8 @@
   // We nned to know the position of the Super Columns amonsgt other siblings
   // to adjust various properties
   $: getOrderAmongstSiblings($screenStore);
-  $: enrichColumnnOptions($stbSettings, field, $optionOverrides);
+  $: validField = isValid(field, $stbSchema);
+  $: enrichColumnnOptions($stbSettings, field, $optionOverrides, $stbSchema);
 
   const enrichColumnnOptions = () => {
     let schema = $stbSchema;
@@ -176,23 +177,31 @@
   }
 
   const isValid = () => {
+    if (!stbSchema) return true;
+
     let validFields = Object.keys($stbSchema ?? {});
     return field && validFields.includes(field);
   };
 </script>
 
-<div use:styleable={$component.styles}>
+<div
+  class="super-column-wrapper"
+  class:in-builder={inBuilder}
+  class:invalid={!validField}
+  class:error={!$stbSchema && inBuilder}
+  use:styleable={$component.styles}
+>
   {#if !$stbSchema && inBuilder}
-    <p class="error-message">
+    <div class="error-message">
       <i
         class="ri-error-warning-line"
         style="color: var(--spectrum-global-color-yellow-700)"
       />
       Super Columns can only be placed inside a Super Table
-    </p>
-  {:else if $stbSchema && !isValid(field) && inBuilder}
+    </div>
+  {:else if $stbSchema && !validField && inBuilder}
     <FieldSelect bind:value={localField} schema={$stbSchema} />
-  {:else if isValid(field)}
+  {:else if validField}
     <SuperTableColumn
       {stbData}
       columnOptions={{ ...$columnOptions, hasChildren: $component.children }}
@@ -203,10 +212,30 @@
 </div>
 
 <style>
+  .super-column-wrapper {
+    display: contents;
+  }
+
+  .super-column-wrapper.in-builder {
+    display: flex;
+  }
+
+  .super-column-wrapper.invalid {
+    width: 10rem;
+    border: 1px dashed var(--spectrum-global-color-blue-400);
+  }
+
+  .super-column-wrapper.error {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
   .error-message {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.5rem 1.25rem;
+    padding: 1rem 1.25rem;
+    border: 1px dashed var(--spectrum-global-color-red-400);
   }
 </style>
