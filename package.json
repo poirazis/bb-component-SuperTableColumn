@@ -1,6 +1,6 @@
 {
   "name": "bb-component-SuperTableColumn",
-  "version": "2.0.80-beta",
+  "version": "2.1.0",
   "description": "Customizable columns for the SuperTable Component",
   "author": "Michael Poirazi",
   "license": "MIT",
@@ -11,28 +11,29 @@
     "watch": "rollup -cw"
   },
   "dependencies": {
-    "@crownframework/svelte-error-boundary": "^1.0.3",
-    "@poirazis/supercomponents-shared": "^1.0.0",
+    "@poirazis/supercomponents-shared": "latest",
     "svelte-fsm": "^1.2.0"
   },
   "devDependencies": {
-    "@budibase/backend-core": "^2.33.14",
-    "@rollup/plugin-commonjs": "^18.1.0",
-    "@rollup/plugin-node-resolve": "^11.2.1",
-    "npm-run-all": "^4.1.5",
+    "svelte": "^5.0.0",
+    "@budibase/backend-core": "^2.8.0",
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-terser": "^0.4.4",
     "postcss": "^8.5.3",
-    "rollup": "^2.79.2",
+    "rollup": "^4.21.0",
     "rollup-plugin-copy2": "^0.3.1",
     "rollup-plugin-json": "^4.0.0",
-    "rollup-plugin-polyfill-node": "^0.8.0",
+    "rollup-plugin-polyfill-node": "^0.13.0",
     "rollup-plugin-postcss": "^4.0.2",
-    "rollup-plugin-svelte": "^7.2.2",
+    "rollup-plugin-svelte": "^7.2.3",
     "rollup-plugin-svg": "^2.0.0",
-    "rollup-plugin-terser": "^7.0.2",
     "tar": "^6.2.1",
     "svelte-preprocess": "^5.1.4",
     "typescript": "^5.8.3",
-    "sass": "^1.89.0",
-    "svelte": "^4.2.20"
+    "sass": "^1.89.0"
+  },
+  "peerDependencies": {
+    "svelte": "^5.0.0"
   }
 }

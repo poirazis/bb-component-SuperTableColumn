@@ -1,13 +1,17 @@
 {
   "type": "component",
-  "metadata": {},
+  "metadata": {
+    "svelteMajor": 5
+  },
   "schema": {
     "name": "bb-component-SuperTableColumn",
     "friendlyName": "Super Table Column",
     "description": "Customizable columns for the Super Table Component",
     "icon": "TableColumnAddRight",
     "hasChildren": true,
-    "illegalChildren": ["plugin/bb-component-SuperTableColumn"],
+    "illegalChildren": [
+      "plugin/bb-component-SuperTableColumn"
+    ],
     "showSettingsBar": true,
     "showEmptyState": false,
     "settings": [
@@ -102,7 +106,10 @@
       {
         "section": true,
         "name": "Options Settings",
-        "dependsOn": { "setting": "columnType", "value": "options" },
+        "dependsOn": {
+          "setting": "columnType",
+          "value": "options"
+        },
         "settings": [
           {
             "type": "select",
@@ -169,9 +176,21 @@
         "showInBar": true,
         "barStyle": "buttons",
         "options": [
-          { "label": "Inherit", "value": "inherit", "barIcon": "Table" },
-          { "label": "On", "value": true, "barIcon": "Checkmark" },
-          { "label": "Off", "value": false, "barIcon": "Cancel" }
+          {
+            "label": "Inherit",
+            "value": "inherit",
+            "barIcon": "Table"
+          },
+          {
+            "label": "On",
+            "value": true,
+            "barIcon": "Checkmark"
+          },
+          {
+            "label": "Off",
+            "value": false,
+            "barIcon": "Cancel"
+          }
         ],
         "defaultValue": "inherit"
       },
@@ -183,10 +202,26 @@
         "barStyle": "buttons",
         "barTitle": "Filtering",
         "options": [
-          { "label": "Inherit", "value": "inherit", "barIcon": "Table" },
-          { "label": "Simple", "value": "simple", "barIcon": "Filter" },
-          { "label": "Advanced", "value": "advanced", "barIcon": "FilterEdit" },
-          { "label": "Off", "value": false, "barIcon": "Cancel" }
+          {
+            "label": "Inherit",
+            "value": "inherit",
+            "barIcon": "Table"
+          },
+          {
+            "label": "Simple",
+            "value": "simple",
+            "barIcon": "Filter"
+          },
+          {
+            "label": "Advanced",
+            "value": "advanced",
+            "barIcon": "FilterEdit"
+          },
+          {
+            "label": "Off",
+            "value": false,
+            "barIcon": "Cancel"
+          }
         ],
         "defaultValue": "inherit"
       },
@@ -197,9 +232,21 @@
         "showInBar": true,
         "barStyle": "buttons",
         "options": [
-          { "label": "Inherit", "value": "inherit", "barIcon": "Table" },
-          { "label": "On", "value": true, "barIcon": "Checkmark" },
-          { "label": "Off", "value": false, "barIcon": "Cancel" }
+          {
+            "label": "Inherit",
+            "value": "inherit",
+            "barIcon": "Table"
+          },
+          {
+            "label": "On",
+            "value": true,
+            "barIcon": "Checkmark"
+          },
+          {
+            "label": "Off",
+            "value": false,
+            "barIcon": "Cancel"
+          }
         ],
         "defaultValue": "inherit"
       },
@@ -210,9 +257,21 @@
         "showInBar": true,
         "barStyle": "buttons",
         "options": [
-          { "label": "Inherit", "value": "inherit", "barIcon": "Table" },
-          { "label": "On", "value": true, "barIcon": "Checkmark" },
-          { "label": "Off", "value": false, "barIcon": "Cancel" }
+          {
+            "label": "Inherit",
+            "value": "inherit",
+            "barIcon": "Table"
+          },
+          {
+            "label": "On",
+            "value": true,
+            "barIcon": "Checkmark"
+          },
+          {
+            "label": "Off",
+            "value": false,
+            "barIcon": "Cancel"
+          }
         ],
         "defaultValue": "inherit"
       },
@@ -227,9 +286,18 @@
             "key": "sizing",
             "label": "Column Sizing",
             "options": [
-              { "label": "Inherit", "value": "inherit" },
-              { "label": "Fixed", "value": "fixed" },
-              { "label": "Flexible", "value": "flexible" }
+              {
+                "label": "Inherit",
+                "value": "inherit"
+              },
+              {
+                "label": "Fixed",
+                "value": "fixed"
+              },
+              {
+                "label": "Flexible",
+                "value": "flexible"
+              }
             ],
             "defaultValue": "inherit"
           },
@@ -239,21 +307,30 @@
             "label": "Flex Factor",
             "min": 1,
             "defaultValue": 1,
-            "dependsOn": { "setting": "sizing", "value": "flexible" }
+            "dependsOn": {
+              "setting": "sizing",
+              "value": "flexible"
+            }
           },
           {
             "type": "text",
             "key": "minWidth",
             "label": "Min Width",
             "placeholder": "6rem",
-            "dependsOn": { "setting": "sizing", "value": "flexible" }
+            "dependsOn": {
+              "setting": "sizing",
+              "value": "flexible"
+            }
           },
           {
             "type": "text",
             "key": "maxWidth",
             "label": "Max Width",
             "placeholder": "16rem",
-            "dependsOn": { "setting": "sizing", "value": "flexible" }
+            "dependsOn": {
+              "setting": "sizing",
+              "value": "flexible"
+            }
           },
           {
             "type": "text",
@@ -261,7 +338,10 @@
             "label": "Width",
             "placeholder": "7rem",
             "resetOn": "sizing",
-            "dependsOn": { "setting": "sizing", "value": "fixed" }
+            "dependsOn": {
+              "setting": "sizing",
+              "value": "fixed"
+            }
           },
           {
             "tag": "style",
