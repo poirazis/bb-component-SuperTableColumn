@@ -47,9 +47,9 @@
   let order, isLast, isFirst;
   let localField = field;
   let columnOptions = memo({});
-  let optionOverrides = memo($$props);
+  let optionOverrides = memo({ ...$$props });
 
-  $: optionOverrides.set($$props);
+  $: optionOverrides.set({ ...$$props });
   $: inBuilder = $builderStore?.inBuilder;
 
   // We nned to know the position of the Super Columns amonsgt other siblings
@@ -179,9 +179,11 @@
   const isValid = () => {
     if (!stbSchema) return true;
 
-    let validFields = Object.keys($stbSchema ?? {});
+    let validFields = Object.keys($stbSchema ?? []);
     return field && validFields.includes(field);
   };
+
+  $: console.log($optionOverrides);
 </script>
 
 <div
@@ -196,7 +198,7 @@
       <i
         class="ri-error-warning-line"
         style="color: var(--spectrum-global-color-yellow-700)"
-      />
+      ></i>
       Super Columns can only be placed inside a Super Table
     </div>
   {:else if $stbSchema && !validField && inBuilder}
@@ -206,7 +208,7 @@
       {stbData}
       columnOptions={{ ...$columnOptions, hasChildren: $component.children }}
     >
-      <slot />
+      <slot></slot>
     </SuperTableColumn>
   {/if}
 </div>
