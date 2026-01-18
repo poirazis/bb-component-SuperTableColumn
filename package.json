@@ -1,6 +1,6 @@
 {
   "name": "bb-component-SuperTableColumn",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Customizable columns for the SuperTable Component",
   "author": "Michael Poirazi",
   "packageManager": "bun@1.0.0",
