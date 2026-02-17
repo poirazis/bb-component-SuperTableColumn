@@ -169,7 +169,7 @@
     let parentTableID = $stbSettings.componentID;
     let parentTableObj = findComponentById(
       $screenStore.activeScreen.props,
-      parentTableID
+      parentTableID,
     );
     order = parentTableObj?._children?.findIndex((v) => v._id == id);
     isLast = order == parentTableObj?._children?.length - 1;
@@ -182,8 +182,6 @@
     let validFields = Object.keys($stbSchema ?? []);
     return field && validFields.includes(field);
   };
-
-  $: console.log($optionOverrides);
 </script>
 
 <div
@@ -205,7 +203,6 @@
     <FieldSelect bind:value={localField} schema={$stbSchema} />
   {:else if validField}
     <SuperTableColumn
-      {stbData}
       columnOptions={{ ...$columnOptions, hasChildren: $component.children }}
     >
       <slot></slot>
