@@ -12,7 +12,7 @@
     padding: "0.5rem",
     addNew: false,
     placeholder: "Select Field",
-    role: "formInput",
+    role: "inlineInput",
     debounce: 100,
   };
 </script>
