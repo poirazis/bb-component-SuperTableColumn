@@ -5,14 +5,14 @@
 
   $: cellOptions = {
     optionsSource: "custom",
-    customOptions: Object.keys(schema),
+    customOptions: Object.keys(schema ?? {}),
     controlType: "select",
     optionsViewMode: "text",
     autocomplete: true,
     padding: "0.5rem",
     addNew: false,
+    role: "formInput",
     placeholder: "Select Field",
-    role: "inlineInput",
     debounce: 100,
   };
 </script>
