@@ -11,7 +11,6 @@
   const component = getContext("component");
   const stbSettings = getContext("stbSettings");
   const stbSchema = getContext("stbSchema");
-  const stbData = getContext("stbData");
 
   export let field;
   export let columnType;
@@ -179,9 +178,11 @@
   const isValid = () => {
     if (!stbSchema) return true;
 
-    let validFields = Object.keys($stbSchema ?? []);
+    let validFields = Object.keys($stbSchema ?? {});
     return field && validFields.includes(field);
   };
+
+  $: console.log(localField, field, $stbSchema, validField);
 </script>
 
 <div
@@ -199,9 +200,9 @@
       ></i>
       Super Columns can only be placed inside a Super Table
     </div>
-  {:else if $stbSchema && !validField && inBuilder}
+  {:else if $stbSchema && validField != true && inBuilder}
     <FieldSelect bind:value={localField} schema={$stbSchema} />
-  {:else if validField}
+  {:else}
     <SuperTableColumn
       columnOptions={{ ...$columnOptions, hasChildren: $component.children }}
     >

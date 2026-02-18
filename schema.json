@@ -9,17 +9,13 @@
     "description": "Customizable columns for the Super Table Component",
     "icon": "TableColumnAddRight",
     "hasChildren": true,
-    "illegalChildren": [
-      "plugin/bb-component-SuperTableColumn"
-    ],
     "showSettingsBar": true,
     "showEmptyState": false,
     "settings": [
       {
         "type": "text",
         "key": "field",
-        "label": "Field",
-        "hidden": true
+        "label": "Field"
       },
       {
         "type": "select",
